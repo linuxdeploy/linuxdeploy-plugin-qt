@@ -103,5 +103,11 @@ int main(const int argc, const char* const* argv) {
         ldQtLog() << "Nothing to do for module:" << module.name << std::endl;
     }
 
+    ldQtLog() << "-- Executing deferred operations --" << std::endl;
+    if (!appDir.executeDeferredOperations()) {
+        ldQtLog() << LD_ERROR << "Failed to execute deferred operations" << std::endl;
+        return 1;
+    }
+
     ldQtLog() << "Done!" << std::endl;
 }
