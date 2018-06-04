@@ -1,0 +1,1 @@
+add_subdirectory(linuxdeploy EXCLUDE_FROM_ALL)
