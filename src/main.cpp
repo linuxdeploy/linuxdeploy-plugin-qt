@@ -11,6 +11,7 @@
 #include <linuxdeploy/core/elf.h>
 #include <linuxdeploy/core/log.h>
 #include <args.hxx>
+#include <subprocess.hpp>
 
 // local includes
 #include "qt-modules.h"
@@ -20,8 +21,25 @@ namespace bf = boost::filesystem;
 using namespace linuxdeploy::core;
 using namespace linuxdeploy::core::log;
 
-static ldLog ldQtLog() {
-    return ldLog() << "linuxdeploy-plugin-qt:";
+static ldLog ldQtLog(LD_LOGLEVEL logLevel = LD_INFO) {
+    return ldLog() << logLevel << "linuxdeploy-plugin-qt:";
+}
+
+static std::string which(const std::string& name) {
+    subprocess::Popen proc({"which", name.c_str()}, subprocess::output{subprocess::PIPE});
+    auto output = proc.communicate();
+
+    if (proc.retcode() != 0) {
+        ldQtLog(LD_DEBUG) << "which call failed:" << output.first.buf << std::endl;
+        return "";
+    }
+
+    std::string path =  output.first.buf.data();
+    while (path.back() == '\n') {
+        path.erase(path.end() - 1, path.end());
+    }
+
+    return path;
 }
 
 std::string join(const std::vector<std::string>& list) {
@@ -36,6 +54,12 @@ std::string join(const std::vector<std::string>& list) {
     }
 
     return rv.str();
+}
+
+std::string join(const std::set<std::string>& list) {
+    std::vector<std::string> data;
+    std::copy(list.begin(), list.end(), std::back_inserter(data));
+    return join(data);
 }
 
 int main(const int argc, const char* const* argv) {
@@ -86,26 +110,36 @@ int main(const int argc, const char* const* argv) {
     });
 
     {
-        std::vector<std::string> moduleNames;
+        std::set<std::string> moduleNames;
         std::for_each(foundQtModules.begin(), foundQtModules.end(), [&moduleNames](const QtModule& module) {
-            moduleNames.push_back(module.name);
-            moduleNames.push_back(module.name);
-            moduleNames.push_back(module.name);
+            moduleNames.insert(module.name);
         });
         ldQtLog() << "Found Qt modules:" << join(moduleNames) << std::endl;
     }
 
+    // search for qmake
+    auto qmakePath = which("qmake-qt5");
+
+    if (qmakePath.empty()) {
+        qmakePath = which("qmake");
+
+        if (qmakePath.empty()) {
+            ldQtLog() << "Failed to find suitable qmake" << std::endl;
+            return 1;
+        }
+    }
+
+    ldQtLog() << "Using qmake:" << qmakePath << std::endl;
+
     for (const auto& module : foundQtModules) {
         ldQtLog() << "-- Deploying module:" << module.name << "--" << std::endl;
-
-        // TODO: add if statements for all plugins that require special treatment
 
         ldQtLog() << "Nothing to do for module:" << module.name << std::endl;
     }
 
     ldQtLog() << "-- Executing deferred operations --" << std::endl;
     if (!appDir.executeDeferredOperations()) {
-        ldQtLog() << LD_ERROR << "Failed to execute deferred operations" << std::endl;
+        ldQtLog(LD_ERROR) << "Failed to execute deferred operations" << std::endl;
         return 1;
     }
 
