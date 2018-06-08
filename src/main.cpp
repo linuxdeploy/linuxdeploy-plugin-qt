@@ -122,6 +122,8 @@ std::string join(const std::set<std::string>& list) {
 }
 
 bool deployPlatformPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
+    ldLog() << "Deploying platform plugins" << std::endl;
+
     appDir.deployLibrary(qtPluginsPath / "platforms/libqxcb.so", appDir.path() / "usr/plugins/platforms/");
 
     for (bf::directory_iterator i(qtPluginsPath / "platforminputcontexts"); i != bf::directory_iterator(); ++i) {
@@ -215,15 +217,9 @@ int main(const int argc, const char* const* argv) {
         ldLog() << std::endl << "-- Deploying module:" << module.name << "--" << std::endl;
 
         if (module.name == "gui") {
-            ldLog() << "Deploying platform plugins";
-
             if (!deployPlatformPlugins(appDir, qtPluginsPath))
                 return 1;
-
-            continue;
         }
-
-        ldLog() << "Nothing to do for module:" << module.name << std::endl;
     }
 
     ldLog() << std::endl << "-- Executing deferred operations --" << std::endl;
