@@ -21,16 +21,12 @@ namespace bf = boost::filesystem;
 using namespace linuxdeploy::core;
 using namespace linuxdeploy::core::log;
 
-static ldLog ldQtLog(LD_LOGLEVEL logLevel = LD_INFO) {
-    return ldLog() << logLevel << "linuxdeploy-plugin-qt:";
-}
-
 static std::string which(const std::string& name) {
     subprocess::Popen proc({"which", name.c_str()}, subprocess::output{subprocess::PIPE});
     auto output = proc.communicate();
 
     if (proc.retcode() != 0) {
-        ldQtLog(LD_DEBUG) << "which call failed:" << output.first.buf << std::endl;
+        ldLog() << LD_DEBUG << "which call failed:" << output.first.buf << std::endl;
         return "";
     }
 
@@ -75,13 +71,13 @@ int main(const int argc, const char* const* argv) {
     }
 
     if (!appDirPath) {
-        ldQtLog() << LD_ERROR << "--appdir parameter required" << std::endl;
+        ldLog() << LD_ERROR << "--appdir parameter required" << std::endl;
         std::cout << std::endl << parser;
         return 1;
     }
 
     if (!bf::is_directory(appDirPath.Get())) {
-        ldQtLog() << LD_ERROR << "No such directory:" << appDirPath.Get() << std::endl;
+        ldLog() << LD_ERROR << "No such directory:" << appDirPath.Get( << std::endl;
         return 1;
     }
 
@@ -95,7 +91,7 @@ int main(const int argc, const char* const* argv) {
                 libraryNames.insert(dependency.filename().string());
             }
         } catch (const elf::ElfFileParseError& e) {
-            ldQtLog() << LD_DEBUG << "Failed to parse file as ELF file:" << path << std::endl;
+            ldLog() << LD_DEBUG << "Failed to parse file as ELF file:" << path << std::endl;
         }
     }
 
@@ -114,7 +110,7 @@ int main(const int argc, const char* const* argv) {
         std::for_each(foundQtModules.begin(), foundQtModules.end(), [&moduleNames](const QtModule& module) {
             moduleNames.insert(module.name);
         });
-        ldQtLog() << "Found Qt modules:" << join(moduleNames) << std::endl;
+        ldLog() << "Found Qt modules:" << join(moduleNames) << std::endl;
     }
 
     // search for qmake
@@ -124,24 +120,24 @@ int main(const int argc, const char* const* argv) {
         qmakePath = which("qmake");
 
         if (qmakePath.empty()) {
-            ldQtLog() << "Failed to find suitable qmake" << std::endl;
+            ldLog() << "Failed to find suitable qmake" << std::endl;
             return 1;
         }
     }
 
-    ldQtLog() << "Using qmake:" << qmakePath << std::endl;
+    ldLog() << "Using qmake:" << qmakePath << std::endl;
 
     for (const auto& module : foundQtModules) {
-        ldQtLog() << "-- Deploying module:" << module.name << "--" << std::endl;
+        ldLog() << "-- Deploying module:" << module.name << "--" << std::endl;
 
-        ldQtLog() << "Nothing to do for module:" << module.name << std::endl;
+        ldLog() << "Nothing to do for module:" << module.name << std::endl;
     }
 
-    ldQtLog() << "-- Executing deferred operations --" << std::endl;
+    ldLog() << "-- Executing deferred operations --" << std::endl;
     if (!appDir.executeDeferredOperations()) {
-        ldQtLog(LD_ERROR) << "Failed to execute deferred operations" << std::endl;
+        ldLog() << LD_ERROR << "Failed to execute deferred operations" << std::endl;
         return 1;
     }
 
-    ldQtLog() << "Done!" << std::endl;
+    ldLog() << "Done!" << std::endl;
 }
