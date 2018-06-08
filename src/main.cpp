@@ -184,6 +184,34 @@ bool deploySqlPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
     return true;
 }
 
+bool deployPositioningPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
+    ldLog() << "Deploying positioning plugins" << std::endl;
+
+    for (bf::directory_iterator i(qtPluginsPath / "position"); i != bf::directory_iterator(); ++i) {
+        if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/position/"))
+            return false;
+    }
+
+    return true;
+}
+
+bool deployMultimediaPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
+    ldLog() << "Deploying mediaservice plugins" << std::endl;
+
+    for (bf::directory_iterator i(qtPluginsPath / "mediaservice"); i != bf::directory_iterator(); ++i) {
+        if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/mediaservice/"))
+            return false;
+    }
+    ldLog() << "Deploying audio plugins" << std::endl;
+
+    for (bf::directory_iterator i(qtPluginsPath / "audio"); i != bf::directory_iterator(); ++i) {
+        if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/audio/"))
+            return false;
+    }
+
+    return true;
+}
+
 int main(const int argc, const char* const* argv) {
     args::ArgumentParser parser("linuxdeploy Qt plugin", "Bundles Qt resources. For use with an existing AppDir, created by linuxdeploy.");
 
@@ -285,6 +313,16 @@ int main(const int argc, const char* const* argv) {
 
         if (module.name == "sql") {
             if (!deploySqlPlugins(appDir, qtPluginsPath))
+                return 1;
+        }
+
+        if (module.name == "positioning") {
+            if (!deployPositioningPlugins(appDir, qtPluginsPath))
+                return 1;
+        }
+
+        if (module.name == "multimedia") {
+            if (!deployMultimediaPlugins(appDir, qtPluginsPath))
                 return 1;
         }
     }
