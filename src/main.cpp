@@ -149,6 +149,14 @@ bool deployXcbglIntegrationPlugins(appdir::AppDir& appDir, const bf::path& qtPlu
     return true;
 }
 
+bool deploySvgPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
+    ldLog() << "Deploying svg icon engine" << std::endl;
+
+    appDir.deployLibrary(qtPluginsPath / "iconengines/libqsvgicon.so", appDir.path() / "usr/plugins/iconengines/");
+
+    return true;
+}
+
 int main(const int argc, const char* const* argv) {
     args::ArgumentParser parser("linuxdeploy Qt plugin", "Bundles Qt resources. For use with an existing AppDir, created by linuxdeploy.");
 
@@ -235,6 +243,11 @@ int main(const int argc, const char* const* argv) {
 
         if (module.name == "opengl" || module.name == "gui" || module.name == "xcbqpa") {
             if (!deployXcbglIntegrationPlugins(appDir, qtPluginsPath))
+                return 1;
+        }
+
+        if (module.name == "svg") {
+            if (!deploySvgPlugins(appDir, qtPluginsPath))
                 return 1;
         }
     }
