@@ -134,6 +134,8 @@ bool deployPlatformPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath
         appDir.deployLibrary(*i, appDir.path() / "usr/plugins/imageformats/");
     }
 
+    // TODO: platform themes -- https://github.com/probonopd/linuxdeployqt/issues/236
+
     return true;
 }
 
