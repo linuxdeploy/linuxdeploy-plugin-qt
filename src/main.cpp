@@ -3,6 +3,7 @@
 #include <set>
 #include <sstream>
 #include <string>
+#include <tuple>
 #include <vector>
 
 // library includes
@@ -21,12 +22,74 @@ namespace bf = boost::filesystem;
 using namespace linuxdeploy::core;
 using namespace linuxdeploy::core::log;
 
+typedef struct {
+    bool success;
+    int retcode;
+    std::string stdoutOutput;
+    std::string stderrOutput;
+} procOutput;
+
+procOutput check_command(const std::initializer_list<const char*> args) {
+    subprocess::Popen proc(args, subprocess::output(subprocess::PIPE), subprocess::error(subprocess::PIPE));
+
+    auto output = proc.communicate();
+
+    std::string out, err;
+
+    if (output.first.length > 0)
+        out = output.first.buf.data();
+
+    if (output.second.length > 0)
+        err = output.second.buf.data();
+
+    return {proc.retcode() == 0, proc.retcode(), out, err};
+};
+
+const std::map<std::string, std::string> queryQmake(const bf::path& qmakePath) {
+    auto qmakeCall = check_command({qmakePath.c_str(), "-query"});
+
+    if (!qmakeCall.success)
+        return {};
+
+    std::map<std::string, std::string> rv;
+
+    std::stringstream ss;
+    ss << qmakeCall.stdoutOutput;
+
+    std::string line;
+
+    auto stringSplit = [](const std::string& str, const char delim = ' ') {
+        std::stringstream ss;
+        ss << str;
+
+        std::string part;
+        std::vector<std::string> parts;
+
+        while (std::getline(ss, part, delim)) {
+            parts.push_back(part);
+        }
+
+        return parts;
+    };
+
+    while (std::getline(ss, line)) {
+        auto parts = stringSplit(line, ':');
+
+        if (parts.size() != 2)
+            continue;
+
+        rv[parts[0]] = parts[1];
+    }
+
+    return rv;
+};
+
 static std::string which(const std::string& name) {
-    subprocess::Popen proc({"which", name.c_str()}, subprocess::output{subprocess::PIPE});
+    subprocess::Popen proc({"which", name.c_str()}, subprocess::output(subprocess::PIPE));
     auto output = proc.communicate();
 
     if (proc.retcode() != 0) {
-        ldLog() << LD_DEBUG << "which call failed:" << output.first.buf << std::endl;
+        ldLog() << LD_DEBUG << "which call failed:" << output.first.buf.data() << std::endl;
         return "";
     }
 
@@ -58,6 +121,12 @@ std::string join(const std::set<std::string>& list) {
     return join(data);
 }
 
+bool deployPlatformPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
+    appDir.deployLibrary(qtPluginsPath / "platforms/libqxcb.so", "usr/plugins/platforms/");
+
+    return true;
+}
+
 int main(const int argc, const char* const* argv) {
     args::ArgumentParser parser("linuxdeploy Qt plugin", "Bundles Qt resources. For use with an existing AppDir, created by linuxdeploy.");
 
@@ -77,7 +146,7 @@ int main(const int argc, const char* const* argv) {
     }
 
     if (!bf::is_directory(appDirPath.Get())) {
-        ldLog() << LD_ERROR << "No such directory:" << appDirPath.Get( << std::endl;
+        ldLog() << LD_ERROR << "No such directory:" << appDirPath.Get() << std::endl;
         return 1;
     }
 
@@ -127,17 +196,33 @@ int main(const int argc, const char* const* argv) {
 
     ldLog() << "Using qmake:" << qmakePath << std::endl;
 
+    auto qmakeVars = queryQmake(qmakePath);
+
+    if (qmakeVars.empty())
+        return 1;
+
+    auto qtPluginsPath = qmakeVars["QT_INSTALL_PLUGINS"];
+
     for (const auto& module : foundQtModules) {
-        ldLog() << "-- Deploying module:" << module.name << "--" << std::endl;
+        ldLog() << std::endl << "-- Deploying module:" << module.name << "--" << std::endl;
+
+        if (module.name == "gui") {
+            ldLog() << "Deploying platform plugins";
+
+            if (!deployPlatformPlugins(appDir, qtPluginsPath))
+                return 1;
+
+            continue;
+        }
 
         ldLog() << "Nothing to do for module:" << module.name << std::endl;
     }
 
-    ldLog() << "-- Executing deferred operations --" << std::endl;
+    ldLog() << std::endl << "-- Executing deferred operations --" << std::endl;
     if (!appDir.executeDeferredOperations()) {
         ldLog() << LD_ERROR << "Failed to execute deferred operations" << std::endl;
         return 1;
     }
 
-    ldLog() << "Done!" << std::endl;
+    ldLog() << std::endl << "Done!" << std::endl;
 }
