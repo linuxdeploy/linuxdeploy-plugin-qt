@@ -139,6 +139,16 @@ bool deployPlatformPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath
     return true;
 }
 
+bool deployXcbglIntegrationPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
+    ldLog() << "Deploying xcb-gl integrations" << std::endl;
+
+    for (bf::directory_iterator i(qtPluginsPath / "xcbglintegrations"); i != bf::directory_iterator(); ++i) {
+        appDir.deployLibrary(*i, appDir.path() / "usr/plugins/xcbglintegrations/");
+    }
+
+    return true;
+}
+
 int main(const int argc, const char* const* argv) {
     args::ArgumentParser parser("linuxdeploy Qt plugin", "Bundles Qt resources. For use with an existing AppDir, created by linuxdeploy.");
 
@@ -220,6 +230,11 @@ int main(const int argc, const char* const* argv) {
 
         if (module.name == "gui") {
             if (!deployPlatformPlugins(appDir, qtPluginsPath))
+                return 1;
+        }
+
+        if (module.name == "opengl" || module.name == "gui" || module.name == "xcbqpa") {
+            if (!deployXcbglIntegrationPlugins(appDir, qtPluginsPath))
                 return 1;
         }
     }
