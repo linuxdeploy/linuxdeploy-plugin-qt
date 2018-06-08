@@ -173,6 +173,17 @@ bool deployBearerPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) 
     return true;
 }
 
+bool deploySqlPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
+    ldLog() << "Deploying SQL plugins" << std::endl;
+
+    for (bf::directory_iterator i(qtPluginsPath / "bearer"); i != bf::directory_iterator(); ++i) {
+        if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/sqldrivers/"))
+            return false;
+    }
+
+    return true;
+}
+
 int main(const int argc, const char* const* argv) {
     args::ArgumentParser parser("linuxdeploy Qt plugin", "Bundles Qt resources. For use with an existing AppDir, created by linuxdeploy.");
 
@@ -269,6 +280,11 @@ int main(const int argc, const char* const* argv) {
 
         if (module.name == "svg") {
             if (!deploySvgPlugins(appDir, qtPluginsPath))
+                return 1;
+        }
+
+        if (module.name == "sql") {
+            if (!deploySqlPlugins(appDir, qtPluginsPath))
                 return 1;
         }
     }
