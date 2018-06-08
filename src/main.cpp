@@ -124,14 +124,17 @@ std::string join(const std::set<std::string>& list) {
 bool deployPlatformPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
     ldLog() << "Deploying platform plugins" << std::endl;
 
-    appDir.deployLibrary(qtPluginsPath / "platforms/libqxcb.so", appDir.path() / "usr/plugins/platforms/");
+    if (!appDir.deployLibrary(qtPluginsPath / "platforms/libqxcb.so", appDir.path() / "usr/plugins/platforms/"))
+        return false;
 
     for (bf::directory_iterator i(qtPluginsPath / "platforminputcontexts"); i != bf::directory_iterator(); ++i) {
-        appDir.deployLibrary(*i, appDir.path() / "usr/plugins/platforminputcontexts/");
+        if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/platforminputcontexts/"))
+            return false;
     }
 
     for (bf::directory_iterator i(qtPluginsPath / "imageformats"); i != bf::directory_iterator(); ++i) {
-        appDir.deployLibrary(*i, appDir.path() / "usr/plugins/imageformats/");
+        if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/imageformats/"))
+            return false;
     }
 
     // TODO: platform themes -- https://github.com/probonopd/linuxdeployqt/issues/236
@@ -143,7 +146,8 @@ bool deployXcbglIntegrationPlugins(appdir::AppDir& appDir, const bf::path& qtPlu
     ldLog() << "Deploying xcb-gl integrations" << std::endl;
 
     for (bf::directory_iterator i(qtPluginsPath / "xcbglintegrations"); i != bf::directory_iterator(); ++i) {
-        appDir.deployLibrary(*i, appDir.path() / "usr/plugins/xcbglintegrations/");
+        if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/xcbglintegrations/"))
+            return false;
     }
 
     return true;
@@ -152,7 +156,8 @@ bool deployXcbglIntegrationPlugins(appdir::AppDir& appDir, const bf::path& qtPlu
 bool deploySvgPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
     ldLog() << "Deploying svg icon engine" << std::endl;
 
-    appDir.deployLibrary(qtPluginsPath / "iconengines/libqsvgicon.so", appDir.path() / "usr/plugins/iconengines/");
+    if (!appDir.deployLibrary(qtPluginsPath / "iconengines/libqsvgicon.so", appDir.path() / "usr/plugins/iconengines/"))
+        return false;
 
     return true;
 }
