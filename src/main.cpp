@@ -122,7 +122,15 @@ std::string join(const std::set<std::string>& list) {
 }
 
 bool deployPlatformPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
-    appDir.deployLibrary(qtPluginsPath / "platforms/libqxcb.so", "usr/plugins/platforms/");
+    appDir.deployLibrary(qtPluginsPath / "platforms/libqxcb.so", appDir.path() / "usr/plugins/platforms/");
+
+    for (bf::directory_iterator i(qtPluginsPath / "platforminputcontexts"); i != bf::directory_iterator(); ++i) {
+        appDir.deployLibrary(*i, appDir.path() / "usr/plugins/platforminputcontexts/");
+    }
+
+    for (bf::directory_iterator i(qtPluginsPath / "imageformats"); i != bf::directory_iterator(); ++i) {
+        appDir.deployLibrary(*i, appDir.path() / "usr/plugins/imageformats/");
+    }
 
     return true;
 }
