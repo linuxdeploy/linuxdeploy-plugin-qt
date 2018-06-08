@@ -162,6 +162,17 @@ bool deploySvgPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
     return true;
 }
 
+bool deployBearerPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
+    ldLog() << "Deploying bearer plugins" << std::endl;
+
+    for (bf::directory_iterator i(qtPluginsPath / "bearer"); i != bf::directory_iterator(); ++i) {
+        if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/bearer/"))
+            return false;
+    }
+
+    return true;
+}
+
 int main(const int argc, const char* const* argv) {
     args::ArgumentParser parser("linuxdeploy Qt plugin", "Bundles Qt resources. For use with an existing AppDir, created by linuxdeploy.");
 
@@ -248,6 +259,11 @@ int main(const int argc, const char* const* argv) {
 
         if (module.name == "opengl" || module.name == "gui" || module.name == "xcbqpa") {
             if (!deployXcbglIntegrationPlugins(appDir, qtPluginsPath))
+                return 1;
+        }
+
+        if (module.name == "network") {
+            if (!deployBearerPlugins(appDir, qtPluginsPath))
                 return 1;
         }
 
