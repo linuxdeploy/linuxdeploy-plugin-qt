@@ -213,6 +213,42 @@ bool deployMultimediaPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPa
     return true;
 }
 
+bool deployWebEnginePlugins(appdir::AppDir& appDir, const bf::path& qtLibexecsPath, const bf::path& qtDataPath, const bf::path& qtTranslationsPath) {
+    ldLog() << "Deploying web engine plugins" << std::endl;
+
+    for (bf::directory_iterator i(qtLibexecsPath); i != bf::directory_iterator(); ++i) {
+        auto& entry = *i;
+        const std::string prefix = "QtWeb";
+
+        auto fileName = entry.path().filename();
+
+        // skip files which don't start with prefix
+        if (fileName.size() <= prefix.size() || strncmp(fileName.c_str(), prefix.c_str(), prefix.size()) != 0)
+            continue;
+
+        if (!appDir.deployExecutable(*i, appDir.path() / "usr/libexec/"))
+            return false;
+    }
+
+    for (const auto& fileName : {"qtwebengine_resources.pak",
+                                 "qtwebengine_devtools_resources.pak",
+                                 "qtwebengine_resources_100p.pak",
+                                 "qtwebengine_resources_200p.pak", "icudtl.dat"}) {
+        auto path = qtDataPath / "resources" / fileName;
+
+        if (bf::is_regular_file(path))
+            appDir.deployFile(path, appDir.path() / "data/resources/");
+    }
+
+    if (bf::is_directory(qtTranslationsPath / "qtwebengine_locales")) {
+        for (bf::directory_iterator i(qtTranslationsPath / "qtwebengine_locales"); i != bf::directory_iterator(); ++i) {
+            appDir.deployFile(*i, appDir.path() / "usr/qtwebengine_locales/");
+        }
+    }
+
+    return true;
+}
+
 int main(const int argc, const char* const* argv) {
     args::ArgumentParser parser("linuxdeploy Qt plugin", "Bundles Qt resources. For use with an existing AppDir, created by linuxdeploy.");
 
@@ -289,7 +325,10 @@ int main(const int argc, const char* const* argv) {
     if (qmakeVars.empty())
         return 1;
 
-    auto qtPluginsPath = qmakeVars["QT_INSTALL_PLUGINS"];
+    const bf::path qtPluginsPath = qmakeVars["QT_INSTALL_PLUGINS"];
+    const bf::path qtLibexecsPath = qmakeVars["QT_INSTALL_LIBEXECS"];
+    const bf::path qtDataPath = qmakeVars["QT_INSTALL_DATA"];
+    const bf::path qtTranslationsPath = qmakeVars["QT_INSTALL_TRANSLATIONS"];
 
     for (const auto& module : foundQtModules) {
         ldLog() << std::endl << "-- Deploying module:" << module.name << "--" << std::endl;
@@ -326,6 +365,11 @@ int main(const int argc, const char* const* argv) {
 
         if (module.name == "multimedia") {
             if (!deployMultimediaPlugins(appDir, qtPluginsPath))
+                return 1;
+        }
+
+        if (module.name == "webenginecore") {
+            if (!deployWebEnginePlugins(appDir, qtLibexecsPath, qtDataPath, qtTranslationsPath))
                 return 1;
         }
     }
