@@ -176,7 +176,7 @@ bool deployBearerPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) 
 bool deploySqlPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
     ldLog() << "Deploying SQL plugins" << std::endl;
 
-    for (bf::directory_iterator i(qtPluginsPath / "bearer"); i != bf::directory_iterator(); ++i) {
+    for (bf::directory_iterator i(qtPluginsPath / "sqldrivers"); i != bf::directory_iterator(); ++i) {
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/sqldrivers/"))
             return false;
     }
