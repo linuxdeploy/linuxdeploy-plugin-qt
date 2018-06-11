@@ -253,6 +253,7 @@ int main(const int argc, const char* const* argv) {
     args::ArgumentParser parser("linuxdeploy Qt plugin", "Bundles Qt resources. For use with an existing AppDir, created by linuxdeploy.");
 
     args::ValueFlag<bf::path> appDirPath(parser, "appdir path", "Path to an existing AppDir", {"appdir"});
+    args::ValueFlagList<std::string> extraPlugins(parser, "plugin", "Extra Qt plugin to deploy (specified by name, filename or path)", {'p', "extra-plugin"});
 
     try {
         parser.ParseCLI(argc, argv);
@@ -288,14 +289,37 @@ int main(const int argc, const char* const* argv) {
 
     // check for Qt modules
     std::vector<QtModule> foundQtModules;
+    std::vector<QtModule> extraQtModules;
 
-    std::copy_if(QtModules.begin(), QtModules.end(), std::back_inserter(foundQtModules), [&libraryNames](const QtModule& module) {
-        return std::find_if(libraryNames.begin(), libraryNames.end(), [&module](const std::string& libraryFileName) {
-            // adding the trailing dot makes sure e.g., libQt5WebEngineCore won't be matched as webengine and webenginecore
-            const auto& libraryPrefix = module.libraryFilePrefix + ".";
+    auto matchesQtModule = [](std::string libraryName, const QtModule& module) {
+        // extract filename if argument is path
+        if (bf::is_regular_file(libraryName))
+            libraryName = bf::path(libraryName).filename().string();
 
-            return strncmp(libraryFileName.c_str(), libraryPrefix.c_str(), libraryPrefix.size()) == 0;
+        // adding the trailing dot makes sure e.g., libQt5WebEngineCore won't be matched as webengine and webenginecore
+        const auto& libraryPrefix = module.libraryFilePrefix + ".";
+
+        // match plugin filename
+        if (strncmp(libraryName.c_str(), libraryPrefix.c_str(), libraryPrefix.size()) == 0)
+            return true;
+
+        // match plugin name
+        if (strcmp(libraryName.c_str(), module.name.c_str()) == 0)
+            return true;
+
+        return false;
+    };
+
+    std::copy_if(QtModules.begin(), QtModules.end(), std::back_inserter(foundQtModules), [&matchesQtModule, &libraryNames, &extraPlugins](const QtModule& module) {
+        return std::find_if(libraryNames.begin(), libraryNames.end(), [&matchesQtModule, &module](const std::string& libraryName) {
+            return matchesQtModule(libraryName, module);
         }) != libraryNames.end();
+    });
+
+    std::copy_if(QtModules.begin(), QtModules.end(), std::back_inserter(extraQtModules), [&matchesQtModule, libraryNames, &extraPlugins](const QtModule& module) {
+        return std::find_if(extraPlugins.Get().begin(), extraPlugins.Get().end(), [&matchesQtModule, &module](const std::string& libraryName) {
+            return matchesQtModule(libraryName, module);
+        }) != extraPlugins.Get().end();
     });
 
     {
@@ -304,6 +328,14 @@ int main(const int argc, const char* const* argv) {
             moduleNames.insert(module.name);
         });
         ldLog() << "Found Qt modules:" << join(moduleNames) << std::endl;
+    }
+
+    {
+        std::set<std::string> moduleNames;
+        std::for_each(extraQtModules.begin(), extraQtModules.end(), [&moduleNames](const QtModule& module) {
+            moduleNames.insert(module.name);
+        });
+        ldLog() << "Extra Qt modules:" << join(moduleNames) << std::endl;
     }
 
     // search for qmake
