@@ -254,7 +254,9 @@ int main(const int argc, const char* const* argv) {
 
     std::copy_if(QtModules.begin(), QtModules.end(), std::back_inserter(foundQtModules), [&libraryNames](const QtModule& module) {
         return std::find_if(libraryNames.begin(), libraryNames.end(), [&module](const std::string& libraryFileName) {
-            const auto& libraryPrefix = module.libraryFilePrefix;
+            // adding the trailing dot makes sure e.g., libQt5WebEngineCore won't be matched as webengine and webenginecore
+            const auto& libraryPrefix = module.libraryFilePrefix + ".";
+
             return strncmp(libraryFileName.c_str(), libraryPrefix.c_str(), libraryPrefix.size()) == 0;
         }) != libraryNames.end();
     });
