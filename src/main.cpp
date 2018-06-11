@@ -202,6 +202,7 @@ bool deployMultimediaPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPa
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/mediaservice/"))
             return false;
     }
+
     ldLog() << "Deploying audio plugins" << std::endl;
 
     for (bf::directory_iterator i(qtPluginsPath / "audio"); i != bf::directory_iterator(); ++i) {
