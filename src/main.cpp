@@ -388,7 +388,11 @@ int main(const int argc, const char* const* argv) {
     const bf::path qtDataPath = qmakeVars["QT_INSTALL_DATA"];
     const bf::path qtTranslationsPath = qmakeVars["QT_INSTALL_TRANSLATIONS"];
 
-    for (const auto& module : foundQtModules) {
+    auto qtModulesToDeploy = foundQtModules;
+    qtModulesToDeploy.reserve(extraQtModules.size());
+    std::copy(extraQtModules.begin(), extraQtModules.end(), std::back_inserter(qtModulesToDeploy));
+
+    for (const auto& module : qtModulesToDeploy) {
         ldLog() << std::endl << "-- Deploying module:" << module.name << "--" << std::endl;
 
         if (module.name == "gui") {
