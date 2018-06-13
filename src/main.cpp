@@ -270,7 +270,7 @@ bool createQtConf(appdir::AppDir& appDir) {
         << "Prefix = .." << std::endl
         << "Plugins = plugins" << std::endl
         << "Imports = qml" << std::endl
-        << "Qml2Imports =qml" << std::endl;
+        << "Qml2Imports = qml" << std::endl;
 
     return true;
 }
