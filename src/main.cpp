@@ -299,16 +299,16 @@ bool deployTranslations(appdir::AppDir& appDir, const bf::path& qtTranslationsPa
 
     ldLog() << "Qt translations directory:" << qtTranslationsPath << std::endl;
 
-    auto checkName = [&appDir, &modules](const std::string& fileName) {
-        if (!strEndsWith(fileName, ".qm"))
+    auto checkName = [&appDir, &modules](const bf::path& fileName) {
+        if (!strEndsWith(fileName.string(), ".qm"))
             return false;
 
         // always deploy basic Qt translations
-        if (strStartsWith(fileName, "qt_"))
+        if (strStartsWith(fileName.string(), "qt_") && bf::basename(fileName).size() >= 5 && bf::basename(fileName).size() <= 6)
             return true;
 
         for (const auto& module : modules) {
-            if (!module.translationFilePrefix.empty() && strStartsWith(fileName, module.translationFilePrefix))
+            if (!module.translationFilePrefix.empty() && strStartsWith(fileName.string(), module.translationFilePrefix))
                 return true;
         }
 
@@ -319,7 +319,7 @@ bool deployTranslations(appdir::AppDir& appDir, const bf::path& qtTranslationsPa
         if (!bf::is_regular_file(*i))
             continue;
 
-        const auto fileName = (*i).path().filename().string();
+        const auto fileName = (*i).path().filename();
 
         if (checkName(fileName))
             appDir.deployFile(*i, appDir.path() / "usr/translations/");
