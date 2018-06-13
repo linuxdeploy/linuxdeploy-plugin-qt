@@ -328,7 +328,7 @@ bool deployTranslations(appdir::AppDir& appDir, const bf::path& qtTranslationsPa
     return true;
 }
 
-int main(const int argc, const char* const* argv) {
+int main(const int argc, const char* const* const argv) {
     args::ArgumentParser parser("linuxdeploy Qt plugin", "Bundles Qt resources. For use with an existing AppDir, created by linuxdeploy.");
 
     args::ValueFlag<bf::path> appDirPath(parser, "appdir path", "Path to an existing AppDir", {"appdir"});
