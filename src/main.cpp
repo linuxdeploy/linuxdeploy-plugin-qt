@@ -123,6 +123,20 @@ std::string join(const std::set<std::string>& list) {
     return join(list.begin(), list.end());
 }
 
+bool strStartsWith(const std::string& str, const std::string& prefix) {
+    if (str.size() < prefix.size())
+        return false;
+
+    return strncmp(str.c_str(), prefix.c_str(), prefix.size()) == 0;
+}
+
+bool strEndsWith(const std::string& str, const std::string& suffix) {
+    if (str.size() < suffix.size())
+        return false;
+
+    return strncmp(str.c_str() + (str.size() - suffix.size()), suffix.c_str(), suffix.size()) == 0;
+}
+
 bool deployPlatformPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
     ldLog() << "Deploying platform plugins" << std::endl;
 
@@ -225,7 +239,7 @@ bool deployWebEnginePlugins(appdir::AppDir& appDir, const bf::path& qtLibexecsPa
         auto fileName = entry.path().filename();
 
         // skip files which don't start with prefix
-        if (fileName.size() <= prefix.size() || strncmp(fileName.c_str(), prefix.c_str(), prefix.size()) != 0)
+        if (!strStartsWith(fileName.string(), prefix))
             continue;
 
         if (!appDir.deployExecutable(*i, appDir.path() / "usr/libexec/"))
