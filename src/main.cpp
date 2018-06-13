@@ -237,7 +237,7 @@ bool deployWebEnginePlugins(appdir::AppDir& appDir, const bf::path& qtLibexecsPa
         auto path = qtDataPath / "resources" / fileName;
 
         if (bf::is_regular_file(path))
-            appDir.deployFile(path, appDir.path() / "data/resources/");
+            appDir.deployFile(path, appDir.path() / "usr/data/resources/");
     }
 
     if (bf::is_directory(qtTranslationsPath / "qtwebengine_locales")) {
