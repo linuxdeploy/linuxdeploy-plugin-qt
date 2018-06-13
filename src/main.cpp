@@ -101,13 +101,13 @@ static std::string which(const std::string& name) {
     return path;
 }
 
-std::string join(const std::vector<std::string>& list) {
+template<typename Iter> std::string join(Iter beg, Iter end) {
     std::stringstream rv;
 
-    if (!list.empty()) {
-        rv << list[0];
+    if (beg != end) {
+        rv << *beg;
 
-        std::for_each(list.begin() + 1, list.end(), [&rv](const std::string& s) {
+        std::for_each(++beg, end, [&rv](const std::string& s) {
             rv << " " << s;
         });
     }
@@ -115,10 +115,12 @@ std::string join(const std::vector<std::string>& list) {
     return rv.str();
 }
 
+std::string join(const std::vector<std::string>& list) {
+    return join(list.begin(), list.end());
+}
+
 std::string join(const std::set<std::string>& list) {
-    std::vector<std::string> data;
-    std::copy(list.begin(), list.end(), std::back_inserter(data));
-    return join(data);
+    return join(list.begin(), list.end());
 }
 
 bool deployPlatformPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
