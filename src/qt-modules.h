@@ -16,6 +16,7 @@ class QtModule {
             name(std::move(name)), libraryFilePrefix(std::move(libraryFilePrefix)), translationFilePrefix(std::move(pluginGroup)) {}
 };
 
+// TODO: the list of translation file prefixes is probably incomplete
 static const std::vector<QtModule> QtModules = {
     {"3danimation", "libQt53DAnimation", ""},
     {"3dcore", "libQt53DCore", ""},

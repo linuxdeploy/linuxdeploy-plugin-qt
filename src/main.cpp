@@ -291,6 +291,43 @@ bool createQtConf(appdir::AppDir& appDir) {
     return true;
 }
 
+bool deployTranslations(appdir::AppDir& appDir, const bf::path& qtTranslationsPath, const std::vector<QtModule>& modules) {
+    if (qtTranslationsPath.empty() || !bf::is_directory(qtTranslationsPath)) {
+        ldLog() << LD_WARNING << "Translation directory does not exist, skipping deployment";
+        return true;
+    }
+
+    ldLog() << "Qt translations directory:" << qtTranslationsPath << std::endl;
+
+    auto checkName = [&appDir, &modules](const std::string& fileName) {
+        if (!strEndsWith(fileName, ".qm"))
+            return false;
+
+        // always deploy basic Qt translations
+        if (strStartsWith(fileName, "qt_"))
+            return true;
+
+        for (const auto& module : modules) {
+            if (!module.translationFilePrefix.empty() && strStartsWith(fileName, module.translationFilePrefix))
+                return true;
+        }
+
+        return false;
+    };
+
+    for (bf::directory_iterator i(qtTranslationsPath); i != bf::directory_iterator(); ++i) {
+        if (!bf::is_regular_file(*i))
+            continue;
+
+        const auto fileName = (*i).path().filename().string();
+
+        if (checkName(fileName))
+            appDir.deployFile(*i, appDir.path() / "usr/translations/");
+    }
+
+    return true;
+}
+
 int main(const int argc, const char* const* argv) {
     args::ArgumentParser parser("linuxdeploy Qt plugin", "Bundles Qt resources. For use with an existing AppDir, created by linuxdeploy.");
 
@@ -450,6 +487,12 @@ int main(const int argc, const char* const* argv) {
             if (!deployWebEnginePlugins(appDir, qtLibexecsPath, qtDataPath, qtTranslationsPath))
                 return 1;
         }
+    }
+
+    ldLog() << std::endl << "-- Deploying translations --" << std::endl;
+    if (!deployTranslations(appDir, qtTranslationsPath, qtModulesToDeploy)) {
+        ldLog() << LD_ERROR << "Failed to deploy translations" << std::endl;
+        return 1;
     }
 
     ldLog() << std::endl << "-- Executing deferred operations --" << std::endl;
