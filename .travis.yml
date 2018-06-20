@@ -6,6 +6,7 @@ addons:
     update: true
     packages:
       - libmagic-dev
+      - libmagick++-dev
 
 script:
   - bash -xe travis/build-appimage.sh
