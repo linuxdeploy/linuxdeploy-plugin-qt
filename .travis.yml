@@ -1,9 +1,11 @@
 language: cpp
 sudo: required
 
-#plugins:
-#  apt:
-#    update: true
+plugins:
+  apt:
+    update: true
+    packages:
+      - libmagic-dev
 
 script:
   - bash -xe travis/build-appimage.sh
