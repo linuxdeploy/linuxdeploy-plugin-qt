@@ -334,11 +334,24 @@ int main(const int argc, const char* const* const argv) {
     args::ValueFlag<bf::path> appDirPath(parser, "appdir path", "Path to an existing AppDir", {"appdir"});
     args::ValueFlagList<std::string> extraPlugins(parser, "plugin", "Extra Qt plugin to deploy (specified by name, filename or path)", {'p', "extra-plugin"});
 
+    args::Flag pluginType(parser, "", "Print plugin type and exit", {"plugin-type"});
+    args::Flag pluginApiVersion(parser, "", "Print plugin API version and exit", {"plugin-api-version"});
+
     try {
         parser.ParseCLI(argc, argv);
     } catch (const args::ParseError&) {
         std::cerr << parser;
         return 1;
+    }
+
+    if (pluginType) {
+        std::cout << "input" << std::endl;
+        return 0;
+    }
+
+    if (pluginApiVersion) {
+        std::cout << "0" << std::endl;
+        return 0;
     }
 
     if (!appDirPath) {
@@ -365,6 +378,8 @@ int main(const int argc, const char* const* const argv) {
             ldLog() << LD_DEBUG << "Failed to parse file as ELF file:" << path << std::endl;
         }
     }
+
+    libraryNames = {"libQt5Multimedia.so.5", "libQt5Gui.so.5", "libQt5Core.so.5"};
 
     // check for Qt modules
     std::vector<QtModule> foundQtModules;
