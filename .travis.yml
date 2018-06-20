@@ -7,7 +7,8 @@ addons:
     packages:
       - libmagic-dev
       - libmagick++-dev
-      - libboost-dev
+      - libboost-regex1.55-dev
+      - libboost-filesystem1.55-dev
 
 script:
   - bash -xe travis/build-appimage.sh
