@@ -448,8 +448,10 @@ int main(const int argc, const char* const* const argv) {
 
     auto qmakeVars = queryQmake(qmakePath);
 
-    if (qmakeVars.empty())
+    if (qmakeVars.empty()) {
+        ldLog() << LD_ERROR << "Failed to query Qt paths using qmake -query" << std::endl;
         return 1;
+    }
 
     const bf::path qtPluginsPath = qmakeVars["QT_INSTALL_PLUGINS"];
     const bf::path qtLibexecsPath = qmakeVars["QT_INSTALL_LIBEXECS"];
