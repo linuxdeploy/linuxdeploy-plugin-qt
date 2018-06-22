@@ -48,8 +48,10 @@ procOutput check_command(const std::initializer_list<const char*> args) {
 const std::map<std::string, std::string> queryQmake(const bf::path& qmakePath) {
     auto qmakeCall = check_command({qmakePath.c_str(), "-query"});
 
-    if (!qmakeCall.success)
+    if (!qmakeCall.success) {
+        ldLog() << LD_ERROR << "Call to qmake failed:" << qmakeCall.stderrOutput << std::endl;
         return {};
+    }
 
     std::map<std::string, std::string> rv;
 
