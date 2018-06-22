@@ -379,8 +379,6 @@ int main(const int argc, const char* const* const argv) {
         }
     }
 
-    libraryNames = {"libQt5Multimedia.so.5", "libQt5Gui.so.5", "libQt5Core.so.5"};
-
     // check for Qt modules
     std::vector<QtModule> foundQtModules;
     std::vector<QtModule> extraQtModules;
