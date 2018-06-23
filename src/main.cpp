@@ -432,6 +432,11 @@ int main(const int argc, const char* const* const argv) {
         ldLog() << "Extra Qt modules:" << join(moduleNames) << std::endl;
     }
 
+    if (foundQtModules.empty() && extraQtModules.empty()) {
+        ldLog() << LD_ERROR << "Could not find Qt modules to deploy" << std::endl;
+        return 1;
+    }
+
     // search for qmake
     auto qmakePath = which("qmake-qt5");
 
