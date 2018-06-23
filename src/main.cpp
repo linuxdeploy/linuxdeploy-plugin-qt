@@ -375,7 +375,7 @@ int main(const int argc, const char* const* const argv) {
 
     // check which libraries and plugins the binaries and libraries depend on
     std::set<std::string> libraryNames;
-    for (const auto& path : appDir.listExecutables()) {
+    for (const auto& path : appDir.listSharedLibraries()) {
         try {
             for (const auto& dependency : elf::ElfFile(path).traceDynamicDependencies()) {
                 libraryNames.insert(dependency.filename().string());
