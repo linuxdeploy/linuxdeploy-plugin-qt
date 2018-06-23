@@ -90,8 +90,10 @@ static std::string which(const std::string& name) {
     subprocess::Popen proc({"which", name.c_str()}, subprocess::output(subprocess::PIPE));
     auto output = proc.communicate();
 
+    ldLog() << LD_DEBUG << "Calling 'which" << name << LD_NO_SPACE << "'" << std::endl;
+
     if (proc.retcode() != 0) {
-        ldLog() << LD_DEBUG << "which call failed:" << output.first.buf.data() << std::endl;
+        ldLog() << LD_DEBUG << "which call failed, exit code:" << proc.retcode() << std::endl;
         return "";
     }
 
