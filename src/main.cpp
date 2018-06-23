@@ -397,13 +397,21 @@ int main(const int argc, const char* const* const argv) {
         // adding the trailing dot makes sure e.g., libQt5WebEngineCore won't be matched as webengine and webenginecore
         const auto& libraryPrefix = module.libraryFilePrefix + ".";
 
+        ldLog() << LD_DEBUG << "Checking library name '" << LD_NO_SPACE << libraryName
+                << LD_NO_SPACE << "' against library prefix '" << LD_NO_SPACE << libraryPrefix << LD_NO_SPACE
+            << "' and module name '" << LD_NO_SPACE << module.name << LD_NO_SPACE << "'" << std::endl;
+
         // match plugin filename
-        if (strncmp(libraryName.c_str(), libraryPrefix.c_str(), libraryPrefix.size()) == 0)
+        if (strncmp(libraryName.c_str(), libraryPrefix.c_str(), libraryPrefix.size()) == 0) {
+            ldLog() << LD_DEBUG << "-> matches library filename, found module:" << module.name << std::endl;
             return true;
+        }
 
         // match plugin name
-        if (strcmp(libraryName.c_str(), module.name.c_str()) == 0)
+        if (strcmp(libraryName.c_str(), module.name.c_str()) == 0) {
+            ldLog() << LD_DEBUG << "-> matches module name, found module:" << module.name << std::endl;
             return true;
+        }
 
         return false;
     };
