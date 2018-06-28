@@ -398,6 +398,13 @@ int main(const int argc, const char* const* const argv) {
         }
     }
 
+    {
+        ldLog() << LD_DEBUG << "Libraries to consider: ";
+        for (const auto& libraryName : libraryNames)
+            ldLog() << " " << libraryName;
+        ldLog() << std::endl;
+    }
+
     // check for Qt modules
     std::vector<QtModule> foundQtModules;
     std::vector<QtModule> extraQtModules;
