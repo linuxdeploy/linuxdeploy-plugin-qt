@@ -38,6 +38,7 @@ chmod +x linuxdeploy*.AppImage
     -d "$REPO_ROOT"/resources/linuxdeploy-plugin-qt.desktop \
     -i "$REPO_ROOT"/resources/linuxdeploy-plugin-qt.svg \
     -e $(which patchelf) \
+    -e $(which strip) \
     --output appimage
 
 mv linuxdeploy-plugin-qt*.AppImage "$OLD_CWD"/
