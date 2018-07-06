@@ -86,7 +86,7 @@ const std::map<std::string, std::string> queryQmake(const bf::path& qmakePath) {
     return rv;
 };
 
-static std::string which(const std::string& name) {
+static bf::path which(const std::string& name) {
     subprocess::Popen proc({"which", name.c_str()}, subprocess::output(subprocess::PIPE));
     auto output = proc.communicate();
 
@@ -470,16 +470,34 @@ int main(const int argc, const char* const* const argv) {
         return 1;
     }
 
-    // search for qmake
-    auto qmakePath = which("qmake-qt5");
+    bf::path qmakePath;
 
-    if (qmakePath.empty()) {
-        qmakePath = which("qmake");
+    // allow user to specify absolute path to qmake
+    if (getenv("QMAKE")) {
+        qmakePath = getenv("QMAKE");
+        ldLog() << "Using user specified qmake:" << qmakePath << std::endl;
+    } else {
+        // search for qmake
+        qmakePath = which("qmake-qt5");
 
         if (qmakePath.empty()) {
-            ldLog() << "Failed to find suitable qmake" << std::endl;
-            return 1;
+            qmakePath = which("qmake");
+
+            if (qmakePath.empty()) {
+                ldLog() << "Failed to find suitable qmake" << std::endl;
+                return 1;
+            }
         }
+    }
+
+    if (qmakePath.empty()) {
+        ldLog() << LD_ERROR << "Could not find qmake, please install or provide path using $QMAKE" << std::endl;
+        return 1;
+    }
+
+    if (!bf::exists(qmakePath)) {
+        ldLog() << LD_ERROR << "No such file or directory:" << qmakePath << std::endl;
+        return 1;
     }
 
     ldLog() << "Using qmake:" << qmakePath << std::endl;
