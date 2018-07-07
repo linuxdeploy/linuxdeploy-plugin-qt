@@ -9,6 +9,10 @@ addons:
       - cimg-dev
       - automake  # required for patchelf
 
+env:
+  - ARCH=x86_64
+  - ARCH=i386
+
 install:
   - git clone https://github.com/NixOS/patchelf.git
   - cd patchelf
