@@ -8,6 +8,8 @@ addons:
       - libmagic-dev
       - cimg-dev
       - automake  # required for patchelf
+      - gcc-multilib
+      - g++-multilib
 
 env:
   - ARCH=x86_64
