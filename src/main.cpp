@@ -165,7 +165,14 @@ bool deployPlatformPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath
 bool deployXcbglIntegrationPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
     ldLog() << "Deploying xcb-gl integrations" << std::endl;
 
-    for (bf::directory_iterator i(qtPluginsPath / "xcbglintegrations"); i != bf::directory_iterator(); ++i) {
+    auto dir = qtPluginsPath / "xcbglintegrations";
+
+    if (!bf::is_directory(dir)) {
+        ldLog() << "Directory" << dir << "doesn't exist, skipping deployment" << std::endl;
+        return true;
+    }
+
+    for (bf::directory_iterator i(dir); i != bf::directory_iterator(); ++i) {
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/xcbglintegrations/"))
             return false;
     }
