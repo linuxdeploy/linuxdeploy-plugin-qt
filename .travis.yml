@@ -23,6 +23,7 @@ matrix:
             - libpng-dev:i386
             - gcc-multilib
             - g++-multilib
+            - cimg-dev
             - automake  # required for patchelf
             - libfuse2:i386
 
