@@ -462,6 +462,10 @@ int main(const int argc, const char* const* const argv) {
             if (!deployWebEnginePlugins(appDir, qtLibexecsPath, qtDataPath, qtTranslationsPath))
                 return 1;
         }
+
+        if (module.name == "qml") {
+            deploy_qml(appDir);
+        }
     }
 
     ldLog() << std::endl << "-- Deploying translations --" << std::endl;

@@ -22,7 +22,7 @@ namespace LINUXDEPLOY_PLUGGIN_QT_TESTS {
         }
 
         void TearDown() {
-            boost::filesystem::remove_all(appDirPath);
+//            boost::filesystem::remove_all(appDirPath);
             unsetenv(EXTRA_QML_IMPORT_PATHS_ENV_KEY);
         }
     };

@@ -122,42 +122,29 @@ get_qml_imports(const bf::path &projectRootPath) {
     return imports;
 }
 
+
 void deploy_qml(appdir::AppDir &appDir) {
     auto qmlImports = get_qml_imports(appDir.path());
     bf::path targetQmlModulesPath = appDir.path().string() + "/usr/qml/";
 
     for (const auto &qmlImport: qmlImports) {
-        if (qmlImport.path.empty()) {
-            ldLog() << LD_ERROR << "Missing qml module: " << qmlImport.name << std::endl;
-        } else {
+        if (!qmlImport.path.empty()) {
             if (bf::is_directory(qmlImport.path)) {
                 for (auto &entry : boost::make_iterator_range(bf::directory_iterator(qmlImport.path))) {
-                    const auto relativeFilePath = getRelativeFilePath(entry.path().string(),
-                                                                      qmlImport.relativePath.string());
+                    auto relativeFilePath = qmlImport.relativePath / bf::relative(entry.path(), qmlImport.path);
+
                     try {
                         elf::ElfFile file(entry.path());
-                        ldLog() << LD_INFO << "Queued for deploying as LIBRARY: " << entry.path()
-                                << "\n\t at: "<< targetQmlModulesPath.string() + relativeFilePath << std::endl;
-                        appDir.deployLibrary(entry.path(), targetQmlModulesPath.string() + relativeFilePath);
-                    } catch (...) {
-                        ldLog() << LD_INFO << "Queued for deploying as REGULAR FILE: " << entry.path()
-                                << "\n\t at: "<< targetQmlModulesPath.string() + relativeFilePath << std::endl;
-                        appDir.deployFile(entry.path(), targetQmlModulesPath.string() + relativeFilePath);
+                        appDir.deployLibrary(entry.path(), targetQmlModulesPath / relativeFilePath);
+                    } catch (const elf::ElfFileParseError&) {
+                        appDir.deployFile(entry.path(), targetQmlModulesPath / relativeFilePath);
                     }
                     std::cout << entry.path() << std::endl;
                 }
             }
-
-        }
+        } else
+            ldLog() << LD_ERROR << "Missing qml module: " << qmlImport.name << std::endl;
     }
-}
-
-std::string getRelativeFilePath(const std::string &filePath, const std::string &relativeModulePath) {
-    std::__cxx11::string relativeFilePath;
-    std::size_t found = filePath.find(relativeModulePath);
-    if (found != std::string::npos)
-        relativeFilePath = filePath.substr(found, filePath.size());
-    return relativeFilePath;
 }
 
 #endif //LINUXDEPLOY_PLUGIN_QT_DEPLOY_QML_H
