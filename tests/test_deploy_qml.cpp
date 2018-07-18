@@ -16,21 +16,8 @@ namespace LINUXDEPLOY_PLUGGIN_QT_TESTS {
         boost::filesystem::path projectQmlRoot;
         boost::filesystem::path defaultQmlImportPath;
 
-        std::string generateRandomString(int length) {
-            static std::string charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-            std::string result;
-            result.resize(length);
-
-            for (int i = 0; i < length; i++)
-                result[i] = charset[rand() % charset.length()];
-
-            return result;
-        }
-
         void SetUp() override {
-            srand(time(NULL));
-            appDirPath = "/tmp/linuxdeploy-plugin-qt-tests-appdir-" + generateRandomString(8);
-
+            appDirPath = getTempDirName();
             projectQmlRoot = appDirPath.string() + "/usr/qml";
             try {
                 boost::filesystem::create_directories(projectQmlRoot);
@@ -42,6 +29,14 @@ namespace LINUXDEPLOY_PLUGGIN_QT_TESTS {
             setenv(EXTRA_QML_IMPORT_PATHS_ENV_KEY, TESTS_DATA_DIR, 1);
 
             defaultQmlImportPath = getQmlImportPath();
+        }
+
+        std::string getTempDirName() const {
+            char tmpl[]{"/tmp/linuxdeploy-plugin-qt-unit-tests-appdir-XXXXXX"};
+            char *tempDir = mkdtemp(tmpl);
+
+            std::string name{tempDir};
+            return name;
         }
 
         void TearDown() override {
