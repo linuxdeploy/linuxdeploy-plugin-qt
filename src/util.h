@@ -1,37 +1,31 @@
-#ifndef LINUXDEPLOY_PLUGIN_QT_UTIL_HPP
-#define LINUXDEPLOY_PLUGIN_QT_UTIL_HPP
-
+// system includes
 #include <iostream>
 #include <set>
 #include <sstream>
 #include <tuple>
 #include <vector>
 
+// library includes
 #include <boost/filesystem.hpp>
 #include <subprocess.hpp>
 #include <args.hxx>
-
 #include <linuxdeploy/core/log.h>
 
-namespace bf = boost::filesystem;
-
-using namespace linuxdeploy::core;
-using namespace linuxdeploy::core::log;
+#pragma once
 
 typedef struct {
     bool success;
     int retcode;
     std::string stdoutOutput;
     std::string stderrOutput;
-} procOutput;;
+} procOutput;
 
-
-procOutput check_command(std::vector<std::string> args) {
+static procOutput check_command(const std::vector<std::string>& args) {
     subprocess::Popen proc(subprocess::util::join(args), subprocess::output(subprocess::PIPE), subprocess::error(subprocess::PIPE));
 
     auto output = proc.communicate();
 
-    std::__cxx11::string out, err;
+    std::string out, err;
 
     if (output.first.length > 0)
         out = output.first.buf.data();
@@ -42,9 +36,11 @@ procOutput check_command(std::vector<std::string> args) {
     return {proc.retcode() == 0, proc.retcode(), out, err};
 }
 
-static boost::filesystem::path which(const std::__cxx11::string &name) {
+static boost::filesystem::path which(const std::string &name) {
     subprocess::Popen proc({"which", name.c_str()}, subprocess::output(subprocess::PIPE));
     auto output = proc.communicate();
+
+    using namespace linuxdeploy::core::log;
 
     ldLog() << LD_DEBUG << "Calling 'which" << name << LD_NO_SPACE << "'" << std::endl;
 
@@ -53,7 +49,8 @@ static boost::filesystem::path which(const std::__cxx11::string &name) {
         return "";
     }
 
-    std::__cxx11::string path = output.first.buf.data();
+    std::string path = output.first.buf.data();
+
     while (path.back() == '\n') {
         path.erase(path.end() - 1, path.end());
     }
@@ -62,13 +59,13 @@ static boost::filesystem::path which(const std::__cxx11::string &name) {
 }
 
 template<typename Iter>
-std::__cxx11::string join(Iter beg, Iter end) {
+std::string join(Iter beg, Iter end) {
     std::stringstream rv;
 
     if (beg != end) {
         rv << *beg;
 
-        for_each(++beg, end, [&rv](const std::__cxx11::string &s) {
+        for_each(++beg, end, [&rv](const std::string &s) {
             rv << " " << s;
         });
     }
@@ -76,26 +73,10 @@ std::__cxx11::string join(Iter beg, Iter end) {
     return rv.str();
 }
 
-bf::path find_qmake_path() {
-    boost::filesystem::path qmakePath;
-
-    // allow user to specify absolute path to qmake
-    if (getenv("QMAKE")) {
-        qmakePath = getenv("QMAKE");
-        ldLog() << "Using user specified qmake:" << qmakePath << std::endl;
-    } else {
-        // search for qmake
-        qmakePath = which("qmake-qt5");
-
-        if (qmakePath.empty())
-            qmakePath = which("qmake");
-    }
-
-    return  qmakePath;
-}
-
-const std::map<std::string, std::string> queryQmake(const bf::path& qmakePath) {
+static std::map<std::string, std::string> queryQmake(const boost::filesystem::path& qmakePath) {
     auto qmakeCall = check_command({qmakePath.string(), "-query"});
+
+    using namespace linuxdeploy::core::log;
 
     if (!qmakeCall.success) {
         ldLog() << LD_ERROR << "Call to qmake failed:" << qmakeCall.stderrOutput << std::endl;
@@ -135,4 +116,22 @@ const std::map<std::string, std::string> queryQmake(const bf::path& qmakePath) {
     return rv;
 };
 
-#endif // LINUXDEPLOY_PLUGIN_QT_UTIL_HPP
+static boost::filesystem::path findQmake() {
+    using namespace linuxdeploy::core::log;
+
+    boost::filesystem::path qmakePath;
+
+    // allow user to specify absolute path to qmake
+    if (getenv("QMAKE")) {
+        qmakePath = getenv("QMAKE");
+        ldLog() << "Using user specified qmake:" << qmakePath << std::endl;
+    } else {
+        // search for qmake
+        qmakePath = which("qmake-qt5");
+
+        if (qmakePath.empty())
+            qmakePath = which("qmake");
+    }
+
+    return qmakePath;
+}

@@ -6,4 +6,4 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(lib)
 add_subdirectory(src)
-add_subdirectory(test)
+add_subdirectory(tests)

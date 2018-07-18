@@ -12,11 +12,10 @@
 #include <linuxdeploy/core/elf.h>
 #include <linuxdeploy/core/log.h>
 
-
 // local includes
 #include "qt-modules.h"
-#include "util.hpp"
-#include "deploy-qml.hpp"
+#include "qml.h"
+#include "util.h"
 
 namespace bf = boost::filesystem;
 
@@ -255,6 +254,12 @@ bool deployTranslations(appdir::AppDir& appDir, const bf::path& qtTranslationsPa
     return true;
 }
 
+bool deployQmlFiles(appdir::AppDir& appDir, const bf::path& installLibsPath) {
+    deployQml(appDir, installLibsPath);
+
+    return true;
+}
+
 int main(const int argc, const char* const* const argv) {
     // set up verbose logging if $DEBUG is set
     if (getenv("DEBUG"))
@@ -330,10 +335,6 @@ int main(const int argc, const char* const* const argv) {
         // adding the trailing dot makes sure e.g., libQt5WebEngineCore won't be matched as webengine and webenginecore
         const auto& libraryPrefix = module.libraryFilePrefix + ".";
 
-//        ldLog() << LD_DEBUG << "Checking library name '" << LD_NO_SPACE << libraryName
-//                << LD_NO_SPACE << "' against library prefix '" << LD_NO_SPACE << libraryPrefix << LD_NO_SPACE
-//            << "' and module name '" << LD_NO_SPACE << module.name << LD_NO_SPACE << "'" << std::endl;
-
         // match plugin filename
         if (strncmp(libraryName.c_str(), libraryPrefix.c_str(), libraryPrefix.size()) == 0) {
             ldLog() << LD_DEBUG << "-> matches library filename, found module:" << module.name << std::endl;
@@ -382,7 +383,7 @@ int main(const int argc, const char* const* const argv) {
         return 1;
     }
 
-    auto qmakePath = find_qmake_path();
+    auto qmakePath = findQmake();
 
     if (qmakePath.empty()) {
         ldLog() << LD_ERROR << "Could not find qmake, please install or provide path using $QMAKE" << std::endl;
@@ -408,6 +409,7 @@ int main(const int argc, const char* const* const argv) {
     const bf::path qtDataPath = qmakeVars["QT_INSTALL_DATA"];
     const bf::path qtTranslationsPath = qmakeVars["QT_INSTALL_TRANSLATIONS"];
     const bf::path qtLibsPath = qmakeVars["QT_INSTALL_LIBS"];
+    const bf::path qtInstallQmlPath = qmakeVars["QT_INSTALL_QML"];
 
     ldLog() << std::endl;
     ldLog() << "QT_INSTALL_LIBS:" << qtLibsPath << std::endl;
@@ -464,7 +466,8 @@ int main(const int argc, const char* const* const argv) {
         }
 
         if (module.name == "qml") {
-            deploy_qml(appDir);
+            if (!deployQmlFiles(appDir, qtInstallQmlPath))
+                return 1;
         }
     }
 
