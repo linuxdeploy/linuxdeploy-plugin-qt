@@ -11,113 +11,18 @@
 #include <linuxdeploy/core/appdir.h>
 #include <linuxdeploy/core/elf.h>
 #include <linuxdeploy/core/log.h>
-#include <args.hxx>
-#include <subprocess.hpp>
+
 
 // local includes
 #include "qt-modules.h"
+#include "util.hpp"
+#include "deploy-qml.hpp"
 
 namespace bf = boost::filesystem;
 
 using namespace linuxdeploy::core;
 using namespace linuxdeploy::core::log;
 
-typedef struct {
-    bool success;
-    int retcode;
-    std::string stdoutOutput;
-    std::string stderrOutput;
-} procOutput;
-
-procOutput check_command(const std::initializer_list<const char*> args) {
-    subprocess::Popen proc(args, subprocess::output(subprocess::PIPE), subprocess::error(subprocess::PIPE));
-
-    auto output = proc.communicate();
-
-    std::string out, err;
-
-    if (output.first.length > 0)
-        out = output.first.buf.data();
-
-    if (output.second.length > 0)
-        err = output.second.buf.data();
-
-    return {proc.retcode() == 0, proc.retcode(), out, err};
-};
-
-const std::map<std::string, std::string> queryQmake(const bf::path& qmakePath) {
-    auto qmakeCall = check_command({qmakePath.c_str(), "-query"});
-
-    if (!qmakeCall.success) {
-        ldLog() << LD_ERROR << "Call to qmake failed:" << qmakeCall.stderrOutput << std::endl;
-        return {};
-    }
-
-    std::map<std::string, std::string> rv;
-
-    std::stringstream ss;
-    ss << qmakeCall.stdoutOutput;
-
-    std::string line;
-
-    auto stringSplit = [](const std::string& str, const char delim = ' ') {
-        std::stringstream ss;
-        ss << str;
-
-        std::string part;
-        std::vector<std::string> parts;
-
-        while (std::getline(ss, part, delim)) {
-            parts.push_back(part);
-        }
-
-        return parts;
-    };
-
-    while (std::getline(ss, line)) {
-        auto parts = stringSplit(line, ':');
-
-        if (parts.size() != 2)
-            continue;
-
-        rv[parts[0]] = parts[1];
-    }
-
-    return rv;
-};
-
-static bf::path which(const std::string& name) {
-    subprocess::Popen proc({"which", name.c_str()}, subprocess::output(subprocess::PIPE));
-    auto output = proc.communicate();
-
-    ldLog() << LD_DEBUG << "Calling 'which" << name << LD_NO_SPACE << "'" << std::endl;
-
-    if (proc.retcode() != 0) {
-        ldLog() << LD_DEBUG << "which call failed, exit code:" << proc.retcode() << std::endl;
-        return "";
-    }
-
-    std::string path =  output.first.buf.data();
-    while (path.back() == '\n') {
-        path.erase(path.end() - 1, path.end());
-    }
-
-    return path;
-}
-
-template<typename Iter> std::string join(Iter beg, Iter end) {
-    std::stringstream rv;
-
-    if (beg != end) {
-        rv << *beg;
-
-        std::for_each(++beg, end, [&rv](const std::string& s) {
-            rv << " " << s;
-        });
-    }
-
-    return rv.str();
-}
 
 std::string join(const std::vector<std::string>& list) {
     return join(list.begin(), list.end());
@@ -477,25 +382,7 @@ int main(const int argc, const char* const* const argv) {
         return 1;
     }
 
-    bf::path qmakePath;
-
-    // allow user to specify absolute path to qmake
-    if (getenv("QMAKE")) {
-        qmakePath = getenv("QMAKE");
-        ldLog() << "Using user specified qmake:" << qmakePath << std::endl;
-    } else {
-        // search for qmake
-        qmakePath = which("qmake-qt5");
-
-        if (qmakePath.empty()) {
-            qmakePath = which("qmake");
-
-            if (qmakePath.empty()) {
-                ldLog() << "Failed to find suitable qmake" << std::endl;
-                return 1;
-            }
-        }
-    }
+    auto qmakePath = find_qmake_path();
 
     if (qmakePath.empty()) {
         ldLog() << LD_ERROR << "Could not find qmake, please install or provide path using $QMAKE" << std::endl;
