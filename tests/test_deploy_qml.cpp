@@ -91,4 +91,21 @@ namespace LINUXDEPLOY_PLUGGIN_QT_TESTS {
         ASSERT_TRUE(boost::filesystem::exists(projectQmlRoot.string() + "/QtQuick.2"));
         ASSERT_TRUE(boost::filesystem::exists(projectQmlRoot.string() + "/qml_module"));
     }
+
+    TEST_F(TestDeployQml, getQmlModuleRelativePath) {
+        std::vector<bf::path> qmlModulesImportPaths = {"/usr/lib/x86_64-linux-gnu/qt5/qml", "/usr/lib/",
+                                                       "/usr/lib/qt5.10/qml", TESTS_DATA_DIR};
+
+        auto rpath = getQmlModuleRelativePath(qmlModulesImportPaths, "/usr/lib/x86_64-linux-gnu/qt5/qml/QtQuick.2");
+        ASSERT_EQ(rpath, "QtQuick.2");
+
+        rpath = getQmlModuleRelativePath(qmlModulesImportPaths, "/usr/lib/x86_64-linux-gnu/qt5/qml/org/kde/plasma");
+        ASSERT_EQ(rpath, "org/kde/plasma");
+
+        rpath = getQmlModuleRelativePath(qmlModulesImportPaths, TESTS_DATA_DIR "/qml_module");
+        ASSERT_EQ(rpath, "qml_module");
+
+        rpath = getQmlModuleRelativePath(qmlModulesImportPaths, "/qml_module");
+        ASSERT_EQ(rpath, "");
+    }
 }

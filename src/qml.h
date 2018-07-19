@@ -19,4 +19,7 @@ boost::filesystem::path findQmlImportScanner();
 
 std::string runQmlImportScanner(const boost::filesystem::path& projectRootPath, const std::vector<boost::filesystem::path>& qmlImportPaths);
 
+boost::filesystem::path getQmlModuleRelativePath(const std::vector<boost::filesystem::path>& qmlModulesImportPaths,
+                                                 const boost::filesystem::path& qmlModulePath);
+
 std::vector<QmlModuleImport> getQmlImports(const boost::filesystem::path& projectRootPath, const boost::filesystem::path& installQmlPath);

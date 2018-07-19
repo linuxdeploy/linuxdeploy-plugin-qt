@@ -1,6 +1,5 @@
 // system includes
 #include <boost/filesystem.hpp>
-#include <boost/filesystem/path.hpp>
 
 // library includes
 #include <json.hpp>
@@ -21,7 +20,7 @@ bf::path findQmlImportScanner() {
     return which("qmlimportscanner");
 }
 
-std::string runQmlImportScanner(const bf::path& projectRootPath, const std::vector<bf::path>& qmlImportPaths) {
+std::string runQmlImportScanner(const bf::path &projectRootPath, const std::vector<bf::path> &qmlImportPaths) {
     auto qmlImportScannerPath = findQmlImportScanner();
     std::vector<std::string> command = {qmlImportScannerPath.string().c_str(),
                                         "-rootPath", projectRootPath.c_str()};
@@ -32,7 +31,7 @@ std::string runQmlImportScanner(const bf::path& projectRootPath, const std::vect
     }
 
     ldLog() << LD_DEBUG << "Calling: ";
-    for (const auto& string : command)
+    for (const auto &string : command)
         ldLog() << LD_DEBUG << string << " ";
     ldLog() << LD_DEBUG << std::endl;
 
@@ -46,12 +45,12 @@ std::string runQmlImportScanner(const bf::path& projectRootPath, const std::vect
     }
 }
 
-std::vector<QmlModuleImport> parseQmlImportScannerOutput(const std::string& output) {
+std::vector<QmlModuleImport> parseQmlImportScannerOutput(const std::string &output) {
     std::vector<QmlModuleImport> imports;
 
     auto jsonOutput = json::parse(output);
 
-    for (const auto& qmlModuleImportJson : jsonOutput) {
+    for (const auto &qmlModuleImportJson : jsonOutput) {
         auto type = qmlModuleImportJson.at("type").get<std::string>();
         if (type == "module") {
             QmlModuleImport moduleImport;
@@ -84,7 +83,7 @@ std::vector<boost::filesystem::path> getExtraQmlImportPaths() {
 }
 
 std::vector<QmlModuleImport> getQmlImports(const bf::path& projectRootPath, const bf::path& installQmlPath) {
-    std::vector<QmlModuleImport> imports;
+    std::vector<QmlModuleImport> moduleImports;
 
     std::vector<boost::filesystem::path> qmlImportPaths = {installQmlPath};
     const auto extraQmlImportPaths = getExtraQmlImportPaths();
@@ -94,15 +93,34 @@ std::vector<QmlModuleImport> getQmlImports(const bf::path& projectRootPath, cons
     auto output = runQmlImportScanner(projectRootPath, qmlImportPaths);
 
     try {
-        imports = parseQmlImportScannerOutput(output);
+        moduleImports = parseQmlImportScannerOutput(output);
     } catch (...) {
         ldLog() << LD_ERROR << "Unable to parse 'qmlimportscanner' output!" << std::endl;
     }
 
-    return imports;
+    // Resolve modules relative path if qmlimportscanner din't provided it
+    for (auto &moduleImport: moduleImports) {
+        if (!moduleImport.path.empty() && moduleImport.relativePath.empty())
+            moduleImport.relativePath = getQmlModuleRelativePath(qmlImportPaths, moduleImport.path);
+    }
+
+
+    return moduleImports;
 }
 
-void deployQml(appdir::AppDir& appDir, const bf::path& installQmlPath) {
+boost::filesystem::path getQmlModuleRelativePath(const std::vector<boost::filesystem::path>& qmlModulesImportPaths,
+                                                 const boost::filesystem::path& qmlModulePath) {
+    boost::filesystem::path relativePath;
+    for (const auto &qmlImportPath: qmlModulesImportPaths) {
+        auto candidate = relative(qmlModulePath, qmlImportPath);
+        if (qmlImportPath / candidate == qmlModulePath && (candidate < relativePath || relativePath.empty()) )
+            relativePath = candidate;
+    }
+
+    return relativePath;
+}
+
+void deployQml(appdir::AppDir &appDir, const bf::path &installQmlPath) {
     auto qmlImports = getQmlImports(appDir.path(), installQmlPath);
     bf::path targetQmlModulesPath = appDir.path().string() + "/usr/qml/";
 
@@ -110,14 +128,14 @@ void deployQml(appdir::AppDir& appDir, const bf::path& installQmlPath) {
         if (!qmlImport.path.empty()) {
             if (bf::is_directory(qmlImport.path)) {
                 for (bf::directory_iterator i(qmlImport.path); i != bf::directory_iterator(); ++i) {
-                    const auto& entry = *i;
+                    const auto &entry = *i;
 
                     auto relativeFilePath = qmlImport.relativePath / bf::relative(entry.path(), qmlImport.path);
 
                     try {
                         elf::ElfFile file(entry.path());
                         appDir.deployLibrary(entry.path(), targetQmlModulesPath / relativeFilePath);
-                    } catch (const elf::ElfFileParseError&) {
+                    } catch (const elf::ElfFileParseError &) {
                         appDir.deployFile(entry.path(), targetQmlModulesPath / relativeFilePath);
                     }
                 }
