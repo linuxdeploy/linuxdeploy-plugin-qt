@@ -16,8 +16,8 @@ matrix:
             - libpng-dev
             - cimg-dev
             - automake  # required for patchelf
-            - gcc-6 # required by nlohmann/json
-            - g++-6
+            - gcc-4.9 # required by nlohmann/json
+            - g++-4.9
     - env: ARCH=i386
       addons:
         apt:
@@ -32,11 +32,12 @@ matrix:
             - g++-multilib
             - automake  # required for patchelf
             - libfuse2:i386
-            - gcc-6 # required by nlohmann/json
-            - g++-6
+            - gcc-4.9 # required by nlohmann/json
+            - g++-4.9
+            - g++-4.9-multilib
 
 install:
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 90
   - git clone https://github.com/NixOS/patchelf.git -b 0.8
   - cd patchelf
   - ./bootstrap.sh
