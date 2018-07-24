@@ -27,7 +27,7 @@ matrix:
             - libfuse2:i386
 
 before_install:
-  - sudo apt-get install -y g++-7
+  - sudo apt-get install -y g++-6
 addons:
   apt:
     update: true
