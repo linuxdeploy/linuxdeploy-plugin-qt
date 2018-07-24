@@ -1,5 +1,16 @@
 language: cpp
 sudo: required
+dist: trusty
+
+addons:
+  apt:
+    update: true
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-6
+    - g++-6
+
 
 matrix:
   include:
@@ -25,12 +36,6 @@ matrix:
             - g++-multilib
             - automake  # required for patchelf
             - libfuse2:i386
-
-before_install:
-  - sudo apt-get install -y g++-6
-addons:
-  apt:
-    update: true
 
 install:
   - git clone https://github.com/NixOS/patchelf.git -b 0.8
