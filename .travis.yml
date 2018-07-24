@@ -38,6 +38,7 @@ matrix:
             - libfuse2:i386
 
 install:
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
   - git clone https://github.com/NixOS/patchelf.git -b 0.8
   - cd patchelf
   - ./bootstrap.sh
