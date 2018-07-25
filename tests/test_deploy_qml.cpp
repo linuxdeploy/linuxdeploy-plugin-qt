@@ -26,7 +26,7 @@ namespace LINUXDEPLOY_PLUGGIN_QT_TESTS {
             } catch (...) {
             }
 
-            setenv(EXTRA_QML_IMPORT_PATHS_ENV_KEY, TESTS_DATA_DIR, 1);
+            setenv(ENV_KEY_QML_MODULES_PATHS, TESTS_DATA_DIR, 1);
 
             defaultQmlImportPath = getQmlImportPath();
         }
@@ -41,7 +41,7 @@ namespace LINUXDEPLOY_PLUGGIN_QT_TESTS {
 
         void TearDown() override {
             boost::filesystem::remove_all(appDirPath);
-            unsetenv(EXTRA_QML_IMPORT_PATHS_ENV_KEY);
+            unsetenv(ENV_KEY_QML_MODULES_PATHS);
         }
 
         bf::path getQmlImportPath() {
@@ -59,14 +59,14 @@ namespace LINUXDEPLOY_PLUGGIN_QT_TESTS {
     }
 
     TEST_F(TestDeployQml, runQmlImportScanner) {
-        auto result = runQmlImportScanner(projectQmlRoot,
+        auto result = runQmlImportScanner({projectQmlRoot},
                                           {TESTS_DATA_DIR, defaultQmlImportPath});
         ASSERT_FALSE(result.empty());
         std::cout << result;
     }
 
     TEST_F(TestDeployQml, run_qmlimportscanner_without_qml_import_paths) {
-        auto result = runQmlImportScanner(projectQmlRoot, {});
+        auto result = runQmlImportScanner({projectQmlRoot}, {});
         ASSERT_FALSE(result.empty());
         std::cout << result;
     }

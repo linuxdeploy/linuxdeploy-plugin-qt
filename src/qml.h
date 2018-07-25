@@ -10,14 +10,24 @@ typedef struct {
     boost::filesystem::path relativePath;
 } QmlModuleImport;
 
-static const char* const EXTRA_QML_IMPORT_PATHS_ENV_KEY = "EXTRA_QML_IMPORT_PATHS";
+static const char* const ENV_KEY_QML_MODULES_PATHS = "LINUXDEPLOY_QT_PLUGIN_QML_MODULES_PATHS";
+static const char* const ENV_KEY_QML_SOURCES_PATHS = "LINUXDEPLOY_QT_PLUGIN_QML_SOURCES_PATHS";
+
+
+struct NoImportsFound : public std::runtime_error {
+    NoImportsFound(const std::string &__arg) : runtime_error(__arg) {}
+};
+
+struct QmlImportScannerError : public std::runtime_error {
+    QmlImportScannerError(const std::string &__arg) : runtime_error(__arg) {}
+};
 
 // deploys QML files into AppDir
-void deployQml(linuxdeploy::core::appdir::AppDir& appDir, const boost::filesystem::path& installQmlPath);
+void deployQml(linuxdeploy::core::appdir::AppDir &appDir, const boost::filesystem::path &installQmlPath);
 
 boost::filesystem::path findQmlImportScanner();
 
-std::string runQmlImportScanner(const boost::filesystem::path& projectRootPath, const std::vector<boost::filesystem::path>& qmlImportPaths);
+std::string runQmlImportScanner(const std::vector<boost::filesystem::path> &sourcesPaths, const std::vector<boost::filesystem::path>& qmlImportPaths);
 
 boost::filesystem::path getQmlModuleRelativePath(const std::vector<boost::filesystem::path>& qmlModulesImportPaths,
                                                  const boost::filesystem::path& qmlModulePath);
