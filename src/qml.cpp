@@ -6,6 +6,7 @@
 #include <linuxdeploy/core/appdir.h>
 #include <linuxdeploy/core/log.h>
 #include <linuxdeploy/core/elf.h>
+#include <linuxdeploy/util/util.h>
 
 // local includes
 #include "util.h"
@@ -14,6 +15,7 @@
 namespace bf = boost::filesystem;
 using namespace linuxdeploy::core;
 using namespace linuxdeploy::core::log;
+using namespace linuxdeploy::util;
 using namespace nlohmann;
 
 bf::path findQmlImportScanner() {
@@ -80,36 +82,30 @@ std::vector<QmlModuleImport> parseQmlImportScannerOutput(const std::string &outp
     return imports;
 }
 
-std::vector<boost::filesystem::path> getExtraQmlModulesPaths() {
-    std::vector<boost::filesystem::path> extraQmlImportPaths;
-    const char* extraQmlImportPathsRaw = std::getenv(ENV_KEY_QML_MODULES_PATHS);
+std::vector<bf::path> getExtraQmlModulesPaths() {
+    const auto* envVarContents = std::getenv(ENV_KEY_QML_MODULES_PATHS);
 
-    if (extraQmlImportPathsRaw) {
-        for (const auto &path: subprocess::util::split(extraQmlImportPathsRaw, ":")) {
-            extraQmlImportPaths.emplace_back(boost::filesystem::path{path});
-            ldLog() << "Using EXTRA QML IMPORT PATH: " << path << std::endl;
-        }
-    }
+    if (envVarContents == nullptr)
+        return {};
 
-    return extraQmlImportPaths;
+    auto paths = split(envVarContents);
+    std::vector<bf::path> extraQmlSourcesPaths;
+
+    std::copy(paths.begin(), paths.end(), std::back_inserter(extraQmlSourcesPaths));
+
+    return extraQmlSourcesPaths;
 }
 
-std::vector<boost::filesystem::path> getExtraQmlSourcesPaths() {
-    std::vector<boost::filesystem::path> extraQmlSourcesPaths;
-    char* extraQmlSourcesPathsRaw = std::getenv(ENV_KEY_QML_SOURCES_PATHS);
+std::vector<bf::path> getExtraQmlSourcesPaths() {
+    const auto* envVarContents = std::getenv(ENV_KEY_QML_SOURCES_PATHS);
 
-    if (extraQmlSourcesPathsRaw) {
-        char* pch = strtok (extraQmlSourcesPathsRaw,":");
-        while (pch != NULL)
-        {
-            std::vector<char> path(strlen(pch));
-            strcpy(path.data(), pch);
-            pch = strtok (NULL, ":");
+    if (envVarContents == nullptr)
+        return {};
 
-            extraQmlSourcesPaths.emplace_back(path);
-            ldLog() << LD_INFO << "Using QML SOURCE PATH: " << path << std::endl;
-        }
-    }
+    auto paths = split(envVarContents);
+    std::vector<bf::path> extraQmlSourcesPaths;
+
+    std::copy(paths.begin(), paths.end(), std::back_inserter(extraQmlSourcesPaths));
 
     return extraQmlSourcesPaths;
 }
