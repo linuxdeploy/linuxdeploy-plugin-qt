@@ -147,6 +147,11 @@ bool deployWebEnginePlugins(appdir::AppDir &appDir, const bf::path &qtLibexecsPa
                             const bf::path &qtTranslationsPath) {
     ldLog() << "Deploying web engine plugins" << std::endl;
 
+    const auto newLibexecPath = appDir.path() / "usr/libexec/";
+
+    // make sure directory is there before trying to write a qt.conf file
+    bf::create_directory(newLibexecPath);
+
     for (bf::directory_iterator i(qtLibexecsPath); i != bf::directory_iterator(); ++i) {
         auto &entry = *i;
         const std::string prefix = "QtWeb";
@@ -157,7 +162,7 @@ bool deployWebEnginePlugins(appdir::AppDir &appDir, const bf::path &qtLibexecsPa
         if (!strStartsWith(fileName.string(), prefix))
             continue;
 
-        if (!appDir.deployExecutable(*i, appDir.path() / "usr/libexec/"))
+        if (!appDir.deployExecutable(*i, newLibexecPath))
             return false;
     }
 
@@ -177,10 +182,12 @@ bool deployWebEnginePlugins(appdir::AppDir &appDir, const bf::path &qtLibexecsPa
         }
     }
 
-    std::ofstream ofs((qtLibexecsPath / "qt.conf").string());
+    const auto qtConfPath = newLibexecPath / "qt.conf";
+
+    std::ofstream ofs(qtConfPath.string());
 
     if (!ofs) {
-        ldLog() << LD_ERROR << "Failed to open qt.conf for writing" << std::endl;
+        ldLog() << LD_ERROR << "Failed to open" << qtConfPath << "for writing" << std::endl;
         return false;
     }
 
