@@ -32,7 +32,7 @@ namespace LINUXDEPLOY_PLUGGIN_QT_TESTS {
         }
 
         std::string getTempDirName() const {
-            char tmpl[]{"/tmp/linuxdeploy-plugin-qt-unit-tests-appdir-XXXXXX"};
+            char tmpl[] = "/tmp/linuxdeploy-plugin-qt-unit-tests-appdir-XXXXXX";
             char *tempDir = mkdtemp(tmpl);
 
             std::string name{tempDir};
