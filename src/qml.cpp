@@ -134,12 +134,11 @@ std::vector<QmlModuleImport> getQmlImports(const bf::path &projectRootPath, cons
     } catch (const json::parse_error &e) {
         ldLog() << LD_ERROR << e.what() << std::endl;
         throw QmlImportScannerError("Unable to parse 'qmlimportscanner' output!");
-    } catch (const NoImportsFound &) {
+    } catch (const NoImportsFound&) {
         if (moduleImports.empty()) {
             ldLog() << LD_ERROR << "No qml module imports fount at: " << std::endl;
-            for (const auto &sourcesPath: qmlSourcesPaths)
+            for (const auto& sourcesPath: qmlSourcesPaths)
                 ldLog() << LD_ERROR << "\t" << sourcesPath.string() << std::endl;
-
 
             ldLog() << std::endl << LD_INFO << "Use the environment variable" << ENV_KEY_QML_SOURCES_PATHS <<
                     "to specify the paths to the directories containing your project QML files." << std::endl;
