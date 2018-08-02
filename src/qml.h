@@ -14,7 +14,7 @@ static const char* const ENV_KEY_QML_MODULES_PATHS = "LINUXDEPLOY_QT_PLUGIN_QML_
 static const char* const ENV_KEY_QML_SOURCES_PATHS = "LINUXDEPLOY_QT_PLUGIN_QML_SOURCES_PATHS";
 
 struct QmlImportScannerError : public std::runtime_error {
-    explicit QmlImportScannerError(const std::string &__arg) : runtime_error(__arg) {}
+    explicit QmlImportScannerError(const std::string& message) : runtime_error(message) {}
 };
 
 // deploys QML files into AppDir
