@@ -22,9 +22,7 @@ bf::path findQmlImportScanner() {
     return which("qmlimportscanner");
 }
 
-std::string
-runQmlImportScanner(const std::vector<boost::filesystem::path> &sourcesPaths,
-                    const std::vector<bf::path> &qmlImportPaths) {
+std::string runQmlImportScanner(const std::vector<boost::filesystem::path> &sourcesPaths, const std::vector<bf::path> &qmlImportPaths) {
     auto qmlImportScannerPath = findQmlImportScanner();
     std::vector<std::string> command{qmlImportScannerPath.string()};
 
@@ -48,12 +46,12 @@ runQmlImportScanner(const std::vector<boost::filesystem::path> &sourcesPaths,
 
     auto output = check_command(command);
 
-    if (output.retcode == 0)
-        return output.stdoutOutput;
-    else {
+    if (output.retcode != 0) {
         ldLog() << LD_ERROR << output.stderrOutput << std::endl;
-        return std::string{};
+        throw QmlImportScannerError("Failed to run qmlimportscanner");
     }
+
+    return output.stdoutOutput;
 }
 
 std::vector<QmlModuleImport> parseQmlImportScannerOutput(const std::string &output) {
