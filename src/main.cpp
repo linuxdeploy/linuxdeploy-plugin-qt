@@ -245,6 +245,9 @@ bool deployWebEnginePlugins(appdir::AppDir& appDir, const bf::path& qtLibexecsPa
 
     const auto newLibexecPath = appDir.path() / "usr/libexec/";
 
+    // make sure directory is there before trying to write a qt.conf file
+    bf::create_directory(newLibexecPath);
+
     for (bf::directory_iterator i(qtLibexecsPath); i != bf::directory_iterator(); ++i) {
         auto& entry = *i;
         const std::string prefix = "QtWeb";
