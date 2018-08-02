@@ -13,13 +13,8 @@ typedef struct {
 static const char* const ENV_KEY_QML_MODULES_PATHS = "LINUXDEPLOY_QT_PLUGIN_QML_MODULES_PATHS";
 static const char* const ENV_KEY_QML_SOURCES_PATHS = "LINUXDEPLOY_QT_PLUGIN_QML_SOURCES_PATHS";
 
-
-struct NoImportsFound : public std::runtime_error {
-    NoImportsFound(const std::string &__arg) : runtime_error(__arg) {}
-};
-
 struct QmlImportScannerError : public std::runtime_error {
-    QmlImportScannerError(const std::string &__arg) : runtime_error(__arg) {}
+    explicit QmlImportScannerError(const std::string &__arg) : runtime_error(__arg) {}
 };
 
 // deploys QML files into AppDir

@@ -266,13 +266,11 @@ deployTranslations(appdir::AppDir &appDir, const bf::path &qtTranslationsPath, c
 bool deployQmlFiles(appdir::AppDir &appDir, const bf::path &installLibsPath) {
     try {
         deployQml(appDir, installLibsPath);
-        return true;
-    } catch (const NoImportsFound &) {
-        return false;
     } catch (const QmlImportScannerError &) {
         return false;
     }
 
+    return true;
 }
 
 int main(const int argc, const char *const *const argv) {

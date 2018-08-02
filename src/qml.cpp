@@ -62,7 +62,7 @@ std::vector<QmlModuleImport> parseQmlImportScannerOutput(const std::string &outp
     auto jsonOutput = json::parse(output);
 
     if (jsonOutput.empty())
-        throw NoImportsFound("No qml imports found");
+        return {};
 
     for (const auto &qmlModuleImportJson : jsonOutput) {
         auto type = qmlModuleImportJson.at("type").get<std::string>();
@@ -134,18 +134,13 @@ std::vector<QmlModuleImport> getQmlImports(const bf::path &projectRootPath, cons
     } catch (const json::parse_error &e) {
         ldLog() << LD_ERROR << e.what() << std::endl;
         throw QmlImportScannerError("Unable to parse 'qmlimportscanner' output!");
-    } catch (const NoImportsFound&) {
-        if (moduleImports.empty()) {
-            ldLog() << LD_ERROR << "No qml module imports fount at: " << std::endl;
-            for (const auto& sourcesPath: qmlSourcesPaths)
-                ldLog() << LD_ERROR << "\t" << sourcesPath.string() << std::endl;
+    }
 
-            ldLog() << std::endl << LD_INFO << "Use the environment variable" << ENV_KEY_QML_SOURCES_PATHS <<
-                    "to specify the paths to the directories containing your project QML files." << std::endl;
-            ldLog() << LD_INFO << "\t" << "Example: " << ENV_KEY_QML_SOURCES_PATHS << LD_NO_SPACE <<
-                    "=\"/project_root/src/qml\"" << std::endl;
-        }
-        throw;
+    if (moduleImports.empty()) {
+        ldLog() << LD_WARNING << "No qml module imports fount at: " << std::endl;
+
+        for (const auto& sourcesPath: qmlSourcesPaths)
+            ldLog() << LD_WARNING << "\t" << sourcesPath.string() << std::endl;
     }
 
     // Resolve modules relative path if qmlimportscanner din't provided it
