@@ -273,10 +273,12 @@ bool deployWebEnginePlugins(appdir::AppDir& appDir, const bf::path& qtLibexecsPa
         }
     }
 
-    std::ofstream ofs((qtLibexecsPath / "qt.conf").string());
+    const auto qtConfPath = qtLibexecsPath / "qt.conf";
+
+    std::ofstream ofs((qtConfPath).string());
 
     if (!ofs) {
-        ldLog() << LD_ERROR << "Failed to open qt.conf for writing" << std::endl;
+        ldLog() << LD_ERROR << "Failed to open" << qtConfPath << "for writing" << std::endl;
         return false;
     }
 
