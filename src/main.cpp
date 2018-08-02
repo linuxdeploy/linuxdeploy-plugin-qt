@@ -243,6 +243,8 @@ bool deployMultimediaPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPa
 bool deployWebEnginePlugins(appdir::AppDir& appDir, const bf::path& qtLibexecsPath, const bf::path& qtDataPath, const bf::path& qtTranslationsPath) {
     ldLog() << "Deploying web engine plugins" << std::endl;
 
+    const auto newLibexecPath = appDir.path() / "usr/libexec/";
+
     for (bf::directory_iterator i(qtLibexecsPath); i != bf::directory_iterator(); ++i) {
         auto& entry = *i;
         const std::string prefix = "QtWeb";
@@ -253,7 +255,7 @@ bool deployWebEnginePlugins(appdir::AppDir& appDir, const bf::path& qtLibexecsPa
         if (!strStartsWith(fileName.string(), prefix))
             continue;
 
-        if (!appDir.deployExecutable(*i, appDir.path() / "usr/libexec/"))
+        if (!appDir.deployExecutable(*i, newLibexecPath))
             return false;
     }
 
@@ -273,9 +275,9 @@ bool deployWebEnginePlugins(appdir::AppDir& appDir, const bf::path& qtLibexecsPa
         }
     }
 
-    const auto qtConfPath = qtLibexecsPath / "qt.conf";
+    const auto qtConfPath = newLibexecPath / "qt.conf";
 
-    std::ofstream ofs((qtConfPath).string());
+    std::ofstream ofs(qtConfPath.string());
 
     if (!ofs) {
         ldLog() << LD_ERROR << "Failed to open" << qtConfPath << "for writing" << std::endl;
