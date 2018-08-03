@@ -169,16 +169,17 @@ void deployQml(appdir::AppDir &appDir, const boost::filesystem::path &installQml
     for (const auto &qmlImport: qmlImports) {
         if (!qmlImport.path.empty()) {
             if (bf::is_directory(qmlImport.path)) {
-                for (bf::directory_iterator i(qmlImport.path); i != bf::directory_iterator(); ++i) {
+                for (bf::recursive_directory_iterator i(qmlImport.path); i != bf::recursive_directory_iterator(); ++i) {
                     const auto &entry = *i;
 
-                    auto relativeFilePath = qmlImport.relativePath / bf::relative(entry.path(), qmlImport.path);
-
-                    try {
-                        elf::ElfFile file(entry.path());
-                        appDir.deployLibrary(entry.path(), targetQmlModulesPath / relativeFilePath);
-                    } catch (const elf::ElfFileParseError &) {
-                        appDir.deployFile(entry.path(), targetQmlModulesPath / relativeFilePath);
+                    if (!bf::is_directory(entry)) {
+                        auto relativeFilePath = qmlImport.relativePath / bf::relative(entry.path(), qmlImport.path);
+                        try {
+                            elf::ElfFile file(entry.path());
+                            appDir.deployLibrary(entry.path(), targetQmlModulesPath / relativeFilePath);
+                        } catch (const elf::ElfFileParseError &) {
+                            appDir.deployFile(entry.path(), targetQmlModulesPath / relativeFilePath);
+                        }
                     }
                 }
             }
