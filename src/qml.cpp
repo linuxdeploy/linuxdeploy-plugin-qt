@@ -123,7 +123,7 @@ std::vector<QmlModuleImport> getQmlImports(const bf::path &projectRootPath, cons
     auto qmlSourcesPaths = getExtraQmlSourcesPaths();
     qmlSourcesPaths.emplace_back(projectRootPath);
     ldLog() << "QML sources search path: ";
-    for (const auto& path : qmlImportPaths)
+    for (const auto& path : qmlSourcesPaths)
         ldLog() << " " << path;
     ldLog() << std::endl;
 
@@ -139,7 +139,7 @@ std::vector<QmlModuleImport> getQmlImports(const bf::path &projectRootPath, cons
     if (moduleImports.empty()) {
         ldLog() << LD_WARNING << "No qml module imports fount at: " << std::endl;
 
-        for (const auto& sourcesPath: qmlSourcesPaths)
+        for (const auto &sourcesPath: qmlSourcesPaths)
             ldLog() << LD_WARNING << "\t" << sourcesPath.string() << std::endl;
     }
 
