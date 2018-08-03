@@ -1,0 +1,2 @@
+module qml_module
+plugin qml_module_plugin

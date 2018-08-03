@@ -2,7 +2,6 @@
 #include <iostream>
 #include <set>
 #include <sstream>
-#include <string>
 #include <tuple>
 #include <vector>
 
@@ -11,137 +10,41 @@
 #include <linuxdeploy/core/appdir.h>
 #include <linuxdeploy/core/elf.h>
 #include <linuxdeploy/core/log.h>
-#include <args.hxx>
-#include <subprocess.hpp>
 
 // local includes
 #include "qt-modules.h"
+#include "qml.h"
+#include "util.h"
 
 namespace bf = boost::filesystem;
 
 using namespace linuxdeploy::core;
 using namespace linuxdeploy::core::log;
 
-typedef struct {
-    bool success;
-    int retcode;
-    std::string stdoutOutput;
-    std::string stderrOutput;
-} procOutput;
 
-procOutput check_command(const std::initializer_list<const char*> args) {
-    subprocess::Popen proc(args, subprocess::output(subprocess::PIPE), subprocess::error(subprocess::PIPE));
-
-    auto output = proc.communicate();
-
-    std::string out, err;
-
-    if (output.first.length > 0)
-        out = output.first.buf.data();
-
-    if (output.second.length > 0)
-        err = output.second.buf.data();
-
-    return {proc.retcode() == 0, proc.retcode(), out, err};
-};
-
-const std::map<std::string, std::string> queryQmake(const bf::path& qmakePath) {
-    auto qmakeCall = check_command({qmakePath.c_str(), "-query"});
-
-    if (!qmakeCall.success) {
-        ldLog() << LD_ERROR << "Call to qmake failed:" << qmakeCall.stderrOutput << std::endl;
-        return {};
-    }
-
-    std::map<std::string, std::string> rv;
-
-    std::stringstream ss;
-    ss << qmakeCall.stdoutOutput;
-
-    std::string line;
-
-    auto stringSplit = [](const std::string& str, const char delim = ' ') {
-        std::stringstream ss;
-        ss << str;
-
-        std::string part;
-        std::vector<std::string> parts;
-
-        while (std::getline(ss, part, delim)) {
-            parts.push_back(part);
-        }
-
-        return parts;
-    };
-
-    while (std::getline(ss, line)) {
-        auto parts = stringSplit(line, ':');
-
-        if (parts.size() != 2)
-            continue;
-
-        rv[parts[0]] = parts[1];
-    }
-
-    return rv;
-};
-
-static bf::path which(const std::string& name) {
-    subprocess::Popen proc({"which", name.c_str()}, subprocess::output(subprocess::PIPE));
-    auto output = proc.communicate();
-
-    ldLog() << LD_DEBUG << "Calling 'which" << name << LD_NO_SPACE << "'" << std::endl;
-
-    if (proc.retcode() != 0) {
-        ldLog() << LD_DEBUG << "which call failed, exit code:" << proc.retcode() << std::endl;
-        return "";
-    }
-
-    std::string path =  output.first.buf.data();
-    while (path.back() == '\n') {
-        path.erase(path.end() - 1, path.end());
-    }
-
-    return path;
-}
-
-template<typename Iter> std::string join(Iter beg, Iter end) {
-    std::stringstream rv;
-
-    if (beg != end) {
-        rv << *beg;
-
-        std::for_each(++beg, end, [&rv](const std::string& s) {
-            rv << " " << s;
-        });
-    }
-
-    return rv.str();
-}
-
-std::string join(const std::vector<std::string>& list) {
+std::string join(const std::vector<std::string> &list) {
     return join(list.begin(), list.end());
 }
 
-std::string join(const std::set<std::string>& list) {
+std::string join(const std::set<std::string> &list) {
     return join(list.begin(), list.end());
 }
 
-bool strStartsWith(const std::string& str, const std::string& prefix) {
+bool strStartsWith(const std::string &str, const std::string &prefix) {
     if (str.size() < prefix.size())
         return false;
 
     return strncmp(str.c_str(), prefix.c_str(), prefix.size()) == 0;
 }
 
-bool strEndsWith(const std::string& str, const std::string& suffix) {
+bool strEndsWith(const std::string &str, const std::string &suffix) {
     if (str.size() < suffix.size())
         return false;
 
     return strncmp(str.c_str() + (str.size() - suffix.size()), suffix.c_str(), suffix.size()) == 0;
 }
 
-bool deployPlatformPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
+bool deployPlatformPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
     ldLog() << "Deploying platform plugins" << std::endl;
 
     if (!appDir.deployLibrary(qtPluginsPath / "platforms/libqxcb.so", appDir.path() / "usr/plugins/platforms/"))
@@ -162,7 +65,7 @@ bool deployPlatformPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath
     return true;
 }
 
-bool deployXcbglIntegrationPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
+bool deployXcbglIntegrationPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
     ldLog() << "Deploying xcb-gl integrations" << std::endl;
 
     auto dir = qtPluginsPath / "xcbglintegrations";
@@ -180,7 +83,7 @@ bool deployXcbglIntegrationPlugins(appdir::AppDir& appDir, const bf::path& qtPlu
     return true;
 }
 
-bool deploySvgPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
+bool deploySvgPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
     ldLog() << "Deploying svg icon engine" << std::endl;
 
     if (!appDir.deployLibrary(qtPluginsPath / "iconengines/libqsvgicon.so", appDir.path() / "usr/plugins/iconengines/"))
@@ -189,7 +92,7 @@ bool deploySvgPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
     return true;
 }
 
-bool deployBearerPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
+bool deployBearerPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
     ldLog() << "Deploying bearer plugins" << std::endl;
 
     for (bf::directory_iterator i(qtPluginsPath / "bearer"); i != bf::directory_iterator(); ++i) {
@@ -200,7 +103,7 @@ bool deployBearerPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) 
     return true;
 }
 
-bool deploySqlPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
+bool deploySqlPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
     ldLog() << "Deploying SQL plugins" << std::endl;
 
     for (bf::directory_iterator i(qtPluginsPath / "sqldrivers"); i != bf::directory_iterator(); ++i) {
@@ -211,7 +114,7 @@ bool deploySqlPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
     return true;
 }
 
-bool deployPositioningPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
+bool deployPositioningPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
     ldLog() << "Deploying positioning plugins" << std::endl;
 
     for (bf::directory_iterator i(qtPluginsPath / "position"); i != bf::directory_iterator(); ++i) {
@@ -222,7 +125,7 @@ bool deployPositioningPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsP
     return true;
 }
 
-bool deployMultimediaPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
+bool deployMultimediaPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
     ldLog() << "Deploying mediaservice plugins" << std::endl;
 
     for (bf::directory_iterator i(qtPluginsPath / "mediaservice"); i != bf::directory_iterator(); ++i) {
@@ -240,16 +143,17 @@ bool deployMultimediaPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPa
     return true;
 }
 
-bool deployWebEnginePlugins(appdir::AppDir& appDir, const bf::path& qtLibexecsPath, const bf::path& qtDataPath, const bf::path& qtTranslationsPath) {
+bool deployWebEnginePlugins(appdir::AppDir &appDir, const bf::path &qtLibexecsPath, const bf::path &qtDataPath,
+                            const bf::path &qtTranslationsPath) {
     ldLog() << "Deploying web engine plugins" << std::endl;
 
     const auto newLibexecPath = appDir.path() / "usr/libexec/";
 
     // make sure directory is there before trying to write a qt.conf file
-    bf::create_directory(newLibexecPath);
+    bf::create_directories(newLibexecPath);
 
     for (bf::directory_iterator i(qtLibexecsPath); i != bf::directory_iterator(); ++i) {
-        auto& entry = *i;
+        auto &entry = *i;
         const std::string prefix = "QtWeb";
 
         auto fileName = entry.path().filename();
@@ -262,7 +166,7 @@ bool deployWebEnginePlugins(appdir::AppDir& appDir, const bf::path& qtLibexecsPa
             return false;
     }
 
-    for (const auto& fileName : {"qtwebengine_resources.pak",
+    for (const auto &fileName : {"qtwebengine_resources.pak",
                                  "qtwebengine_devtools_resources.pak",
                                  "qtwebengine_resources_100p.pak",
                                  "qtwebengine_resources_200p.pak", "icudtl.dat"}) {
@@ -294,7 +198,7 @@ bool deployWebEnginePlugins(appdir::AppDir& appDir, const bf::path& qtLibexecsPa
     return true;
 }
 
-bool createQtConf(appdir::AppDir& appDir) {
+bool createQtConf(appdir::AppDir &appDir) {
     auto qtConfPath = appDir.path() / "usr" / "bin" / "qt.conf";
 
     if (bf::is_regular_file(qtConfPath)) {
@@ -320,7 +224,8 @@ bool createQtConf(appdir::AppDir& appDir) {
     return true;
 }
 
-bool deployTranslations(appdir::AppDir& appDir, const bf::path& qtTranslationsPath, const std::vector<QtModule>& modules) {
+bool
+deployTranslations(appdir::AppDir &appDir, const bf::path &qtTranslationsPath, const std::vector<QtModule> &modules) {
     if (qtTranslationsPath.empty() || !bf::is_directory(qtTranslationsPath)) {
         ldLog() << LD_WARNING << "Translation directory does not exist, skipping deployment";
         return true;
@@ -328,15 +233,16 @@ bool deployTranslations(appdir::AppDir& appDir, const bf::path& qtTranslationsPa
 
     ldLog() << "Qt translations directory:" << qtTranslationsPath << std::endl;
 
-    auto checkName = [&appDir, &modules](const bf::path& fileName) {
+    auto checkName = [&appDir, &modules](const bf::path &fileName) {
         if (!strEndsWith(fileName.string(), ".qm"))
             return false;
 
         // always deploy basic Qt translations
-        if (strStartsWith(fileName.string(), "qt_") && bf::basename(fileName).size() >= 5 && bf::basename(fileName).size() <= 6)
+        if (strStartsWith(fileName.string(), "qt_") && bf::basename(fileName).size() >= 5 &&
+            bf::basename(fileName).size() <= 6)
             return true;
 
-        for (const auto& module : modules) {
+        for (const auto &module : modules) {
             if (!module.translationFilePrefix.empty() && strStartsWith(fileName.string(), module.translationFilePrefix))
                 return true;
         }
@@ -357,22 +263,35 @@ bool deployTranslations(appdir::AppDir& appDir, const bf::path& qtTranslationsPa
     return true;
 }
 
-int main(const int argc, const char* const* const argv) {
+bool deployQmlFiles(appdir::AppDir &appDir, const bf::path &installLibsPath) {
+    try {
+        deployQml(appDir, installLibsPath);
+    } catch (const QmlImportScannerError &) {
+        return false;
+    }
+
+    return true;
+}
+
+int main(const int argc, const char *const *const argv) {
     // set up verbose logging if $DEBUG is set
     if (getenv("DEBUG"))
         ldLog::setVerbosity(LD_DEBUG);
 
-    args::ArgumentParser parser("linuxdeploy Qt plugin", "Bundles Qt resources. For use with an existing AppDir, created by linuxdeploy.");
+    args::ArgumentParser parser("linuxdeploy Qt plugin",
+                                "Bundles Qt resources. For use with an existing AppDir, created by linuxdeploy.");
 
     args::ValueFlag<bf::path> appDirPath(parser, "appdir path", "Path to an existing AppDir", {"appdir"});
-    args::ValueFlagList<std::string> extraPlugins(parser, "plugin", "Extra Qt plugin to deploy (specified by name, filename or path)", {'p', "extra-plugin"});
+    args::ValueFlagList<std::string> extraPlugins(parser, "plugin",
+                                                  "Extra Qt plugin to deploy (specified by name, filename or path)",
+                                                  {'p', "extra-plugin"});
 
     args::Flag pluginType(parser, "", "Print plugin type and exit", {"plugin-type"});
     args::Flag pluginApiVersion(parser, "", "Print plugin API version and exit", {"plugin-api-version"});
 
     try {
         parser.ParseCLI(argc, argv);
-    } catch (const args::ParseError&) {
+    } catch (const args::ParseError &) {
         std::cerr << parser;
         return 1;
     }
@@ -402,20 +321,20 @@ int main(const int argc, const char* const* const argv) {
 
     // check which libraries and plugins the binaries and libraries depend on
     std::set<std::string> libraryNames;
-    for (const auto& path : appDir.listSharedLibraries()) {
+    for (const auto &path : appDir.listSharedLibraries()) {
         libraryNames.insert(path.filename().string());
         try {
-            for (const auto& dependency : elf::ElfFile(path).traceDynamicDependencies()) {
+            for (const auto &dependency : elf::ElfFile(path).traceDynamicDependencies()) {
                 libraryNames.insert(dependency.filename().string());
             }
-        } catch (const elf::ElfFileParseError& e) {
+        } catch (const elf::ElfFileParseError &e) {
             ldLog() << LD_DEBUG << "Failed to parse file as ELF file:" << path << std::endl;
         }
     }
 
     {
         ldLog() << LD_DEBUG << "Libraries to consider: ";
-        for (const auto& libraryName : libraryNames)
+        for (const auto &libraryName : libraryNames)
             ldLog() << " " << libraryName;
         ldLog() << std::endl;
     }
@@ -424,17 +343,13 @@ int main(const int argc, const char* const* const argv) {
     std::vector<QtModule> foundQtModules;
     std::vector<QtModule> extraQtModules;
 
-    auto matchesQtModule = [](std::string libraryName, const QtModule& module) {
+    auto matchesQtModule = [](std::string libraryName, const QtModule &module) {
         // extract filename if argument is path
         if (bf::is_regular_file(libraryName))
             libraryName = bf::path(libraryName).filename().string();
 
         // adding the trailing dot makes sure e.g., libQt5WebEngineCore won't be matched as webengine and webenginecore
-        const auto& libraryPrefix = module.libraryFilePrefix + ".";
-
-//        ldLog() << LD_DEBUG << "Checking library name '" << LD_NO_SPACE << libraryName
-//                << LD_NO_SPACE << "' against library prefix '" << LD_NO_SPACE << libraryPrefix << LD_NO_SPACE
-//            << "' and module name '" << LD_NO_SPACE << module.name << LD_NO_SPACE << "'" << std::endl;
+        const auto &libraryPrefix = module.libraryFilePrefix + ".";
 
         // match plugin filename
         if (strncmp(libraryName.c_str(), libraryPrefix.c_str(), libraryPrefix.size()) == 0) {
@@ -451,21 +366,25 @@ int main(const int argc, const char* const* const argv) {
         return false;
     };
 
-    std::copy_if(QtModules.begin(), QtModules.end(), std::back_inserter(foundQtModules), [&matchesQtModule, &libraryNames, &extraPlugins](const QtModule& module) {
-        return std::find_if(libraryNames.begin(), libraryNames.end(), [&matchesQtModule, &module](const std::string& libraryName) {
-            return matchesQtModule(libraryName, module);
-        }) != libraryNames.end();
-    });
+    std::copy_if(QtModules.begin(), QtModules.end(), std::back_inserter(foundQtModules),
+                 [&matchesQtModule, &libraryNames, &extraPlugins](const QtModule &module) {
+                     return std::find_if(libraryNames.begin(), libraryNames.end(),
+                                         [&matchesQtModule, &module](const std::string &libraryName) {
+                                             return matchesQtModule(libraryName, module);
+                                         }) != libraryNames.end();
+                 });
 
-    std::copy_if(QtModules.begin(), QtModules.end(), std::back_inserter(extraQtModules), [&matchesQtModule, libraryNames, &extraPlugins](const QtModule& module) {
-        return std::find_if(extraPlugins.Get().begin(), extraPlugins.Get().end(), [&matchesQtModule, &module](const std::string& libraryName) {
-            return matchesQtModule(libraryName, module);
-        }) != extraPlugins.Get().end();
-    });
+    std::copy_if(QtModules.begin(), QtModules.end(), std::back_inserter(extraQtModules),
+                 [&matchesQtModule, libraryNames, &extraPlugins](const QtModule &module) {
+                     return std::find_if(extraPlugins.Get().begin(), extraPlugins.Get().end(),
+                                         [&matchesQtModule, &module](const std::string &libraryName) {
+                                             return matchesQtModule(libraryName, module);
+                                         }) != extraPlugins.Get().end();
+                 });
 
     {
         std::set<std::string> moduleNames;
-        std::for_each(foundQtModules.begin(), foundQtModules.end(), [&moduleNames](const QtModule& module) {
+        std::for_each(foundQtModules.begin(), foundQtModules.end(), [&moduleNames](const QtModule &module) {
             moduleNames.insert(module.name);
         });
         ldLog() << "Found Qt modules:" << join(moduleNames) << std::endl;
@@ -473,7 +392,7 @@ int main(const int argc, const char* const* const argv) {
 
     {
         std::set<std::string> moduleNames;
-        std::for_each(extraQtModules.begin(), extraQtModules.end(), [&moduleNames](const QtModule& module) {
+        std::for_each(extraQtModules.begin(), extraQtModules.end(), [&moduleNames](const QtModule &module) {
             moduleNames.insert(module.name);
         });
         ldLog() << "Extra Qt modules:" << join(moduleNames) << std::endl;
@@ -484,25 +403,7 @@ int main(const int argc, const char* const* const argv) {
         return 1;
     }
 
-    bf::path qmakePath;
-
-    // allow user to specify absolute path to qmake
-    if (getenv("QMAKE")) {
-        qmakePath = getenv("QMAKE");
-        ldLog() << "Using user specified qmake:" << qmakePath << std::endl;
-    } else {
-        // search for qmake
-        qmakePath = which("qmake-qt5");
-
-        if (qmakePath.empty()) {
-            qmakePath = which("qmake");
-
-            if (qmakePath.empty()) {
-                ldLog() << "Failed to find suitable qmake" << std::endl;
-                return 1;
-            }
-        }
-    }
+    auto qmakePath = findQmake();
 
     if (qmakePath.empty()) {
         ldLog() << LD_ERROR << "Could not find qmake, please install or provide path using $QMAKE" << std::endl;
@@ -528,19 +429,21 @@ int main(const int argc, const char* const* const argv) {
     const bf::path qtDataPath = qmakeVars["QT_INSTALL_DATA"];
     const bf::path qtTranslationsPath = qmakeVars["QT_INSTALL_TRANSLATIONS"];
     const bf::path qtLibsPath = qmakeVars["QT_INSTALL_LIBS"];
+    const bf::path qtInstallQmlPath = qmakeVars["QT_INSTALL_QML"];
 
     ldLog() << std::endl;
     ldLog() << "QT_INSTALL_LIBS:" << qtLibsPath << std::endl;
     std::ostringstream newLibraryPath;
     newLibraryPath << qtLibsPath.string() << ":" << getenv("LD_LIBRARY_PATH");
     setenv("LD_LIBRARY_PATH", newLibraryPath.str().c_str(), true);
-    ldLog() << "Prepending QT_INSTALL_LIBS path to $LD_LIBRARY_PATH, new $LD_LIBRARY_PATH:" << newLibraryPath.str() << std::endl;
+    ldLog() << "Prepending QT_INSTALL_LIBS path to $LD_LIBRARY_PATH, new $LD_LIBRARY_PATH:" << newLibraryPath.str()
+            << std::endl;
 
     auto qtModulesToDeploy = foundQtModules;
     qtModulesToDeploy.reserve(extraQtModules.size());
     std::copy(extraQtModules.begin(), extraQtModules.end(), std::back_inserter(qtModulesToDeploy));
 
-    for (const auto& module : qtModulesToDeploy) {
+    for (const auto &module : qtModulesToDeploy) {
         ldLog() << std::endl << "-- Deploying module:" << module.name << "--" << std::endl;
 
         if (module.name == "gui") {
@@ -580,6 +483,11 @@ int main(const int argc, const char* const* const argv) {
 
         if (module.name == "webenginecore") {
             if (!deployWebEnginePlugins(appDir, qtLibexecsPath, qtDataPath, qtTranslationsPath))
+                return 1;
+        }
+
+        if (module.name == "qml") {
+            if (!deployQmlFiles(appDir, qtInstallQmlPath))
                 return 1;
         }
     }
