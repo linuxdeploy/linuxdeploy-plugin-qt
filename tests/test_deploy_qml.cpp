@@ -8,7 +8,7 @@
 
 namespace bf = boost::filesystem;
 
-namespace LINUXDEPLOY_PLUGGIN_QT_TESTS {
+namespace linuxdeploy::plugin::qt::tests {
     class TestDeployQml : public testing::Test {
 
     public:
