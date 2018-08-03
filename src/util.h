@@ -20,20 +20,26 @@ typedef struct {
     std::string stderrOutput;
 } procOutput;
 
-static procOutput check_command(const std::vector<std::string>& args) {
-    subprocess::Popen proc(subprocess::util::join(args), subprocess::output(subprocess::PIPE), subprocess::error(subprocess::PIPE));
+static procOutput check_command(const std::vector<std::string> &args) {
+    auto command = subprocess::util::join(args);
+    subprocess::Popen proc(command, subprocess::bufsize{100*1024*1024}, subprocess::output(subprocess::PIPE), subprocess::error(subprocess::PIPE));
 
-    auto output = proc.communicate();
+    auto returnCode = proc.wait();
 
-    std::string out, err;
+    std::string out;
+    std::vector<char> buff(1024);
+    while (fgets (buff.data(), 1024 , proc.output()) != NULL) {
+        auto end = std::find(buff.begin(), buff.end(), '\0');
+        out += std::string(buff.begin(), end);
+    }
 
-    if (output.first.length > 0)
-        out = output.first.buf.data();
+    std::string err;
+    while (fgets (buff.data(), 1024 , proc.error()) != NULL) {
+        auto end = std::find(buff.begin(), buff.end(), '\0');
+        err += std::string(buff.begin(), end);
+    }
 
-    if (output.second.length > 0)
-        err = output.second.buf.data();
-
-    return {proc.retcode() == 0, proc.retcode(), out, err};
+    return {returnCode == 0, returnCode, out, err};
 }
 
 static boost::filesystem::path which(const std::string &name) {
