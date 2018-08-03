@@ -18,6 +18,12 @@ ARCH="x86_64"
 
 build_dir=$(mktemp -d /tmp/linuxdeploy-plugin-qt-test-build-XXXXXX)
 
+_cleanup() {
+    [ -d "$build_dir" ] && rm -rf "$build_dir"
+}
+
+trap _cleanup EXIT
+
 pushd "$build_dir"
 
 mkdir build
