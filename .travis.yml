@@ -8,30 +8,26 @@ matrix:
       addons:
         apt:
           update: true
-          sources:
-            - ubuntu-toolchain-r-test
           packages:
             - libmagic-dev
             - libjpeg-dev
             - libpng-dev
             - cimg-dev
             - automake  # required for patchelf
-            - gcc-4.9 # required by nlohmann/json
-            - g++-4.9
+            - gcc
+            - g++
     - env: ARCH=i386
       addons:
         apt:
           update: true
-          sources:
-            - ubuntu-toolchain-r-test
           packages:
             - libmagic-dev:i386
             - libjpeg-dev:i386
             - libpng-dev:i386
             - automake  # required for patchelf
             - libfuse2:i386
-            - gcc-4.9-multilib # required by nlohmann/json
-            - g++-4.9-multilib
+            - gcc-multilib
+            - g++-multilib
 
 install:
   - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 90

@@ -129,7 +129,7 @@ std::vector<QmlModuleImport> getQmlImports(const bf::path &projectRootPath, cons
 
     try {
         moduleImports = parseQmlImportScannerOutput(output);
-    } catch (const json::parse_error &e) {
+    } catch (const std::domain_error& e) {
         ldLog() << LD_ERROR << e.what() << std::endl;
         throw QmlImportScannerError("Unable to parse 'qmlimportscanner' output!");
     }
