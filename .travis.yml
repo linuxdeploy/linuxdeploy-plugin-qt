@@ -30,8 +30,6 @@ matrix:
             - g++-multilib
 
 install:
-  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 90
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 90
   - git clone https://github.com/NixOS/patchelf.git -b 0.8
   - cd patchelf
   - ./bootstrap.sh
