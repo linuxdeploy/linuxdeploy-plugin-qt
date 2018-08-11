@@ -173,7 +173,7 @@ bool deployWebEnginePlugins(appdir::AppDir &appDir, const bf::path &qtLibexecsPa
         auto path = qtDataPath / "resources" / fileName;
 
         if (bf::is_regular_file(path))
-            appDir.deployFile(path, appDir.path() / "usr/data/resources/");
+            appDir.deployFile(path, appDir.path() / "usr/resources/");
     }
 
     if (bf::is_directory(qtTranslationsPath / "qtwebengine_locales")) {
@@ -219,8 +219,7 @@ bool createQtConf(appdir::AppDir &appDir) {
         << "Prefix = ../" << std::endl
         << "Plugins = plugins" << std::endl
         << "Imports = qml" << std::endl
-        << "Qml2Imports = qml" << std::endl
-        << "Data = data" << std::endl;
+        << "Qml2Imports = qml" << std::endl;
 
     return true;
 }
