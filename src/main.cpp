@@ -178,7 +178,7 @@ bool deployWebEnginePlugins(appdir::AppDir &appDir, const bf::path &qtLibexecsPa
 
     if (bf::is_directory(qtTranslationsPath / "qtwebengine_locales")) {
         for (bf::directory_iterator i(qtTranslationsPath / "qtwebengine_locales"); i != bf::directory_iterator(); ++i) {
-            appDir.deployFile(*i, appDir.path() / "usr/qtwebengine_locales/");
+            appDir.deployFile(*i, appDir.path() / "usr/translations/qtwebengine_locales/");
         }
     }
 
