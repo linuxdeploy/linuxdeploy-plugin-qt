@@ -86,7 +86,7 @@ std::vector<bf::path> getExtraQmlModulesPaths() {
     if (envVarContents == nullptr)
         return {};
 
-    auto paths = split(envVarContents);
+    auto paths = split(envVarContents, ':');
     std::vector<bf::path> extraQmlSourcesPaths;
 
     std::copy(paths.begin(), paths.end(), std::back_inserter(extraQmlSourcesPaths));
@@ -100,7 +100,7 @@ std::vector<bf::path> getExtraQmlSourcesPaths() {
     if (envVarContents == nullptr)
         return {};
 
-    auto paths = split(envVarContents);
+    auto paths = split(envVarContents, ':');
     std::vector<bf::path> extraQmlSourcesPaths;
 
     std::copy(paths.begin(), paths.end(), std::back_inserter(extraQmlSourcesPaths));
