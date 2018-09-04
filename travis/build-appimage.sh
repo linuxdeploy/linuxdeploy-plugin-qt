@@ -43,7 +43,7 @@ make install DESTDIR=AppDir
 
 wget https://github.com/TheAssassin/linuxdeploy/releases/download/continuous/linuxdeploy-"$ARCH".AppImage
 chmod +x linuxdeploy*.AppImage
-./linuxdeploy-"$ARCH".AppImage -n linuxdeploy-plugin-qt --appdir AppDir --init-appdir \
+./linuxdeploy-"$ARCH".AppImage --appdir AppDir \
     -d "$REPO_ROOT"/resources/linuxdeploy-plugin-qt.desktop \
     -i "$REPO_ROOT"/resources/linuxdeploy-plugin-qt.svg \
     -e $(which patchelf) \
