@@ -10,6 +10,7 @@
 #include <linuxdeploy/core/appdir.h>
 #include <linuxdeploy/core/elf.h>
 #include <linuxdeploy/core/log.h>
+#include <linuxdeploy/util/util.h>
 
 // local includes
 #include "qt-modules.h"
@@ -367,20 +368,28 @@ int main(const int argc, const char *const *const argv) {
     };
 
     std::copy_if(QtModules.begin(), QtModules.end(), std::back_inserter(foundQtModules),
-                 [&matchesQtModule, &libraryNames, &extraPlugins](const QtModule &module) {
+                 [&matchesQtModule, &libraryNames](const QtModule &module) {
                      return std::find_if(libraryNames.begin(), libraryNames.end(),
                                          [&matchesQtModule, &module](const std::string &libraryName) {
                                              return matchesQtModule(libraryName, module);
                                          }) != libraryNames.end();
                  });
 
-    std::copy_if(QtModules.begin(), QtModules.end(), std::back_inserter(extraQtModules),
-                 [&matchesQtModule, libraryNames, &extraPlugins](const QtModule &module) {
-                     return std::find_if(extraPlugins.Get().begin(), extraPlugins.Get().end(),
-                                         [&matchesQtModule, &module](const std::string &libraryName) {
-                                             return matchesQtModule(libraryName, module);
-                                         }) != extraPlugins.Get().end();
-                 });
+    std::vector<std::string> extraPluginsFromEnv;
+    const auto* const extraPluginsFromEnvData = getenv("EXTRA_QT_PLUGINS");
+    if (extraPluginsFromEnvData != nullptr)
+        extraPluginsFromEnv = linuxdeploy::util::split(std::string(extraPluginsFromEnvData, ':'));
+
+    for (const auto& pluginsList : {static_cast<std::vector<std::string>>(extraPlugins.Get()), extraPluginsFromEnv}) {
+        std::copy_if(QtModules.begin(), QtModules.end(), std::back_inserter(extraQtModules),
+            [&matchesQtModule, &libraryNames, &pluginsList](const QtModule &module) {
+                return std::find_if(pluginsList.begin(), pluginsList.end(),
+                    [&matchesQtModule, &module](const std::string &libraryName) {
+                        return matchesQtModule(libraryName, module);
+                    }) != pluginsList.end();
+            }
+        );
+    }
 
     {
         std::set<std::string> moduleNames;
