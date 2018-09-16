@@ -42,7 +42,7 @@ install:
   - rm -rf patchelf
 
 script:
-  - bash -xe travis/build-appimage.sh
+  - bash -xe travis/build.sh
 
 after_success:
   - ls -lh
