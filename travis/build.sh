@@ -4,7 +4,7 @@ set -e
 set -x
 
 if [ "$ARCH" == "" ]; then
-    echo "Error: $ARCH is not set"
+    echo 'Error: $ARCH is not set'
     exit 1
 fi
 
@@ -40,6 +40,8 @@ cmake "$REPO_ROOT" -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RelWithDebInfo
 make -j$(nproc)
 
 make install DESTDIR=AppDir
+
+export UPD_INFO="gh-releases-zsync|linuxdeploy|linuxdeploy-plugin-qt|continuous|linuxdeploy-plugin-qt-$ARCH.AppImage"
 
 wget https://github.com/TheAssassin/linuxdeploy/releases/download/continuous/linuxdeploy-"$ARCH".AppImage
 chmod +x linuxdeploy*.AppImage
