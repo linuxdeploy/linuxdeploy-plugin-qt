@@ -8,6 +8,8 @@ matrix:
       addons:
         apt:
           update: true
+          sources:
+            - sourceline: 'ppa:beineri/opt-qt-5.10.1-trusty'
           packages:
             - libmagic-dev
             - libjpeg-dev
@@ -16,6 +18,11 @@ matrix:
             - automake  # required for patchelf
             - gcc
             - g++
+            # Packages below are only required by the test srcipt
+            - qt510-meta-minimal
+            - qt510declarative
+            - qt510webengine
+            - mesa-common-dev
     - env: ARCH=i386
       addons:
         apt:
@@ -43,6 +50,7 @@ install:
 
 script:
   - bash -xe travis/build.sh
+  - bash -xe travis/test.sh linuxdeploy-plugin-qt-${ARCH}.AppImage
 
 after_success:
   - ls -lh
