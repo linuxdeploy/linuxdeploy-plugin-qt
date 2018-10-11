@@ -43,3 +43,21 @@ To use linuxdeploy-plugin-standalone, download the official AppImage, make it ex
 ```
 
 linuxdeploy-plugin-qt will look for Qt libraries in the library directory `usr/lib/` and deploy the Qt plugins and other resources for these. This means that if linuxdeploy or another tool haven't been run on the AppDir yet, i.e., no Qt libraries have been deployed yet, linuxdeploy-plugin-qt won't be able to recognize which plugins and resources have to be deployed, and will return an error.
+
+
+
+### Environment variables
+
+Just like all linuxdeploy plugins, the Qt plugin's behavior can be configured some environment variables.
+
+**General:**
+- `$DEBUG=1`: enables verbose output, useful for debugging (equal to linuxdeploy's `-v0`)
+- `$LD_LIBRARY_PATH=pathA:pathB`: Paths to check for library dependencies (see `man ld.so` for more information)
+
+**Qt specific:**
+- `$QMAKE=/path/to/my/qmake`: use another `qmake` binary to detect paths of plugins and other resources (usually doesn't need to be set manually, most Qt environments ship scripts changing `$PATH`)
+- `$EXTRA_QT_PLUGINS=pluginA;pluginB`: Plugins to deploy even if not found automatically by linuxdeploy-plugin-qt
+
+QML related:
+- `$QML_SOURCES_PATH`: directory containing the application's QML files -- useful/needed if QML files are "baked" into the binaries
+- `$QML_MODULES_PATH`: extra directories containing imported QML files (normally doesn't need to be specified)
