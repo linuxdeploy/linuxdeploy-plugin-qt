@@ -50,7 +50,7 @@ install:
 
 script:
   - bash -xe travis/build.sh
-  - bash -xe travis/test.sh linuxdeploy-plugin-qt-${ARCH}.AppImage
+  - bash -xe travis/test.sh linuxdeploy-plugin-qt-"$ARCH".AppImage
 
 after_success:
   - ls -lh
