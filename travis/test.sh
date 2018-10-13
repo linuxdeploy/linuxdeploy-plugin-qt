@@ -8,11 +8,6 @@ if [ "$ARCH" == "" ]; then
     exit 1
 fi
 
-if [ "$ARCH" != "x86_64" ]; then
-    echo 'NOTICE: $ARCH is not supported yet'
-    exit 0
-fi
-
 TARGET=$1
 if [ "$TARGET" == "" ]; then
     echo 'Error: $TARGET is not set'
