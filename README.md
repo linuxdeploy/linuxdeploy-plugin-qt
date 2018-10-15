@@ -59,5 +59,5 @@ Just like all linuxdeploy plugins, the Qt plugin's behavior can be configured so
 - `$EXTRA_QT_PLUGINS=pluginA;pluginB`: Plugins to deploy even if not found automatically by linuxdeploy-plugin-qt
 
 QML related:
-- `$QML_SOURCES_PATH`: directory containing the application's QML files -- useful/needed if QML files are "baked" into the binaries
-- `$QML_MODULES_PATH`: extra directories containing imported QML files (normally doesn't need to be specified)
+- `$QML_SOURCES_PATHS`: directory containing the application's QML files -- useful/needed if QML files are "baked" into the binaries
+- `$QML_MODULES_PATHS`: extra directories containing imported QML files (normally doesn't need to be specified)
