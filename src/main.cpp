@@ -264,7 +264,7 @@ deployTranslations(appdir::AppDir &appDir, const bf::path &qtTranslationsPath, c
 
     const auto& appDirTranslationsPath = appDir.path() / "usr/translations";
     for (auto& i: bf::recursive_directory_iterator(appDir.path())) {
-        if (!bf::is_regular_file(i) || path_contains_file(appDirTranslationsPath, i))
+        if (!bf::is_regular_file(i) || pathContainsFile(appDirTranslationsPath, i))
             continue;
 
         const auto fileName = i.path().filename();

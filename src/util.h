@@ -142,7 +142,7 @@ static boost::filesystem::path findQmake() {
     return qmakePath;
 }
 
-static bool path_contains_file(boost::filesystem::path dir, boost::filesystem::path file) {
+static bool pathContainsFile(boost::filesystem::path dir, boost::filesystem::path file) {
     // If dir ends with "/" and isn't the root directory, then the final
     // component returned by iterators will include "." and will interfere
     // with the std::equal check below, so we strip it before proceeding.
