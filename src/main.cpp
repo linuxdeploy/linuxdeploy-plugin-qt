@@ -270,7 +270,7 @@ deployTranslations(appdir::AppDir &appDir, const bf::path &qtTranslationsPath, c
         const auto fileName = i.path().filename();
 
         if (strEndsWith(fileName.string(), ".qm"))
-            appDir.deployFile(i, appDir.path() / "usr/translations/");
+            appDir.createRelativeSymlink(i, appDir.path() / "usr/translations" / fileName);
     }
 
     return true;
