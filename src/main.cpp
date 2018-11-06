@@ -20,6 +20,7 @@
 namespace bf = boost::filesystem;
 
 using namespace linuxdeploy::core;
+using namespace linuxdeploy::util::misc;
 using namespace linuxdeploy::core::log;
 
 
@@ -259,6 +260,17 @@ deployTranslations(appdir::AppDir &appDir, const bf::path &qtTranslationsPath, c
 
         if (checkName(fileName))
             appDir.deployFile(*i, appDir.path() / "usr/translations/");
+    }
+
+    const auto& appDirTranslationsPath = appDir.path() / "usr/translations";
+    for (auto& i: bf::recursive_directory_iterator(appDir.path())) {
+        if (!bf::is_regular_file(i) || pathContainsFile(appDirTranslationsPath, i))
+            continue;
+
+        const auto fileName = i.path().filename();
+
+        if (strEndsWith(fileName.string(), ".qm"))
+            appDir.createRelativeSymlink(i, appDir.path() / "usr/translations" / fileName);
     }
 
     return true;
