@@ -359,6 +359,12 @@ int main(const int argc, const char *const *const argv) {
 
     appdir::AppDir appDir(appDirPath.Get());
 
+    // allow disabling copyright files deployment via environment variable
+    if (getenv("DISABLE_COPYRIGHT_FILES_DEPLOYMENT") != nullptr) {
+        ldLog() << std::endl << LD_WARNING << "Copyright files deployment disabled" << std::endl;
+        appDir.setDisableCopyrightFilesDeployment(true);
+    }
+
     // check which libraries and plugins the binaries and libraries depend on
     std::set<std::string> libraryNames;
     for (const auto &path : appDir.listSharedLibraries()) {
