@@ -67,22 +67,34 @@ bool deployPlatformPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath
     return true;
 }
 
-bool deployXcbglIntegrationPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
-    ldLog() << "Deploying xcb-gl integrations" << std::endl;
+// little helper called by other integration plugins
+bool deployIntegrationPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath, const std::initializer_list<bf::path>& subDirs) {
+    for (const bf::path& subDir : subDirs) {
+        auto dir = qtPluginsPath / subDir;
 
-    auto dir = qtPluginsPath / "xcbglintegrations";
+        if (!bf::is_directory(dir)) {
+            ldLog() << "Directory" << dir << "doesn't exist, skipping deployment" << std::endl;
+            continue;
+        }
 
-    if (!bf::is_directory(dir)) {
-        ldLog() << "Directory" << dir << "doesn't exist, skipping deployment" << std::endl;
-        return true;
-    }
+        for (bf::directory_iterator i(dir); i != bf::directory_iterator(); ++i) {
+            // append a trailing slash to make linuxdeploy aware of the destination being a directory
+            // otherwise, when the directory doesn't exist, it might just copy all files to files called like
+            // destinationDir
+            auto destinationDir = appDir.path() / "usr/plugins" / subDir / "";
 
-    for (bf::directory_iterator i(dir); i != bf::directory_iterator(); ++i) {
-        if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/xcbglintegrations/"))
-            return false;
+            if (!appDir.deployLibrary(*i, destinationDir))
+                return false;
+        }
     }
 
     return true;
+}
+
+bool deployXcbglIntegrationPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
+    ldLog() << "Deploying xcb-gl integrations" << std::endl;
+
+    return deployIntegrationPlugins(appDir, qtPluginsPath, {"xcbglintegrations"});
 }
 
 bool deploySvgPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
