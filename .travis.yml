@@ -21,7 +21,7 @@ matrix:
             - g++
             # Packages below are only required by the test srcipt
             - qt512-meta-minimal
-            - qt512-base
+            - qt512base
             - qt512declarative
             - qt512webengine
             - qt512wayland
