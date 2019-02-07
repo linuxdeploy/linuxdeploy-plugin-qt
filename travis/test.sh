@@ -60,8 +60,8 @@ pushd linuxdeploy-plugin-qt-examples/QtQuickControls2Application
         cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=/usr || exit 1
         DESTDIR="$PWD"/AppDir make install || exit 1
 
-        "$LINUXDEPLOY_BIN" --appdir "$PWD"/AppDir --plugin qt --output appimage || return 1
-         mv -v *AppImage "$BUILD_DIR" || return 1
+        "$LINUXDEPLOY_BIN" --appdir "$PWD"/AppDir --plugin qt --output appimage || exit 1
+         mv -v *AppImage "$BUILD_DIR" || exit 1
     popd
 popd
 
@@ -77,8 +77,8 @@ pushd linuxdeploy-plugin-qt-examples/QtWebEngineApplication
         mkdir -p "$PWD"/AppDir/usr/lib/
         cp -r /usr/lib/x86_64-linux-gnu/nss "$PWD"/AppDir/usr/lib/
 
-        "$LINUXDEPLOY_BIN" --appdir "$PWD"/AppDir --plugin qt --output appimage || return 1
-         mv -v *AppImage "$BUILD_DIR" || return 1
+        "$LINUXDEPLOY_BIN" --appdir "$PWD"/AppDir --plugin qt --output appimage || exit 1
+         mv -v *AppImage "$BUILD_DIR" || exit 1
     popd
 popd
 
@@ -88,7 +88,7 @@ pushd linuxdeploy-plugin-qt-examples/QtWidgetsApplication
         qmake CONFIG+=release PREFIX=/usr ../QtWidgetsApplication.pro || exit 1
         INSTALL_ROOT="$PWD"/AppDir make install || exit 1
 
-        "$LINUXDEPLOY_BIN" --appdir "$PWD"/AppDir --plugin qt --output appimage || return 1
-         mv -v *AppImage "$BUILD_DIR" || return 1
+        "$LINUXDEPLOY_BIN" --appdir "$PWD"/AppDir --plugin qt --output appimage || exit 1
+         mv -v *AppImage "$BUILD_DIR" || exit 1
     popd
 popd
