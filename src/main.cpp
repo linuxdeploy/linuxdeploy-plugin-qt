@@ -49,7 +49,7 @@ bool strEndsWith(const std::string &str, const std::string &suffix) {
 bool deployPlatformPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
     ldLog() << "Deploying platform plugins" << std::endl;
 
-    for (const std::string& libName : {"libqxcb", "libqwayland-egl", "libqwayland-generic"}) {
+    for (const std::string& libName : {"libqxcb", "libqwayland-generic"}) {
         if (!appDir.deployLibrary(qtPluginsPath / "platforms" / (libName + ".so"), appDir.path() / "usr/plugins/platforms/"))
             return false;
     }
