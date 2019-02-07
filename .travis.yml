@@ -55,7 +55,7 @@ install:
 script:
   - bash -xe travis/build.sh
   # TODO: allow for cross-compiling the test projects and install i386 packages for build dependencies, then remove $ARCH check
-  - if [ "$ARCH" == "x86_64" ]; then bash -xe travis/test.sh linuxdeploy-plugin-qt-"$ARCH".AppImage; fi
+  #- if [ "$ARCH" == "x86_64" ]; then bash -xe travis/test.sh linuxdeploy-plugin-qt-"$ARCH".AppImage; fi
 
 after_success:
   - ls -lh
