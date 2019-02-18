@@ -40,7 +40,7 @@ pushd "$BUILD_DIR"
 
 git clone --depth=1 https://github.com/linuxdeploy/linuxdeploy-plugin-qt-examples.git
 
-source /opt/qt*/bin/qt*-env.sh
+source /opt/qt510/bin/qt510-env.sh || echo ""   # hack required, otherwise the script will end whit 1
 mkdir -p "$HOME"/.config/qtchooser
 echo "${QTDIR}/bin" > "$HOME"/.config/qtchooser/qt5.10.conf
 echo "${QTDIR}/lib" >> "$HOME"/.config/qtchooser/qt5.10.conf
