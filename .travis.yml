@@ -26,7 +26,6 @@ matrix:
             - qt512webengine
             - qt512wayland
             - mesa-common-dev
-            - libgl1
     - env: ARCH=i386
       addons:
         apt:
