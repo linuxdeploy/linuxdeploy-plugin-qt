@@ -1,7 +1,6 @@
 language: cpp
 sudo: required
-# required for Qt 5 wayland packages
-dist: xenial
+dist: trusty
 
 matrix:
   include:
@@ -10,7 +9,7 @@ matrix:
         apt:
           update: true
           sources:
-            - sourceline: 'ppa:beineri/opt-qt-5.12.0-xenial'
+            - sourceline: 'ppa:beineri/opt-qt-5.10.1-trusty'
           packages:
             - libmagic-dev
             - libjpeg-dev
@@ -20,10 +19,10 @@ matrix:
             - gcc
             - g++
             # Packages below are only required by the test srcipt
-            - qt512-meta-minimal
-            - qt512declarative
-            - qt512webengine
-            - qt512wayland
+            - qt510-meta-minimal
+            - qt510declarative
+            - qt510webengine
+            - qt510wayland
             - mesa-common-dev
     - env: ARCH=i386
       addons:
