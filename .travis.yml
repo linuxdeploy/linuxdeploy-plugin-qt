@@ -22,7 +22,6 @@ matrix:
             - qt510-meta-minimal
             - qt510declarative
             - qt510webengine
-            - qt510wayland
             - mesa-common-dev
     - env: ARCH=i386
       addons:
