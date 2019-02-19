@@ -49,10 +49,8 @@ bool strEndsWith(const std::string &str, const std::string &suffix) {
 bool deployPlatformPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
     ldLog() << "Deploying platform plugins" << std::endl;
 
-    for (const std::string& libName : {"libqxcb", "libqwayland-egl", "libqwayland-generic"}) {
-        if (!appDir.deployLibrary(qtPluginsPath / "platforms" / (libName + ".so"), appDir.path() / "usr/plugins/platforms/"))
-            return false;
-    }
+    if (!appDir.deployLibrary(qtPluginsPath / "platforms/libqxcb.so", appDir.path() / "usr/plugins/platforms/"))
+        return false;
 
     for (bf::directory_iterator i(qtPluginsPath / "platforminputcontexts"); i != bf::directory_iterator(); ++i) {
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/platforminputcontexts/"))
@@ -97,19 +95,6 @@ bool deployXcbglIntegrationPlugins(appdir::AppDir& appDir, const bf::path& qtPlu
     ldLog() << "Deploying xcb-gl integrations" << std::endl;
 
     return deployIntegrationPlugins(appDir, qtPluginsPath, {"xcbglintegrations"});
-}
-
-bool deployWaylandIntegrationPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
-    ldLog() << "Deploying wayland integrations" << std::endl;
-
-    const std::initializer_list<bf::path> pluginDirs = {
-        "wayland-graphics-integration-client",
-        "wayland-graphics-integration-server",
-        "wayland-decoration-client",
-        "wayland-shell-integration",
-    };
-
-    return deployIntegrationPlugins(appDir, qtPluginsPath, pluginDirs);
 }
 
 bool deploySvgPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
@@ -508,9 +493,6 @@ int main(const int argc, const char *const *const argv) {
         if (module.name == "opengl" || module.name == "gui" || module.name == "xcbqpa") {
             if (!deployXcbglIntegrationPlugins(appDir, qtPluginsPath))
                 return 1;
-
-            if (!deployWaylandIntegrationPlugins(appDir, qtPluginsPath))
-                ldLog() << LD_WARNING << "Failed to deploy wayland integration plugins; this will become an error in the future" << std::endl;
         }
 
         if (module.name == "network") {
