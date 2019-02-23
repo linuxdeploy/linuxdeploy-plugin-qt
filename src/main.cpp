@@ -70,7 +70,8 @@ bool deployPlatformPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath
 // little helper called by other integration plugins
 bool deployIntegrationPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath, const std::initializer_list<bf::path>& subDirs) {
     for (const bf::path& subDir : subDirs) {
-        auto dir = qtPluginsPath / subDir;
+        // make sure the path ends with a / so that liblinuxdeploy recognize the destination as a directory
+        auto dir = qtPluginsPath / subDir / "/";
 
         if (!bf::is_directory(dir)) {
             ldLog() << "Directory" << dir << "doesn't exist, skipping deployment" << std::endl;
@@ -94,7 +95,7 @@ bool deployIntegrationPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsP
 bool deployXcbglIntegrationPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
     ldLog() << "Deploying xcb-gl integrations" << std::endl;
 
-    return deployIntegrationPlugins(appDir, qtPluginsPath, {"xcbglintegrations"});
+    return deployIntegrationPlugins(appDir, qtPluginsPath, {"xcbglintegrations/"});
 }
 
 bool deploySvgPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
