@@ -64,6 +64,31 @@ bool deployPlatformPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath
 
     // TODO: platform themes -- https://github.com/probonopd/linuxdeployqt/issues/236
 
+    const bf::path platformThemesPath = qtPluginsPath / "platformthemes";
+    const bf::path stylesPath = qtPluginsPath / "styles";
+
+    const bf::path platformThemesDestination = appDir.path() / "usr/plugins/platformthemes/";
+    const bf::path stylesDestination = appDir.path() / "usr/plugins/styles/";
+
+    if (getenv("DEPLOY_PLATFORM_THEMES") != nullptr) {
+        ldLog() << LD_WARNING << "Deploying all platform themes and styles [experimental feature]" << std::endl;
+
+        for (bf::directory_iterator i(platformThemesPath); i != bf::directory_iterator(); ++i) {
+            if (!appDir.deployLibrary(*i, platformThemesDestination))
+                return false;
+        }
+
+        for (bf::directory_iterator i(stylesPath); i != bf::directory_iterator(); ++i) {
+            if (!appDir.deployLibrary(*i, stylesDestination))
+                return false;
+        }
+    } else {
+        ldLog() << "Trying to deploy Gtk 2 platform theme and/or style" << std::endl;
+
+        appDir.deployLibrary(platformThemesPath / "libqgtk2.so", platformThemesDestination);
+        appDir.deployLibrary(stylesPath / "libqgtk2style.so", stylesDestination);
+    }
+
     return true;
 }
 
