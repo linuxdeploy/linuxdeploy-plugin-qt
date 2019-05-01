@@ -5,3 +5,4 @@ Icon=linuxdeploy-plugin-qt
 Terminal=true
 NoDisplay=true
 Type=Application
+Categories=Development;
