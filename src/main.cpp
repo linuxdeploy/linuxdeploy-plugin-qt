@@ -73,15 +73,15 @@ bool deployPlatformPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath
     if (getenv("DEPLOY_PLATFORM_THEMES") != nullptr) {
         ldLog() << LD_WARNING << "Deploying all platform themes and styles [experimental feature]" << std::endl;
 
-        for (bf::directory_iterator i(platformThemesPath); i != bf::directory_iterator(); ++i) {
-            if (!appDir.deployLibrary(*i, platformThemesDestination))
-                return false;
-        }
+        if (bf::is_directory(platformThemesPath))
+            for (bf::directory_iterator i(platformThemesPath); i != bf::directory_iterator(); ++i)
+                if (!appDir.deployLibrary(*i, platformThemesDestination))
+                    return false;
 
-        for (bf::directory_iterator i(stylesPath); i != bf::directory_iterator(); ++i) {
-            if (!appDir.deployLibrary(*i, stylesDestination))
-                return false;
-        }
+        if (bf::is_directory(stylesPath))
+            for (bf::directory_iterator i(stylesPath); i != bf::directory_iterator(); ++i)
+                if (!appDir.deployLibrary(*i, stylesDestination))
+                    return false;
     } else {
         ldLog() << "Trying to deploy Gtk 2 platform theme and/or style" << std::endl;
 
