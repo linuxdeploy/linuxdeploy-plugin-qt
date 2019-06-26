@@ -493,6 +493,7 @@ int main(const int argc, const char *const *const argv) {
     const bf::path qtLibexecsPath = qmakeVars["QT_INSTALL_LIBEXECS"];
     const bf::path qtDataPath = qmakeVars["QT_INSTALL_DATA"];
     const bf::path qtTranslationsPath = qmakeVars["QT_INSTALL_TRANSLATIONS"];
+    const bf::path qtBinsPath = qmakeVars["QT_INSTALL_BINS"];
     const bf::path qtLibsPath = qmakeVars["QT_INSTALL_LIBS"];
     const bf::path qtInstallQmlPath = qmakeVars["QT_INSTALL_QML"];
 
@@ -503,6 +504,12 @@ int main(const int argc, const char *const *const argv) {
     setenv("LD_LIBRARY_PATH", newLibraryPath.str().c_str(), true);
     ldLog() << "Prepending QT_INSTALL_LIBS path to $LD_LIBRARY_PATH, new $LD_LIBRARY_PATH:" << newLibraryPath.str()
             << std::endl;
+
+    std::ostringstream newPath;
+    newPath << qtBinsPath.string() << ":" << getenv("PATH");
+    setenv("PATH", newPath.str().c_str(), true);
+    ldLog() << "Prepending QT_INSTALL_BINS path to $PATH, new $PATH:" << newPath.str() << std::endl;
+
 
     auto qtModulesToDeploy = foundQtModules;
     qtModulesToDeploy.reserve(extraQtModules.size());
