@@ -89,8 +89,17 @@ bool deployPlatformPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath
         // either loading succeeds, then the system Gtk shall be used anyway, otherwise loading fails and Qt will fall
         // back to the default UI theme
         // we don't care whether this works (it's an experimental feature), therefore we ignore the return values
-        appDir.deployFile(platformThemesPath / "libqgtk2.so", platformThemesDestination);
-        appDir.deployFile(stylesPath / "libqgtk2style.so", stylesDestination);
+        bf::path qgtkPlatformThemePath = platformThemesPath / "libqgtk2.so";
+        if (bf::exists(qgtkPlatformThemePath))
+            appDir.deployFile(qgtkPlatformThemePath, platformThemesDestination);
+        else
+            ldLog() << LD_ERROR << "Missing Gtk 2 platform theme file: " << qgtkPlatformThemePath << std::endl;
+
+        bf::path qgtkStylePath = stylesPath / "libqgtk2style.so";
+        if (bf::exists(qgtkStylePath))
+            appDir.deployFile(qgtkStylePath, stylesDestination);
+        else
+            ldLog() << LD_ERROR << "Missing Gtk 2 platform style file: " << qgtkStylePath << std::endl;
     }
 
     return true;
