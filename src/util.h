@@ -22,15 +22,16 @@ typedef struct {
 
 static procOutput check_command(const std::vector<std::string> &args) {
     auto command = subprocess::util::join(args);
-    subprocess::Popen proc(command, subprocess::bufsize{-1}, subprocess::output(subprocess::PIPE), subprocess::error(subprocess::PIPE));
+    subprocess::Popen proc(command, subprocess::bufsize{-1 /* stands for dynamically allocated buffer */},
+                            subprocess::output(subprocess::PIPE), subprocess::error(subprocess::PIPE));
     auto outputs = proc.communicate();
 
     const auto &outBuf = outputs.first.buf;
-    auto outBufEnd = std::find(outBuf.begin(),outBuf.end(), '\0');
+    auto outBufEnd = std::find(outBuf.begin(), outBuf.end(), '\0');
     std::string out(outBuf.begin(), outBufEnd);
 
     const auto &errBuf = outputs.second.buf;
-    auto errBufEnd = std::find(errBuf.begin(),errBuf.end(), '\0');
+    auto errBufEnd = std::find(errBuf.begin(), errBuf.end(), '\0');
     std::string err(errBuf.begin(),  errBufEnd);
 
     int returnCode = proc.retcode();
