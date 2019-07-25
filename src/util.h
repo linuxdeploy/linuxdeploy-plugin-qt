@@ -22,23 +22,18 @@ typedef struct {
 
 static procOutput check_command(const std::vector<std::string> &args) {
     auto command = subprocess::util::join(args);
-    subprocess::Popen proc(command, subprocess::bufsize{100*1024*1024}, subprocess::output(subprocess::PIPE), subprocess::error(subprocess::PIPE));
+    subprocess::Popen proc(command, subprocess::bufsize{-1}, subprocess::output(subprocess::PIPE), subprocess::error(subprocess::PIPE));
+    auto outputs = proc.communicate();
 
-    auto returnCode = proc.wait();
+    const auto &outBuf = outputs.first.buf;
+    auto outBufEnd = std::find(outBuf.begin(),outBuf.end(), '\0');
+    std::string out(outBuf.begin(), outBufEnd);
 
-    std::string out;
-    std::vector<char> buff(1024);
-    while (fgets (buff.data(), 1024 , proc.output()) != NULL) {
-        auto end = std::find(buff.begin(), buff.end(), '\0');
-        out += std::string(buff.begin(), end);
-    }
+    const auto &errBuf = outputs.second.buf;
+    auto errBufEnd = std::find(errBuf.begin(),errBuf.end(), '\0');
+    std::string err(errBuf.begin(),  errBufEnd);
 
-    std::string err;
-    while (fgets (buff.data(), 1024 , proc.error()) != NULL) {
-        auto end = std::find(buff.begin(), buff.end(), '\0');
-        err += std::string(buff.begin(), end);
-    }
-
+    int returnCode = proc.retcode();
     return {returnCode == 0, returnCode, out, err};
 }
 
