@@ -255,7 +255,7 @@ bool createQtConf(appdir::AppDir &appDir) {
     auto qtConfPath = appDir.path() / "usr" / "bin" / "qt.conf";
 
     if (bf::is_regular_file(qtConfPath)) {
-        ldLog() << LD_WARNING << "Skipping creation of Qt conf file: file exists:" << qtConfPath << std::endl;
+        ldLog() << LD_WARNING << "Overwriting existing qt.conf file:" << qtConfPath << std::endl;
     } else {
         ldLog() << "Creating Qt conf file:" << qtConfPath << std::endl;
     }
