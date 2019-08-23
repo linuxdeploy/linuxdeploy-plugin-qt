@@ -9,7 +9,7 @@ matrix:
         apt:
           update: true
           sources:
-            - sourceline: 'ppa:beineri/opt-qt-5.10.1-trusty'
+            - sourceline: 'ppa:beineri/opt-qt-5.12.3-xenial'
           packages:
             - libmagic-dev
             - libjpeg-dev
