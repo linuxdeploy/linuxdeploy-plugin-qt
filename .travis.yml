@@ -23,7 +23,8 @@ matrix:
             - qt512declarative
             - qt512webengine
             - mesa-common-dev
-            - libglvnd-dev
+            - libglvnd-dev  # <-- that's for xenial to provide the x86_64-linux-gnu/libGL.so symlink
+            - # libglvnd-dev  # <-- that's for bionic to provide aforementioned symlink
     - env: ARCH=i386
       addons:
         apt:
