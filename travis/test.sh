@@ -40,13 +40,14 @@ pushd "$BUILD_DIR"
 
 git clone --depth=1 https://github.com/linuxdeploy/linuxdeploy-plugin-qt-examples.git
 
-source /opt/qt510/bin/qt510-env.sh || echo ""   # hack required, otherwise the script will end whit 1
+source /opt/qt5*/bin/qt5*-env.sh || echo ""   # hack required, the script returns 1 for some reason
+qt5_ver=$(echo "$QT_BASE_DIR" | cut -d/ -f3 | cut -d5 -f2-)
 mkdir -p "$HOME"/.config/qtchooser
-echo "${QTDIR}/bin" > "$HOME"/.config/qtchooser/qt5.10.conf
-echo "${QTDIR}/lib" >> "$HOME"/.config/qtchooser/qt5.10.conf
+echo "${QTDIR}/bin" > "$HOME"/.config/qtchooser/qt5."$qt5_ver".conf
+echo "${QTDIR}/lib" >> "$HOME"/.config/qtchooser/qt5."$qt5_ver".conf
 
 export CMAKE_PREFIX_PATH="$QTDIR"/lib/cmake
-export QT_SELECT=qt5.10
+export QT_SELECT=qt5."$qt5_ver"
 
 
 ## Build projects
