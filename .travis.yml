@@ -19,9 +19,9 @@ matrix:
             - gcc
             - g++
             # Packages below are only required by the test srcipt
-            - qt510-meta-minimal
-            - qt510declarative
-            - qt510webengine
+            - qt512-meta-minimal
+            - qt512declarative
+            - qt512webengine
             - mesa-common-dev
     - env: ARCH=i386
       addons:
