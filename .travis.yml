@@ -23,6 +23,7 @@ matrix:
             - qt512declarative
             - qt512webengine
             - mesa-common-dev
+            - libglvnd-dev
     - env: ARCH=i386
       addons:
         apt:
