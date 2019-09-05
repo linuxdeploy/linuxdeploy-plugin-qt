@@ -1,5 +1,5 @@
 add_subdirectory(linuxdeploy EXCLUDE_FROM_ALL)
-if(NOT TARGET gtest)
+if(NOT TARGET gtest AND BUILD_TESTING)
     add_subdirectory(googletest EXCLUDE_FROM_ALL)
 endif()
 
