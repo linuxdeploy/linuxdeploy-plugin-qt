@@ -6,3 +6,4 @@ Terminal=true
 NoDisplay=true
 Type=Application
 Categories=Development;
+X-AppImage-Integrate=false
