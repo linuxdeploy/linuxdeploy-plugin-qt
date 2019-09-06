@@ -39,6 +39,8 @@ cmake "$REPO_ROOT" -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RelWithDebInfo
 
 make -j$(nproc)
 
+ctest -V
+
 make install DESTDIR=AppDir
 
 strip_path=$(which strip)
