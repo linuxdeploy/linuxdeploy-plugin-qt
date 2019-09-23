@@ -22,12 +22,10 @@ namespace linuxdeploy {
                     void SetUp() override {
                         appDirPath = getTempDirName();
                         projectQmlRoot = appDirPath.string() + "/usr/qml";
-                        try {
-                            boost::filesystem::create_directories(projectQmlRoot);
-                            boost::filesystem::copy_file(TESTS_DATA_DIR "/qml_project/file.qml",
-                                projectQmlRoot.string() + "/file.qml");
-                        } catch (...) {
-                        }
+
+                        boost::filesystem::create_directories(projectQmlRoot);
+                        boost::filesystem::copy_file(TESTS_DATA_DIR "/qml_project/file.qml",
+                            projectQmlRoot.string() + "/file.qml");
 
                         setenv(ENV_KEY_QML_MODULES_PATHS, TESTS_DATA_DIR, 1);
 
