@@ -12,7 +12,8 @@ using namespace linuxdeploy::core::log;
 namespace bf = boost::filesystem;
 
 bool PlatformPluginsDeployer::deploy() {
-    BasicPluginDeployer::deploy();
+    if (!BasicPluginsDeployer::deploy())
+        return false;
 
     ldLog() << "Deploying platform plugins" << std::endl;
 
