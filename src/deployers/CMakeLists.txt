@@ -11,7 +11,7 @@ set(CLASSES
 
 add_library(deployers OBJECT)
 
-target_link_libraries(deployers PUBLIC linuxdeploy_core)
+target_link_libraries(deployers PUBLIC linuxdeploy_core linuxdeploy-plugin-qt_util)
 
 foreach(class ${CLASSES})
     target_sources(deployers PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${class}.h)
