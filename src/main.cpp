@@ -225,13 +225,6 @@ int main(const int argc, const char *const *const argv) {
         if (!deployer->deploy())
             return 1;
 
-
-
-        if (module.name == "opengl" || module.name == "gui" || module.name == "xcbqpa") {
-            if (!deployXcbglIntegrationPlugins(appDir, qtPluginsPath))
-                return 1;
-        }
-
         if (module.name == "network") {
             if (!deployBearerPlugins(appDir, qtPluginsPath))
                 return 1;

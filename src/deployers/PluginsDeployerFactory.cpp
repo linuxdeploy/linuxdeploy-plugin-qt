@@ -14,6 +14,10 @@ std::shared_ptr<PluginsDeployer> PluginsDeployerFactory::getInstance(const std::
     if (moduleName == "gui") {
         return std::make_shared<PlatformPluginsDeployer>(moduleName, appDir, qtPluginsPath);
     }
+    
+    if (moduleName == "opengl" || moduleName == "gui" || moduleName == "xcbqpa") {
+        return std::make_shared<PlatformPluginsDeployer>(moduleName, appDir, qtPluginsPath);
+    }
 
     // fallback
     return std::make_shared<BasicPluginsDeployer>(moduleName, appDir, qtPluginsPath);

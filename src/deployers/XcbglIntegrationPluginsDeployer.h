@@ -1,14 +1,14 @@
 #pragma once
 
-#include "basic_plugin_deployer.h"
+#include "BasicPluginsDeployer.h"
 
 namespace linuxdeploy {
     namespace plugin {
         namespace qt {
-            class PlatformPluginsDeployer : public BasicPluginDeployer {
+            class XcbglIntegrationPluginsDeployer : public BasicPluginsDeployer {
             public:
                 // we can just use the base class's constructor
-                using BasicPluginDeployer::BasicPluginDeployer;
+                using BasicPluginsDeployer::BasicPluginsDeployer;
 
                 bool deploy() override;
             };
