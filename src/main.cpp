@@ -260,6 +260,33 @@ bool deployWebEnginePlugins(appdir::AppDir &appDir, const bf::path &qtLibexecsPa
     return true;
 }
 
+bool deploy3DPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
+    ldLog() << "Deploying Qt 3D plugins" << std::endl;
+
+    for (bf::directory_iterator i(qtPluginsPath / "geometryloaders"); i != bf::directory_iterator(); ++i) {
+        if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/geometryloaders/"))
+            return false;
+    }
+
+    for (bf::directory_iterator i(qtPluginsPath / "sceneparsers"); i != bf::directory_iterator(); ++i) {
+        if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/sceneparsers/"))
+            return false;
+    }
+
+    return true;
+}
+
+bool deployGamepadPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
+    ldLog() << "Deploying Gamepad plugins" << std::endl;
+
+    for (bf::directory_iterator i(qtPluginsPath / "gamepads"); i != bf::directory_iterator(); ++i) {
+        if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/gamepads/"))
+            return false;
+    }
+
+    return true;
+}
+
 bool createQtConf(appdir::AppDir &appDir) {
     auto qtConfPath = appDir.path() / "usr" / "bin" / "qt.conf";
 
@@ -619,6 +646,16 @@ int main(const int argc, const char *const *const argv) {
 
         if (module.name == "qml") {
             if (!deployQmlFiles(appDir, qtInstallQmlPath))
+                return 1;
+        }
+
+        if (module.name == "3dquickrender") {
+            if (!deploy3DPlugins(appDir, qtPluginsPath))
+                return 1;
+        }
+
+        if (module.name == "gamepad") {
+            if (!deployGamepadPlugins(appDir, qtPluginsPath))
                 return 1;
         }
     }
