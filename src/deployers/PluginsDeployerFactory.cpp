@@ -1,7 +1,7 @@
 // local headers
 #include "PluginsDeployerFactory.h"
-#include "basic_plugin_deployer.h"
-#include "platform_plugins_deployer.h"
+#include "BasicPluginsDeployer.h"
+#include "PlatformPluginsDeployer.h"
 
 using namespace linuxdeploy::plugin::qt;
 using namespace linuxdeploy::core::appdir;
@@ -16,5 +16,5 @@ std::shared_ptr<PluginsDeployer> PluginsDeployerFactory::getInstance(const std::
     }
 
     // fallback
-    return std::make_shared<BasicPluginDeployer>(moduleName, appDir, qtPluginsPath);
+    return std::make_shared<BasicPluginsDeployer>(moduleName, appDir, qtPluginsPath);
 }

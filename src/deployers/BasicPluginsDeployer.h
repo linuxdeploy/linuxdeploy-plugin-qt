@@ -16,7 +16,7 @@ namespace linuxdeploy {
             /**
              *
              */
-            class BasicPluginDeployer : public PluginsDeployer {
+            class BasicPluginsDeployer : public PluginsDeployer {
             protected:
                 std::string moduleName;
                 core::appdir::AppDir& appDir;
@@ -28,14 +28,14 @@ namespace linuxdeploy {
                  *
                  * @param moduleName
                  */
-                explicit BasicPluginDeployer(std::string moduleName, core::appdir::AppDir& appDir,
-                                             boost::filesystem::path qtPluginsPath);
+                explicit BasicPluginsDeployer(std::string moduleName, core::appdir::AppDir& appDir,
+                                              boost::filesystem::path qtPluginsPath);
 
                 /**
                  * Default destroyer is good enough for this class for now, but in case we need to change this we declare a virtual
                  * one.
                  */
-                virtual ~BasicPluginDeployer() = default;
+                virtual ~BasicPluginsDeployer() = default;
 
             public:
                 bool deploy() override;

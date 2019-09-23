@@ -4,7 +4,7 @@
 #include <boost/filesystem.hpp>
 
 // local headers
-#include "platform_plugins_deployer.h"
+#include "PlatformPluginsDeployer.h"
 
 using namespace linuxdeploy::plugin::qt;
 using namespace linuxdeploy::core::log;

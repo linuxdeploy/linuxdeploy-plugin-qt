@@ -3,8 +3,10 @@ cmake_minimum_required(VERSION 3.1)
 set(CLASSES
     PluginsDeployer
     PluginsDeployerFactory
-    basic_plugin_deployer
-    platform_plugins_deployer
+    BasicPluginsDeployer
+
+    PlatformPluginsDeployer
+    XcbglIntegrationPluginsDeployer
 )
 
 add_library(deployers OBJECT)
