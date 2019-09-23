@@ -12,13 +12,13 @@ PluginsDeployerFactory::PluginsDeployerFactory(AppDir& appDir, bf::path qtPlugin
 
 std::shared_ptr<PluginsDeployer> PluginsDeployerFactory::getInstance(const std::string& moduleName) {
     if (moduleName == "gui") {
-        return std::make_shared<PlatformPluginsDeployer>(moduleName, appDir, qtPluginsPath);
+        return getInstance<PlatformPluginsDeployer>(moduleName);
     }
     
     if (moduleName == "opengl" || moduleName == "gui" || moduleName == "xcbqpa") {
-        return std::make_shared<PlatformPluginsDeployer>(moduleName, appDir, qtPluginsPath);
+        return getInstance<PlatformPluginsDeployer>(moduleName);
     }
 
     // fallback
-    return std::make_shared<BasicPluginsDeployer>(moduleName, appDir, qtPluginsPath);
+    return getInstance<BasicPluginsDeployer>(moduleName);
 }
