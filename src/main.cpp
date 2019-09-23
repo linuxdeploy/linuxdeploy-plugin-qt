@@ -221,7 +221,9 @@ int main(const int argc, const char *const *const argv) {
 
     for (const auto &module : qtModulesToDeploy) {
         auto deployer = deployerFactory.getInstance(module.name);
-        deployer->deploy();
+
+        if (!deployer->deploy())
+            return 1;
 
 
 
