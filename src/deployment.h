@@ -11,14 +11,12 @@
 #include "qt-modules.h"
 #include "qml.h"
 #include "util.h"
-#include "deployers/PluginsDeployerFactory.h"
 
 namespace bf = boost::filesystem;
 
 using namespace linuxdeploy::core;
 using namespace linuxdeploy::util::misc;
 using namespace linuxdeploy::core::log;
-using namespace linuxdeploy::plugin::qt;
 
 // little helper called by other integration plugins
 bool deployIntegrationPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath, const std::initializer_list<bf::path>& subDirs) {
