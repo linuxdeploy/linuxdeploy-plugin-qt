@@ -218,13 +218,10 @@ int main(const int argc, const char *const *const argv) {
     std::copy(extraQtModules.begin(), extraQtModules.end(), std::back_inserter(qtModulesToDeploy));
 
     for (const auto &module : qtModulesToDeploy) {
-        auto deployer = PluginDeployerFactory::getInstance(module.name);
+        auto deployer = PluginDeployerFactory::getInstance(module.name, appDir, qtPluginsPath);
         deployer->deploy();
 
-        if (module.name == "gui") {
-            if (!deployPlatformPlugins(appDir, qtPluginsPath))
-                return 1;
-        }
+
 
         if (module.name == "opengl" || module.name == "gui" || module.name == "xcbqpa") {
             if (!deployXcbglIntegrationPlugins(appDir, qtPluginsPath))

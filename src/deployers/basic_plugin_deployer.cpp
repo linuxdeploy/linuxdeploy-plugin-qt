@@ -1,3 +1,5 @@
+// system headers
+#include <utility>
 
 // library headers
 #include <linuxdeploy/core/log.h>
@@ -6,16 +8,15 @@
 #include "basic_plugin_deployer.h"
 
 using namespace linuxdeploy::core::log;
+using namespace linuxdeploy::core::appdir;
+using namespace linuxdeploy::plugin::qt;
+namespace bf = boost::filesystem;
 
-class BasicPluginDeployer::Private {
-public:
-    std::string moduleName;
-};
+BasicPluginDeployer::BasicPluginDeployer(std::string moduleName, core::appdir::AppDir& appDir,
+                                         bf::path qtPluginsPath) : moduleName(std::move(moduleName)), appDir(appDir),
+                                                                   qtPluginsPath(std::move(qtPluginsPath)) {}
 
-BasicPluginDeployer::BasicPluginDeployer(const std::string& pluginName) : d(new Private) {
-    d->moduleName = pluginName;
-}
-
-void BasicPluginDeployer::deploy() {
-    ldLog() << std::endl << "-- Deploying module:" << d->moduleName << "--" << std::endl;
+bool BasicPluginDeployer::deploy() {
+    ldLog() << std::endl << "-- Deploying module:" << moduleName << "--" << std::endl;
+    return true;
 }

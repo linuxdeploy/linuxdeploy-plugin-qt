@@ -10,7 +10,7 @@ namespace linuxdeploy {
              */
             class PluginDeployer {
             public:
-                virtual void deploy() = 0;
+                virtual bool deploy() = 0;
             };
         }
     }

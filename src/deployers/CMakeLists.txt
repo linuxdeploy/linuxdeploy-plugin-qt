@@ -4,6 +4,7 @@ set(CLASSES
     plugin_deployer
     basic_plugin_deployer
     plugin_deployer_factory
+    platform_plugins_deployer
 )
 
 add_library(deployers OBJECT)
