@@ -11,7 +11,7 @@
 #include "qt-modules.h"
 #include "qml.h"
 #include "util.h"
-#include "deployers/plugin_deployer_factory.h"
+#include "deployers/PluginsDeployerFactory.h"
 
 namespace bf = boost::filesystem;
 

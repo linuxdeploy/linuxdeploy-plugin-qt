@@ -16,7 +16,7 @@
 #include "qt-modules.h"
 #include "util.h"
 #include "deployment.h"
-#include "deployers/plugin_deployer_factory.h"
+#include "deployers/PluginsDeployerFactory.h"
 
 namespace bf = boost::filesystem;
 
@@ -217,8 +217,10 @@ int main(const int argc, const char *const *const argv) {
     qtModulesToDeploy.reserve(extraQtModules.size());
     std::copy(extraQtModules.begin(), extraQtModules.end(), std::back_inserter(qtModulesToDeploy));
 
+    PluginsDeployerFactory deployerFactory(appDir, qtPluginsPath);
+
     for (const auto &module : qtModulesToDeploy) {
-        auto deployer = PluginDeployerFactory::getInstance(module.name, appDir, qtPluginsPath);
+        auto deployer = deployerFactory.getInstance(module.name);
         deployer->deploy();
 
 

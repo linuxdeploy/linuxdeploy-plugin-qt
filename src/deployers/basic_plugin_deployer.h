@@ -7,7 +7,7 @@
 #include <linuxdeploy/core/appdir.h>
 
 // local headers
-#include "plugin_deployer.h"
+#include "PluginsDeployer.h"
 
 
 namespace linuxdeploy {
@@ -16,7 +16,7 @@ namespace linuxdeploy {
             /**
              *
              */
-            class BasicPluginDeployer : public PluginDeployer {
+            class BasicPluginDeployer : public PluginsDeployer {
             protected:
                 std::string moduleName;
                 core::appdir::AppDir& appDir;

@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.1)
 
 set(CLASSES
-    plugin_deployer
+    PluginsDeployer
+    PluginsDeployerFactory
     basic_plugin_deployer
-    plugin_deployer_factory
     platform_plugins_deployer
 )
 

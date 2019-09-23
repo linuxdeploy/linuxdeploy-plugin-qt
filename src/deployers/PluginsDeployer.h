@@ -8,7 +8,7 @@ namespace linuxdeploy {
             /**
              * Interface for deployer classes.
              */
-            class PluginDeployer {
+            class PluginsDeployer {
             public:
                 virtual bool deploy() = 0;
             };
