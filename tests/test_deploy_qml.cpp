@@ -86,6 +86,10 @@ namespace linuxdeploy {
 
                 TEST_F(TestDeployQml, deploy_qml_imports) {
                     linuxdeploy::core::appdir::AppDir appDir(appDirPath);
+
+                    // speed up test runs; we don't check for the copyright files anyway
+                    appDir.setDisableCopyrightFilesDeployment(true);
+
                     deployQml(appDir, defaultQmlImportPath);
                     appDir.executeDeferredOperations();
 
