@@ -19,7 +19,7 @@ using namespace linuxdeploy::util::misc;
 using namespace linuxdeploy::core::log;
 
 // little helper called by other integration plugins
-bool deployIntegrationPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath, const std::initializer_list<bf::path>& subDirs) {
+inline bool deployIntegrationPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath, const std::initializer_list<bf::path>& subDirs) {
     for (const bf::path& subDir : subDirs) {
         // make sure the path ends with a / so that liblinuxdeploy recognize the destination as a directory
         auto dir = qtPluginsPath / subDir / "/";
@@ -43,13 +43,7 @@ bool deployIntegrationPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsP
     return true;
 }
 
-bool deployXcbglIntegrationPlugins(appdir::AppDir& appDir, const bf::path& qtPluginsPath) {
-    ldLog() << "Deploying xcb-gl integrations" << std::endl;
-
-    return deployIntegrationPlugins(appDir, qtPluginsPath, {"xcbglintegrations/"});
-}
-
-bool deploySvgPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
+inline bool deploySvgPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
     ldLog() << "Deploying svg icon engine" << std::endl;
 
     if (!appDir.deployLibrary(qtPluginsPath / "iconengines/libqsvgicon.so", appDir.path() / "usr/plugins/iconengines/"))
@@ -58,7 +52,7 @@ bool deploySvgPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
     return true;
 }
 
-bool deployBearerPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
+inline bool deployBearerPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
     ldLog() << "Deploying bearer plugins" << std::endl;
 
     for (bf::directory_iterator i(qtPluginsPath / "bearer"); i != bf::directory_iterator(); ++i) {
@@ -69,7 +63,7 @@ bool deployBearerPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) 
     return true;
 }
 
-bool deploySqlPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
+inline bool deploySqlPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
     ldLog() << "Deploying SQL plugins" << std::endl;
 
     for (bf::directory_iterator i(qtPluginsPath / "sqldrivers"); i != bf::directory_iterator(); ++i) {
@@ -80,7 +74,7 @@ bool deploySqlPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
     return true;
 }
 
-bool deployPositioningPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
+inline bool deployPositioningPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
     ldLog() << "Deploying positioning plugins" << std::endl;
 
     for (bf::directory_iterator i(qtPluginsPath / "position"); i != bf::directory_iterator(); ++i) {
@@ -91,7 +85,7 @@ bool deployPositioningPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsP
     return true;
 }
 
-bool deployMultimediaPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
+inline bool deployMultimediaPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
     ldLog() << "Deploying mediaservice plugins" << std::endl;
 
     for (bf::directory_iterator i(qtPluginsPath / "mediaservice"); i != bf::directory_iterator(); ++i) {
@@ -109,7 +103,7 @@ bool deployMultimediaPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPa
     return true;
 }
 
-bool deployWebEnginePlugins(appdir::AppDir &appDir, const bf::path &qtLibexecsPath, const bf::path &qtDataPath,
+inline bool deployWebEnginePlugins(appdir::AppDir &appDir, const bf::path &qtLibexecsPath, const bf::path &qtDataPath,
                             const bf::path &qtTranslationsPath) {
     ldLog() << "Deploying web engine plugins" << std::endl;
 
@@ -164,7 +158,7 @@ bool deployWebEnginePlugins(appdir::AppDir &appDir, const bf::path &qtLibexecsPa
     return true;
 }
 
-bool deploy3DPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
+inline bool deploy3DPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
     ldLog() << "Deploying Qt 3D plugins" << std::endl;
 
     for (bf::directory_iterator i(qtPluginsPath / "geometryloaders"); i != bf::directory_iterator(); ++i) {
@@ -180,7 +174,7 @@ bool deploy3DPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
     return true;
 }
 
-bool deployGamepadPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
+inline bool deployGamepadPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath) {
     ldLog() << "Deploying Gamepad plugins" << std::endl;
 
     for (bf::directory_iterator i(qtPluginsPath / "gamepads"); i != bf::directory_iterator(); ++i) {
@@ -191,7 +185,7 @@ bool deployGamepadPlugins(appdir::AppDir &appDir, const bf::path &qtPluginsPath)
     return true;
 }
 
-bool createQtConf(appdir::AppDir &appDir) {
+inline bool createQtConf(appdir::AppDir &appDir) {
     auto qtConfPath = appDir.path() / "usr" / "bin" / "qt.conf";
 
     if (bf::is_regular_file(qtConfPath)) {
@@ -217,7 +211,7 @@ bool createQtConf(appdir::AppDir &appDir) {
     return true;
 }
 
-bool createAppRunHook(appdir::AppDir &appDir) {
+inline bool createAppRunHook(appdir::AppDir &appDir) {
     auto hookPath = appDir.path() / "apprun-hooks" / "linuxdeploy-plugin-qt-hook.sh";
 
     try {
@@ -254,7 +248,7 @@ bool createAppRunHook(appdir::AppDir &appDir) {
     return true;
 }
 
-bool
+inline bool
 deployTranslations(appdir::AppDir &appDir, const bf::path &qtTranslationsPath, const std::vector<QtModule> &modules) {
     if (qtTranslationsPath.empty() || !bf::is_directory(qtTranslationsPath)) {
         ldLog() << LD_WARNING << "Translation directory does not exist, skipping deployment";
@@ -304,7 +298,7 @@ deployTranslations(appdir::AppDir &appDir, const bf::path &qtTranslationsPath, c
     return true;
 }
 
-bool deployQmlFiles(appdir::AppDir &appDir, const bf::path &installLibsPath) {
+inline bool deployQmlFiles(appdir::AppDir &appDir, const bf::path &installLibsPath) {
     try {
         deployQml(appDir, installLibsPath);
     } catch (const QmlImportScannerError &) {
