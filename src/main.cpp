@@ -218,7 +218,8 @@ int main(const int argc, const char *const *const argv) {
     std::copy(extraQtModules.begin(), extraQtModules.end(), std::back_inserter(qtModulesToDeploy));
 
     for (const auto &module : qtModulesToDeploy) {
-        ldLog() << std::endl << "-- Deploying module:" << module.name << "--" << std::endl;
+        auto deployer = PluginDeployerFactory::getInstance(module.name);
+        deployer->deploy();
 
         if (module.name == "gui") {
             if (!deployPlatformPlugins(appDir, qtPluginsPath))
