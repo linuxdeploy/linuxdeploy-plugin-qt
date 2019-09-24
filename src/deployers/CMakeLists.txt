@@ -7,6 +7,15 @@ set(CLASSES
 
     PlatformPluginsDeployer
     XcbglIntegrationPluginsDeployer
+    BearerPluginsDeployer
+    SvgPluginsDeployer
+    SqlPluginsDeployer
+    PositioningPluginsDeployer
+    MultimediaPluginsDeployer
+    WebEnginePluginsDeployer
+    QmlPluginsDeployer
+    Qt3DPluginsDeployer
+    GamepadPluginsDeployer
 )
 
 add_library(deployers OBJECT)

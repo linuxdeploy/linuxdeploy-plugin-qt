@@ -226,55 +226,11 @@ int main(const int argc, const char *const *const argv) {
         qtDataPath
     );
 
-    for (const auto &module : qtModulesToDeploy) {
+    for (const auto& module : qtModulesToDeploy) {
         auto deployer = deployerFactory.getInstance(module.name);
 
-        if (!deployer->deploy())
+        if (!deployer->deploy()) {
             return 1;
-
-        if (module.name == "network") {
-            if (!deployBearerPlugins(appDir, qtPluginsPath))
-                return 1;
-        }
-
-        if (module.name == "svg") {
-            if (!deploySvgPlugins(appDir, qtPluginsPath))
-                return 1;
-        }
-
-        if (module.name == "sql") {
-            if (!deploySqlPlugins(appDir, qtPluginsPath))
-                return 1;
-        }
-
-        if (module.name == "positioning") {
-            if (!deployPositioningPlugins(appDir, qtPluginsPath))
-                return 1;
-        }
-
-        if (module.name == "multimedia") {
-            if (!deployMultimediaPlugins(appDir, qtPluginsPath))
-                return 1;
-        }
-
-        if (module.name == "webenginecore") {
-            if (!deployWebEnginePlugins(appDir, qtLibexecsPath, qtDataPath, qtTranslationsPath))
-                return 1;
-        }
-
-        if (module.name == "qml") {
-            if (!deployQmlFiles(appDir, qtInstallQmlPath))
-                return 1;
-        }
-
-        if (module.name == "3dquickrender") {
-            if (!deploy3DPlugins(appDir, qtPluginsPath))
-                return 1;
-        }
-
-        if (module.name == "gamepad") {
-            if (!deployGamepadPlugins(appDir, qtPluginsPath))
-                return 1;
         }
     }
 
