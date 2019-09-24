@@ -227,6 +227,8 @@ int main(const int argc, const char *const *const argv) {
     );
 
     for (const auto& module : qtModulesToDeploy) {
+        ldLog() << std::endl << "-- Deploying module:" << module.name << "--" << std::endl;
+
         auto deployer = deployerFactory.getInstance(module.name);
 
         if (!deployer->deploy()) {

@@ -27,6 +27,7 @@ BasicPluginsDeployer::BasicPluginsDeployer(std::string moduleName,
                                                                   qtDataPath(std::move(qtDataPath)) {}
 
 bool BasicPluginsDeployer::deploy() {
-    ldLog() << std::endl << "-- Deploying module:" << moduleName << "--" << std::endl;
+    // currently this is a no-op, but we might add more functionality later on, such as some kinds of default
+    // attempts to copy data based on the moduleName
     return true;
 }

@@ -12,6 +12,7 @@ using namespace linuxdeploy::core::log;
 namespace bf = boost::filesystem;
 
 bool WebEnginePluginsDeployer::deploy() {
+    // calling the default code is optional, but it won't hurt for now
     if (!BasicPluginsDeployer::deploy())
         return false;
 

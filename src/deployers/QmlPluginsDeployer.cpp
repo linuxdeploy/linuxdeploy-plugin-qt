@@ -9,6 +9,7 @@ using namespace linuxdeploy::plugin::qt;
 namespace bf = boost::filesystem;
 
 bool QmlPluginsDeployer::deploy() {
+    // calling the default code is optional, but it won't hurt for now
     if (!BasicPluginsDeployer::deploy())
         return false;
 
