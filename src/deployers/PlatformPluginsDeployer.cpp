@@ -1,6 +1,5 @@
 // library headers
 #include <linuxdeploy/core/log.h>
-#include <linuxdeploy/core/appdir.h>
 #include <boost/filesystem.hpp>
 
 // local headers
