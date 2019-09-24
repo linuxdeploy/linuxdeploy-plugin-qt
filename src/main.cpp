@@ -217,7 +217,14 @@ int main(const int argc, const char *const *const argv) {
     qtModulesToDeploy.reserve(extraQtModules.size());
     std::copy(extraQtModules.begin(), extraQtModules.end(), std::back_inserter(qtModulesToDeploy));
 
-    PluginsDeployerFactory deployerFactory(appDir, qtPluginsPath);
+    PluginsDeployerFactory deployerFactory(
+        appDir,
+        qtPluginsPath,
+        qtLibexecsPath,
+        qtInstallQmlPath,
+        qtTranslationsPath,
+        qtDataPath
+    );
 
     for (const auto &module : qtModulesToDeploy) {
         auto deployer = deployerFactory.getInstance(module.name);
