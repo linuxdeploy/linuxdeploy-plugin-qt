@@ -56,4 +56,4 @@ sed -i 's|AI\x02|\x00\x00\x00|' *.AppImage
     -e "$strip_path" \
     --output appimage
 
-mv linuxdeploy-plugin-qt-"$ARCH".AppImage "$OLD_CWD"/
+mv linuxdeploy-plugin-qt-"$ARCH".AppImage* "$OLD_CWD"/
