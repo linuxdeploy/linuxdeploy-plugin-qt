@@ -70,4 +70,4 @@ chmod +x linuxdeploy*.AppImage
     -e "$strip_path" \
     --output appimage
 
-mv linuxdeploy-plugin-qt-"$ARCH".AppImage "$OLD_CWD"/
+mv linuxdeploy-plugin-qt-"$ARCH".AppImage* "$OLD_CWD"/
