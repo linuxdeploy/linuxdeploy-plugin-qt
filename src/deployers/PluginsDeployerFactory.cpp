@@ -11,6 +11,7 @@
 #include "SqlPluginsDeployer.h"
 #include "SvgPluginsDeployer.h"
 #include "WebEnginePluginsDeployer.h"
+#include "XcbglIntegrationPluginsDeployer.h"
 
 using namespace linuxdeploy::plugin::qt;
 using namespace linuxdeploy::core::appdir;
@@ -34,7 +35,7 @@ std::shared_ptr<PluginsDeployer> PluginsDeployerFactory::getInstance(const std::
     }
 
     if (moduleName == "opengl" || moduleName == "gui" || moduleName == "xcbqpa") {
-        return getInstance<PlatformPluginsDeployer>(moduleName);
+        return getInstance<XcbglIntegrationPluginsDeployer>(moduleName);
     }
 
     if (moduleName == "network") {
