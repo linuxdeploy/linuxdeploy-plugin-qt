@@ -29,51 +29,51 @@ PluginsDeployerFactory::PluginsDeployerFactory(AppDir& appDir,
                                                                       qtTranslationsPath(std::move(qtTranslationsPath)),
                                                                       qtDataPath(std::move(qtDataPath)) {}
 
-std::shared_ptr<PluginsDeployer> PluginsDeployerFactory::getInstance(const std::string& moduleName) {
+std::vector<std::shared_ptr<PluginsDeployer>> PluginsDeployerFactory::getDeployers(const std::string& moduleName) {
     if (moduleName == "gui") {
-        return getInstance<PlatformPluginsDeployer>(moduleName);
+        return {getInstance<PlatformPluginsDeployer>(moduleName), getInstance<XcbglIntegrationPluginsDeployer>(moduleName)};
     }
 
-    if (moduleName == "opengl" || moduleName == "gui" || moduleName == "xcbqpa") {
-        return getInstance<XcbglIntegrationPluginsDeployer>(moduleName);
+    if (moduleName == "opengl" || moduleName == "xcbqpa") {
+        return {getInstance<XcbglIntegrationPluginsDeployer>(moduleName)};
     }
 
     if (moduleName == "network") {
-        return getInstance<BearerPluginsDeployer>(moduleName);
+        return {getInstance<BearerPluginsDeployer>(moduleName)};
     }
 
     if (moduleName == "svg") {
-        return getInstance<SvgPluginsDeployer>(moduleName);
+        return {getInstance<SvgPluginsDeployer>(moduleName)};
     }
 
     if (moduleName == "sql") {
-        return getInstance<SqlPluginsDeployer>(moduleName);
+        return {getInstance<SqlPluginsDeployer>(moduleName)};
     }
 
     if (moduleName == "positioning") {
-        return getInstance<PositioningPluginsDeployer>(moduleName);
+        return {getInstance<PositioningPluginsDeployer>(moduleName)};
     }
 
     if (moduleName == "multimedia") {
-        return getInstance<MultimediaPluginsDeployer>(moduleName);
+        return {getInstance<MultimediaPluginsDeployer>(moduleName)};
     }
 
     if (moduleName == "webenginecore") {
-        return getInstance<WebEnginePluginsDeployer>(moduleName);
+        return {getInstance<WebEnginePluginsDeployer>(moduleName)};
     }
 
     if (moduleName == "qml") {
-        return getInstance<QmlPluginsDeployer>(moduleName);
+        return {getInstance<QmlPluginsDeployer>(moduleName)};
     }
 
     if (moduleName == "3dquickrender") {
-        return getInstance<Qt3DPluginsDeployer>(moduleName);
+        return {getInstance<Qt3DPluginsDeployer>(moduleName)};
     }
 
     if (moduleName == "gamepad") {
-        return getInstance<GamepadPluginsDeployer>(moduleName);
+        return {getInstance<GamepadPluginsDeployer>(moduleName)};
     }
 
     // fallback
-    return getInstance<BasicPluginsDeployer>(moduleName);
+    return {getInstance<BasicPluginsDeployer>(moduleName)};
 }
