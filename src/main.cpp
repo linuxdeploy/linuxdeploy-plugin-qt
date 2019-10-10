@@ -229,11 +229,11 @@ int main(const int argc, const char *const *const argv) {
     for (const auto& module : qtModulesToDeploy) {
         ldLog() << std::endl << "-- Deploying module:" << module.name << "--" << std::endl;
 
-        auto deployer = deployerFactory.getInstance(module.name);
+        auto deployers = deployerFactory.getDeployers(module.name);
 
-        if (!deployer->deploy()) {
-            return 1;
-        }
+        for (const auto& deployer : deployers)
+            if (!deployer->deploy())
+                return 1;
     }
 
     ldLog() << std::endl << "-- Deploying translations --" << std::endl;

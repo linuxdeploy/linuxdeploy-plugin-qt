@@ -47,7 +47,7 @@ namespace linuxdeploy {
                                                 boost::filesystem::path qtTranslationsPath,
                                                 boost::filesystem::path qtDataPath);
 
-                std::shared_ptr<PluginsDeployer> getInstance(const std::string& moduleName);
+                std::vector<std::shared_ptr<PluginsDeployer>> getDeployers(const std::string& moduleName);
             };
         }
     }
