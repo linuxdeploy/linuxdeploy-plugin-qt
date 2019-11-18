@@ -18,7 +18,8 @@ set(CLASSES
     GamepadPluginsDeployer
 )
 
-add_library(deployers OBJECT)
+# TODO: CMake <= 3.7 (at least!) doesn't allow for using OBJECT libraries with target_link_libraries
+add_library(deployers STATIC)
 
 target_link_libraries(deployers PUBLIC linuxdeploy_core linuxdeploy-plugin-qt_util)
 

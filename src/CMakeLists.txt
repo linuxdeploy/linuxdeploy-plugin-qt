@@ -1,4 +1,5 @@
-add_library(linuxdeploy-plugin-qt_util OBJECT util.cpp util.h)
+# TODO: CMake <= 3.7 (at least!) doesn't allow for using OBJECT libraries with target_link_libraries
+add_library(linuxdeploy-plugin-qt_util STATIC util.cpp util.h)
 target_include_directories(linuxdeploy-plugin-qt_util PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(linuxdeploy-plugin-qt_util linuxdeploy_core args)
 
