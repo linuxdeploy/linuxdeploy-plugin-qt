@@ -1,3 +1,6 @@
+// library headers
+#include <linuxdeploy/util/util.h>
+
 // local headers
 #include "util.h"
 
@@ -17,28 +20,6 @@ procOutput check_command(const std::vector<std::string> &args) {
 
     int returnCode = proc.retcode();
     return {returnCode == 0, returnCode, out, err};
-}
-
-boost::filesystem::path which(const std::string &name) {
-    subprocess::Popen proc({"which", name.c_str()}, subprocess::output(subprocess::PIPE));
-    auto output = proc.communicate();
-
-    using namespace linuxdeploy::core::log;
-
-    ldLog() << LD_DEBUG << "Calling 'which" << name << LD_NO_SPACE << "'" << std::endl;
-
-    if (proc.retcode() != 0) {
-        ldLog() << LD_DEBUG << "which call failed, exit code:" << proc.retcode() << std::endl;
-        return "";
-    }
-
-    std::string path = output.first.buf.data();
-
-    while (path.back() == '\n') {
-        path.erase(path.end() - 1, path.end());
-    }
-
-    return path;
 }
 
 std::map<std::string, std::string> queryQmake(const boost::filesystem::path& qmakePath) {
@@ -95,10 +76,10 @@ boost::filesystem::path findQmake() {
         ldLog() << "Using user specified qmake:" << qmakePath << std::endl;
     } else {
         // search for qmake
-        qmakePath = which("qmake-qt5");
+        qmakePath = linuxdeploy::util::which("qmake-qt5");
 
         if (qmakePath.empty())
-            qmakePath = which("qmake");
+            qmakePath = linuxdeploy::util::which("qmake");
     }
 
     return qmakePath;

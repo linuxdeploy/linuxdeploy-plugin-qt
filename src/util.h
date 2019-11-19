@@ -22,8 +22,6 @@ typedef struct {
 
 procOutput check_command(const std::vector<std::string> &args);
 
-boost::filesystem::path which(const std::string &name);
-
 template<typename Iter>
 std::string join(Iter beg, Iter end) {
     std::stringstream rv;
