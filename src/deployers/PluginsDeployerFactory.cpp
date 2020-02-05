@@ -5,6 +5,7 @@
 #include "BearerPluginsDeployer.h"
 #include "GamepadPluginsDeployer.h"
 #include "MultimediaPluginsDeployer.h"
+#include "PrintSupportPluginsDeployer.h"
 #include "PositioningPluginsDeployer.h"
 #include "QmlPluginsDeployer.h"
 #include "Qt3DPluginsDeployer.h"
@@ -72,6 +73,10 @@ std::vector<std::shared_ptr<PluginsDeployer>> PluginsDeployerFactory::getDeploye
 
     if (moduleName == "gamepad") {
         return {getInstance<GamepadPluginsDeployer>(moduleName)};
+    }
+
+    if (moduleName == "printsupport") {
+        return {getInstance<PrintSupportPluginsDeployer>(moduleName)};
     }
 
     // fallback
