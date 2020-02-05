@@ -21,4 +21,6 @@ bool PrintSupportPluginsDeployer::deploy() {
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/printsupport/"))
             return false;
     }
+
+    return true;
 }
