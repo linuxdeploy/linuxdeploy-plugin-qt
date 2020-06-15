@@ -11,6 +11,7 @@
 #include "Qt3DPluginsDeployer.h"
 #include "SqlPluginsDeployer.h"
 #include "SvgPluginsDeployer.h"
+#include "TextToSpeechPluginsDeployer.h"
 #include "WebEnginePluginsDeployer.h"
 #include "XcbglIntegrationPluginsDeployer.h"
 
@@ -77,6 +78,10 @@ std::vector<std::shared_ptr<PluginsDeployer>> PluginsDeployerFactory::getDeploye
 
     if (moduleName == "printsupport") {
         return {getInstance<PrintSupportPluginsDeployer>(moduleName)};
+    }
+
+    if (moduleName == "texttospeech") {
+        return {getInstance<TextToSpeechPluginsDeployer>(moduleName)};
     }
 
     // fallback

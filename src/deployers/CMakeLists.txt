@@ -17,6 +17,7 @@ set(CLASSES
     Qt3DPluginsDeployer
     GamepadPluginsDeployer
     PrintSupportPluginsDeployer
+    TextToSpeechPluginsDeployer
 )
 
 # TODO: CMake <= 3.7 (at least!) doesn't allow for using OBJECT libraries with target_link_libraries
