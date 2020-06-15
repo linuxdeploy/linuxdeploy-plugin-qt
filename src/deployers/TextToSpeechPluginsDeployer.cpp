@@ -25,7 +25,10 @@ bool TextToSpeechPluginsDeployer::deploy() {
             continue;
         }
 
-        if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/" / pluginsName))
+        // terminate with a "/" to make sure the deployer will deploy the file into the target directory properly
+        // has to be cast to string, unfortunately, as boost::filesystem doesn't allow for adding a terminating /
+        const auto targetPath = (appDir.path() / "usr/plugins/" / pluginsName).string() + "/";
+        if (!appDir.deployLibrary(*i, targetPath))
             return false;
     }
 
