@@ -173,7 +173,8 @@ void deployQml(appdir::AppDir &appDir, const boost::filesystem::path &installQml
                     const auto &entry = *i;
 
                     if (!bf::is_directory(entry)) {
-                        auto relativeFilePath = qmlImport.relativePath / bf::relative(entry.path(), qmlImport.path);
+                        // lexically relative doesn't resolve symlinks, so the paths stay correct
+                        auto relativeFilePath = qmlImport.relativePath / entry.path().lexically_relative(qmlImport.path);
                         try {
                             elf::ElfFile file(entry.path());
                             appDir.deployLibrary(entry.path(), targetQmlModulesPath / relativeFilePath);
