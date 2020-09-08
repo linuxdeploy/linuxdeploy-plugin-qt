@@ -68,7 +68,7 @@ std::vector<std::shared_ptr<PluginsDeployer>> PluginsDeployerFactory::getDeploye
         return {getInstance<QmlPluginsDeployer>(moduleName)};
     }
 
-    if (moduleName == "3dquickrender") {
+    if (moduleName == "3dquickrender" || moduleName == "3drender") {
         return {getInstance<Qt3DPluginsDeployer>(moduleName)};
     }
 
