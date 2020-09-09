@@ -23,6 +23,7 @@ static const std::vector<QtModule> QtModules = {
     {"3dextras", "libQt53DExtras", ""},
     {"3dinput", "libQt53DInput", ""},
     {"3dlogic", "libQt53DLogic", ""},
+    {"3drender", "libQt53DRender", ""},
     {"3dquickanimation", "libQt53DQuickAnimation", ""},
     {"3dquickextras", "libQt53DQuickExtras", ""},
     {"3dquickinput", "libQt53DQuickInput", ""},
