@@ -112,7 +112,7 @@ std::vector<QmlModuleImport> getQmlImports(const bf::path &projectRootPath, cons
     std::vector<QmlModuleImport> moduleImports;
 
     auto qmlImportPaths = getExtraQmlModulesPaths();
-    qmlImportPaths.emplace_back(installQmlPath);
+    qmlImportPaths.emplace(qmlImportPaths.begin(), installQmlPath);
     ldLog() << "QML imports search path: ";
     for (const auto& path : qmlImportPaths)
         ldLog() << " " << path;
