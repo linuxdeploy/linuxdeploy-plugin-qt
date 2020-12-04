@@ -1,4 +1,4 @@
-FROM i386/centos:6
+FROM i386/centos:7
 
 SHELL ["/bin/bash", "-x", "-c"]
 
@@ -9,8 +9,8 @@ RUN sed -i 's/$basearch/i386/g' /etc/yum.repos.d/CentOS-Base.repo
 # thanks CloudLinux, you're really helping us poor AppImage creators seeking for maximum compatibility by providing devtoolset i386 builds
 RUN yum install -y yum-utils && \
     rpm --import https://repo.cloudlinux.com/cloudlinux/security/RPM-GPG-KEY-CloudLinux && \
-    yum-config-manager --add-repo https://www.repo.cloudlinux.com/cloudlinux/6/sclo/devtoolset-7/i386/ && \
-    yum install -y devtoolset-7 wget curl patchelf vim-common fuse libfuse2 libtool autoconf automake zlib-devel libjpeg-devel libpng-devel nano git
+    yum-config-manager --add-repo https://www.repo.cloudlinux.com/cloudlinux/7/sclo/devtoolset-9/i386/ && \
+    yum install -y devtoolset-9 wget curl patchelf vim-common fuse libfuse2 libtool autoconf automake zlib-evel libjpeg-devel libpng-devel nano git make file gcc-c++
 
 # the shell wrapper takes care of enabling devtoolset and running a shell properly
 # unfortunately this is the easiest and most solid workaround to the limitations of the scl command
