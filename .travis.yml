@@ -3,11 +3,11 @@ dist: xenial
 
 matrix:
   include:
-    - name: Build x86_64 AppImage on CentOS 6
+    - name: Build x86_64 AppImage on CentOS 7
       services:
         - docker
-      env: ARCH=x86_64 BUILD_TYPE=centos6
-      script: travis/build-centos6-docker.sh
+      env: ARCH=x86_64 BUILD_TYPE=centos7
+      script: travis/build-centos7-docker.sh
       after_success:
         - ls -lh
         # make sure only pushes to rewrite create a new release, otherwise pretend PR and upload to transfer.sh
@@ -15,11 +15,11 @@ matrix:
         - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
         - bash upload.sh linuxdeploy*.AppImage*
 
-    - name: Build i386 AppImage on CentOS 6
+    - name: Build i386 AppImage on CentOS 7
       services:
         - docker
-      env: ARCH=i386 BUILD_TYPE=centos6
-      script: travis/build-centos6-docker.sh
+      env: ARCH=i386 BUILD_TYPE=centos7
+      script: travis/build-centos7-docker.sh
       after_success:
         - ls -lh
         # make sure only pushes to rewrite create a new release, otherwise pretend PR and upload to transfer.sh
