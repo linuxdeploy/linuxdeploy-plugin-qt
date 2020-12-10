@@ -1,0 +1,99 @@
+name: CI
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  appimage-x86_64:
+    name: Build x86_64 AppImage on CentOS 7
+    runs-on: ubuntu-latest
+    env:
+      ARCH: x86_64
+      BUILD_TYPE: centos7
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Build AppImage in CentOS 7
+        run: ci/build-centos7-docker.sh
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: AppImage x86_64
+          path: linuxdeploy-plugin-qt*.AppImage*
+
+  appimage-i386:
+    name: Build i386 AppImage on CentOS 7
+    runs-on: ubuntu-latest
+    env:
+      ARCH: i386
+      BUILD_TYPE: centos7
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Build AppImage in CentOS 7
+        run: ci/build-centos7-docker.sh
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: AppImage i386
+          path: linuxdeploy-plugin-qt*.AppImage*
+
+  # TODO: build and test on i386 as well!
+  build-text-xenial-x86_64:
+    name: Build and test on Ubuntu xenial x86_64 (no binaries uploaded)
+    runs-on: ubuntu-16.04
+    env:
+      ARCH: x86_64
+      BUILD_TYPE: test
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Install dependencies
+        run: bash ci/install-dependencies.sh
+      - name: Build and install patchelf
+        run: bash -ex ci/install-patchelf.sh
+      - name: Build and test AppImage
+        run: |
+          bash -ex ci/build.sh
+          bash -xe ci/test.sh linuxdeploy-plugin-qt-"$ARCH".AppImage
+
+  # TODO: build and test on i386 as well!
+  build-text-bionic-x86_64:
+    name: Build and test on Ubuntu bionic x86_64 (no binaries uploaded)
+    runs-on: ubuntu-18.04
+    env:
+      ARCH: x86_64
+      BUILD_TYPE: test
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Install dependencies
+        run: bash ci/install-dependencies.sh
+      - name: Build and install patchelf
+        run: bash -ex ci/install-patchelf.sh
+      - name: Build and test AppImage
+        run: |
+          bash -ex ci/build.sh
+          bash -xe ci/test.sh linuxdeploy-plugin-qt-"$ARCH".AppImage
+
+  upload:
+    name: Create release and upload artifacts
+    needs:
+      - appimage-x86_64
+      - appimage-i386
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+      - name: Inspect directory after downloading artifacts
+        run: ls -alFR
+      - name: Create release and upload artifacts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+            wget -q https://github.com/TheAssassin/pyuploadtool/releases/download/continuous/pyuploadtool-x86_64.AppImage
+            chmod +x pyuploadtool-x86_64.AppImage
+            ./pyuploadtool-x86_64.AppImage **/linuxdeploy-plugin-qt*.AppImage*
