@@ -69,6 +69,22 @@ int main(const int argc, const char *const *const argv) {
         ldLog() << LD_ERROR << "No such directory:" << appDirPath.Get() << std::endl;
         return 1;
     }
+    
+    int qtMajorVersion = 5;
+    auto qtMajorVersionStr = getenv("QT_MAJOR_VERSION");
+    if (qtMajorVersionStr != nullptr) {
+        qtMajorVersion = atoi(qtMajorVersionStr);
+        if (qtMajorVersion < 5) {
+            ldLog() << std::endl << LD_WARNING << "Minimum Qt version supported is 5" << std::endl;
+            qtMajorVersion = 5;
+        }
+        else if (qtMajorVersion > 6) {
+            ldLog() << std::endl << LD_WARNING << "Maximum Qt version supported is 6" << std::endl;
+            qtMajorVersion = 6;
+        }
+    }
+
+    ldLog() << std::endl << "Using Qt" << qtMajorVersion << std::endl;
 
     appdir::AppDir appDir(appDirPath.Get());
 
@@ -125,7 +141,9 @@ int main(const int argc, const char *const *const argv) {
         return false;
     };
 
-    std::copy_if(QtModules.begin(), QtModules.end(), std::back_inserter(foundQtModules),
+    const std::vector<QtModule> *qtmodules = qtMajorVersion == 6 ? &Qt6Modules : &Qt5Modules;
+
+    std::copy_if(qtmodules->begin(), qtmodules->end(), std::back_inserter(foundQtModules),
                  [&matchesQtModule, &libraryNames](const QtModule &module) {
                      return std::find_if(libraryNames.begin(), libraryNames.end(),
                                          [&matchesQtModule, &module](const std::string &libraryName) {
@@ -139,7 +157,7 @@ int main(const int argc, const char *const *const argv) {
         extraPluginsFromEnv = linuxdeploy::util::split(std::string(extraPluginsFromEnvData), ';');
 
     for (const auto& pluginsList : {static_cast<std::vector<std::string>>(extraPlugins.Get()), extraPluginsFromEnv}) {
-        std::copy_if(QtModules.begin(), QtModules.end(), std::back_inserter(extraQtModules),
+        std::copy_if(qtmodules->begin(), qtmodules->end(), std::back_inserter(extraQtModules),
             [&matchesQtModule, &libraryNames, &pluginsList](const QtModule &module) {
                 return std::find_if(pluginsList.begin(), pluginsList.end(),
                     [&matchesQtModule, &module](const std::string &libraryName) {
@@ -223,7 +241,8 @@ int main(const int argc, const char *const *const argv) {
         qtLibexecsPath,
         qtInstallQmlPath,
         qtTranslationsPath,
-        qtDataPath
+        qtDataPath,
+        qtMajorVersion
     );
 
     for (const auto& module : qtModulesToDeploy) {
