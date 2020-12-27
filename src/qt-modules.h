@@ -166,3 +166,15 @@ static const std::vector<QtModule> Qt6Modules = {
     */
    
 };
+
+static const std::vector<QtModule> EmptyQtModules = {};
+
+inline const std::vector<QtModule>& getQtModules(const int version) {
+    if (version == 5) {
+        return Qt5Modules;
+    }
+    else if (version == 6) {
+        return Qt6Modules;
+    }
+    return EmptyQtModules;
+}

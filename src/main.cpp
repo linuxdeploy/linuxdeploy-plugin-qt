@@ -105,7 +105,7 @@ int main(const int argc, const char *const *const argv) {
         return 1;
     }
 
-    int qtMajorVersion = atoi(qtVersion.c_str());
+    int qtMajorVersion = std::stoi(qtVersion, nullptr, 10);
     if (qtMajorVersion < 5) {
         ldLog() << std::endl << LD_WARNING << "Minimum Qt version supported is 5" << std::endl;
         qtMajorVersion = 5;
@@ -172,9 +172,9 @@ int main(const int argc, const char *const *const argv) {
         return false;
     };
 
-    const std::vector<QtModule> *qtmodules = qtMajorVersion == 6 ? &Qt6Modules : &Qt5Modules;
+    const std::vector<QtModule>& qtmodules = getQtModules(qtMajorVersion);
 
-    std::copy_if(qtmodules->begin(), qtmodules->end(), std::back_inserter(foundQtModules),
+    std::copy_if(qtmodules.begin(), qtmodules.end(), std::back_inserter(foundQtModules),
                  [&matchesQtModule, &libraryNames](const QtModule &module) {
                      return std::find_if(libraryNames.begin(), libraryNames.end(),
                                          [&matchesQtModule, &module](const std::string &libraryName) {
@@ -188,7 +188,7 @@ int main(const int argc, const char *const *const argv) {
         extraPluginsFromEnv = linuxdeploy::util::split(std::string(extraPluginsFromEnvData), ';');
 
     for (const auto& pluginsList : {static_cast<std::vector<std::string>>(extraPlugins.Get()), extraPluginsFromEnv}) {
-        std::copy_if(qtmodules->begin(), qtmodules->end(), std::back_inserter(extraQtModules),
+        std::copy_if(qtmodules.begin(), qtmodules.end(), std::back_inserter(extraQtModules),
             [&matchesQtModule, &libraryNames, &pluginsList](const QtModule &module) {
                 return std::find_if(pluginsList.begin(), pluginsList.end(),
                     [&matchesQtModule, &module](const std::string &libraryName) {

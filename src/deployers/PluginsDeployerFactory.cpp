@@ -42,11 +42,7 @@ std::vector<std::shared_ptr<PluginsDeployer>> PluginsDeployerFactory::getDeploye
         return {getInstance<XcbglIntegrationPluginsDeployer>(moduleName)};
     }
 
-    if (moduleName == "network") {
-        if (qtMajorVersion == 6) {
-            // Qt6 has no bearer plugin.
-            return {getInstance<BasicPluginsDeployer>(moduleName)};
-        }
+    if (moduleName == "network" && qtMajorVersion < 6) {
         return {getInstance<BearerPluginsDeployer>(moduleName)};
     }
 
