@@ -2,6 +2,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include <stdexcept>
 
 #pragma once
 
@@ -167,8 +168,6 @@ static const std::vector<QtModule> Qt6Modules = {
    
 };
 
-static const std::vector<QtModule> EmptyQtModules = {};
-
 inline const std::vector<QtModule>& getQtModules(const int version) {
     if (version == 5) {
         return Qt5Modules;
@@ -176,5 +175,5 @@ inline const std::vector<QtModule>& getQtModules(const int version) {
     else if (version == 6) {
         return Qt6Modules;
     }
-    return EmptyQtModules;
+    throw std::runtime_error("Unknown Qt version: " + std::to_string(version));
 }
