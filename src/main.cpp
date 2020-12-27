@@ -69,22 +69,53 @@ int main(const int argc, const char *const *const argv) {
         ldLog() << LD_ERROR << "No such directory:" << appDirPath.Get() << std::endl;
         return 1;
     }
-    
-    int qtMajorVersion = 5;
-    auto qtMajorVersionStr = getenv("QT_MAJOR_VERSION");
-    if (qtMajorVersionStr != nullptr) {
-        qtMajorVersion = atoi(qtMajorVersionStr);
-        if (qtMajorVersion < 5) {
-            ldLog() << std::endl << LD_WARNING << "Minimum Qt version supported is 5" << std::endl;
-            qtMajorVersion = 5;
-        }
-        else if (qtMajorVersion > 6) {
-            ldLog() << std::endl << LD_WARNING << "Maximum Qt version supported is 6" << std::endl;
-            qtMajorVersion = 6;
-        }
+
+    auto qmakePath = findQmake();
+
+    if (qmakePath.empty()) {
+        ldLog() << LD_ERROR << "Could not find qmake, please install or provide path using $QMAKE" << std::endl;
+        return 1;
     }
 
-    ldLog() << std::endl << "Using Qt" << qtMajorVersion << std::endl;
+    if (!bf::exists(qmakePath)) {
+        ldLog() << LD_ERROR << "No such file or directory:" << qmakePath << std::endl;
+        return 1;
+    }
+    
+    ldLog() << "Using qmake:" << qmakePath << std::endl;
+
+    auto qmakeVars = queryQmake(qmakePath);
+
+    if (qmakeVars.empty()) {
+        ldLog() << LD_ERROR << "Failed to query Qt paths using qmake -query" << std::endl;
+        return 1;
+    }
+
+    const bf::path qtPluginsPath = qmakeVars["QT_INSTALL_PLUGINS"];
+    const bf::path qtLibexecsPath = qmakeVars["QT_INSTALL_LIBEXECS"];
+    const bf::path qtDataPath = qmakeVars["QT_INSTALL_DATA"];
+    const bf::path qtTranslationsPath = qmakeVars["QT_INSTALL_TRANSLATIONS"];
+    const bf::path qtBinsPath = qmakeVars["QT_INSTALL_BINS"];
+    const bf::path qtLibsPath = qmakeVars["QT_INSTALL_LIBS"];
+    const bf::path qtInstallQmlPath = qmakeVars["QT_INSTALL_QML"];
+    const std::string qtVersion = qmakeVars["QT_VERSION"];
+
+    if (qtVersion.empty()) {
+        ldLog() << LD_ERROR << "Failed to query QT_VERSION using qmake -query" << std::endl;
+        return 1;
+    }
+
+    int qtMajorVersion = atoi(qtVersion.c_str());
+    if (qtMajorVersion < 5) {
+        ldLog() << std::endl << LD_WARNING << "Minimum Qt version supported is 5" << std::endl;
+        qtMajorVersion = 5;
+    }
+    else if (qtMajorVersion > 6) {
+        ldLog() << std::endl << LD_WARNING << "Maximum Qt version supported is 6" << std::endl;
+        qtMajorVersion = 6;
+    }
+
+    ldLog() << std::endl << "Using Qt version: " << qtVersion << " (" << qtMajorVersion << ")" << std::endl;
 
     appdir::AppDir appDir(appDirPath.Get());
 
@@ -187,35 +218,6 @@ int main(const int argc, const char *const *const argv) {
         ldLog() << LD_ERROR << "Could not find Qt modules to deploy" << std::endl;
         return 1;
     }
-
-    auto qmakePath = findQmake();
-
-    if (qmakePath.empty()) {
-        ldLog() << LD_ERROR << "Could not find qmake, please install or provide path using $QMAKE" << std::endl;
-        return 1;
-    }
-
-    if (!bf::exists(qmakePath)) {
-        ldLog() << LD_ERROR << "No such file or directory:" << qmakePath << std::endl;
-        return 1;
-    }
-
-    ldLog() << "Using qmake:" << qmakePath << std::endl;
-
-    auto qmakeVars = queryQmake(qmakePath);
-
-    if (qmakeVars.empty()) {
-        ldLog() << LD_ERROR << "Failed to query Qt paths using qmake -query" << std::endl;
-        return 1;
-    }
-
-    const bf::path qtPluginsPath = qmakeVars["QT_INSTALL_PLUGINS"];
-    const bf::path qtLibexecsPath = qmakeVars["QT_INSTALL_LIBEXECS"];
-    const bf::path qtDataPath = qmakeVars["QT_INSTALL_DATA"];
-    const bf::path qtTranslationsPath = qmakeVars["QT_INSTALL_TRANSLATIONS"];
-    const bf::path qtBinsPath = qmakeVars["QT_INSTALL_BINS"];
-    const bf::path qtLibsPath = qmakeVars["QT_INSTALL_LIBS"];
-    const bf::path qtInstallQmlPath = qmakeVars["QT_INSTALL_QML"];
 
     ldLog() << std::endl;
     ldLog() << "QT_INSTALL_LIBS:" << qtLibsPath << std::endl;
