@@ -70,6 +70,53 @@ int main(const int argc, const char *const *const argv) {
         return 1;
     }
 
+    auto qmakePath = findQmake();
+
+    if (qmakePath.empty()) {
+        ldLog() << LD_ERROR << "Could not find qmake, please install or provide path using $QMAKE" << std::endl;
+        return 1;
+    }
+
+    if (!bf::exists(qmakePath)) {
+        ldLog() << LD_ERROR << "No such file or directory:" << qmakePath << std::endl;
+        return 1;
+    }
+    
+    ldLog() << "Using qmake:" << qmakePath << std::endl;
+
+    auto qmakeVars = queryQmake(qmakePath);
+
+    if (qmakeVars.empty()) {
+        ldLog() << LD_ERROR << "Failed to query Qt paths using qmake -query" << std::endl;
+        return 1;
+    }
+
+    const bf::path qtPluginsPath = qmakeVars["QT_INSTALL_PLUGINS"];
+    const bf::path qtLibexecsPath = qmakeVars["QT_INSTALL_LIBEXECS"];
+    const bf::path qtDataPath = qmakeVars["QT_INSTALL_DATA"];
+    const bf::path qtTranslationsPath = qmakeVars["QT_INSTALL_TRANSLATIONS"];
+    const bf::path qtBinsPath = qmakeVars["QT_INSTALL_BINS"];
+    const bf::path qtLibsPath = qmakeVars["QT_INSTALL_LIBS"];
+    const bf::path qtInstallQmlPath = qmakeVars["QT_INSTALL_QML"];
+    const std::string qtVersion = qmakeVars["QT_VERSION"];
+
+    if (qtVersion.empty()) {
+        ldLog() << LD_ERROR << "Failed to query QT_VERSION using qmake -query" << std::endl;
+        return 1;
+    }
+
+    int qtMajorVersion = std::stoi(qtVersion, nullptr, 10);
+    if (qtMajorVersion < 5) {
+        ldLog() << std::endl << LD_WARNING << "Minimum Qt version supported is 5" << std::endl;
+        qtMajorVersion = 5;
+    }
+    else if (qtMajorVersion > 6) {
+        ldLog() << std::endl << LD_WARNING << "Maximum Qt version supported is 6" << std::endl;
+        qtMajorVersion = 6;
+    }
+
+    ldLog() << std::endl << "Using Qt version: " << qtVersion << " (" << qtMajorVersion << ")" << std::endl;
+
     appdir::AppDir appDir(appDirPath.Get());
 
     // allow disabling copyright files deployment via environment variable
@@ -125,7 +172,9 @@ int main(const int argc, const char *const *const argv) {
         return false;
     };
 
-    std::copy_if(QtModules.begin(), QtModules.end(), std::back_inserter(foundQtModules),
+    const std::vector<QtModule>& qtModules = getQtModules(qtMajorVersion);
+
+    std::copy_if(qtModules.begin(), qtModules.end(), std::back_inserter(foundQtModules),
                  [&matchesQtModule, &libraryNames](const QtModule &module) {
                      return std::find_if(libraryNames.begin(), libraryNames.end(),
                                          [&matchesQtModule, &module](const std::string &libraryName) {
@@ -139,7 +188,7 @@ int main(const int argc, const char *const *const argv) {
         extraPluginsFromEnv = linuxdeploy::util::split(std::string(extraPluginsFromEnvData), ';');
 
     for (const auto& pluginsList : {static_cast<std::vector<std::string>>(extraPlugins.Get()), extraPluginsFromEnv}) {
-        std::copy_if(QtModules.begin(), QtModules.end(), std::back_inserter(extraQtModules),
+        std::copy_if(qtModules.begin(), qtModules.end(), std::back_inserter(extraQtModules),
             [&matchesQtModule, &libraryNames, &pluginsList](const QtModule &module) {
                 return std::find_if(pluginsList.begin(), pluginsList.end(),
                     [&matchesQtModule, &module](const std::string &libraryName) {
@@ -170,35 +219,6 @@ int main(const int argc, const char *const *const argv) {
         return 1;
     }
 
-    auto qmakePath = findQmake();
-
-    if (qmakePath.empty()) {
-        ldLog() << LD_ERROR << "Could not find qmake, please install or provide path using $QMAKE" << std::endl;
-        return 1;
-    }
-
-    if (!bf::exists(qmakePath)) {
-        ldLog() << LD_ERROR << "No such file or directory:" << qmakePath << std::endl;
-        return 1;
-    }
-
-    ldLog() << "Using qmake:" << qmakePath << std::endl;
-
-    auto qmakeVars = queryQmake(qmakePath);
-
-    if (qmakeVars.empty()) {
-        ldLog() << LD_ERROR << "Failed to query Qt paths using qmake -query" << std::endl;
-        return 1;
-    }
-
-    const bf::path qtPluginsPath = qmakeVars["QT_INSTALL_PLUGINS"];
-    const bf::path qtLibexecsPath = qmakeVars["QT_INSTALL_LIBEXECS"];
-    const bf::path qtDataPath = qmakeVars["QT_INSTALL_DATA"];
-    const bf::path qtTranslationsPath = qmakeVars["QT_INSTALL_TRANSLATIONS"];
-    const bf::path qtBinsPath = qmakeVars["QT_INSTALL_BINS"];
-    const bf::path qtLibsPath = qmakeVars["QT_INSTALL_LIBS"];
-    const bf::path qtInstallQmlPath = qmakeVars["QT_INSTALL_QML"];
-
     ldLog() << std::endl;
     ldLog() << "QT_INSTALL_LIBS:" << qtLibsPath << std::endl;
     std::ostringstream newLibraryPath;
@@ -223,7 +243,8 @@ int main(const int argc, const char *const *const argv) {
         qtLibexecsPath,
         qtInstallQmlPath,
         qtTranslationsPath,
-        qtDataPath
+        qtDataPath,
+        qtMajorVersion
     );
 
     for (const auto& module : qtModulesToDeploy) {

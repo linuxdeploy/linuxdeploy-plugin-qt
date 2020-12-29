@@ -2,6 +2,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include <stdexcept>
 
 #pragma once
 
@@ -17,7 +18,7 @@ class QtModule {
 };
 
 // TODO: the list of translation file prefixes is probably incomplete
-static const std::vector<QtModule> QtModules = {
+static const std::vector<QtModule> Qt5Modules = {
     {"3danimation", "libQt53DAnimation", ""},
     {"3dcore", "libQt53DCore", ""},
     {"3dextras", "libQt53DExtras", ""},
@@ -80,3 +81,99 @@ static const std::vector<QtModule> QtModules = {
     {"xmlpatterns", "libQt5XmlPatterns", "qtxmlpatterns"},
     {"xml", "libQt5Xml", "qtbase"},
 };
+
+static const std::vector<QtModule> Qt6Modules = {
+    {"concurrent", "libQt6Concurrent", "qtbase"},
+    {"core5compat", "libQt6Core5Compat", "qtbase"},
+    {"core", "libQt6Core", "qtbase"},
+    {"dbus", "libQt6DBus", ""},
+    {"designercomponents", "libQt6DesignerComponents", ""},
+    {"designer", "libQt6Designer", ""},
+    {"eglfsdeviceintegration", "libQt6EglFSDeviceIntegration", ""},
+    {"eglfskmssupport", "libQt6EglFsKmsSupport", ""},
+    {"gui", "libQt6Gui", "qtbase"},
+    {"help", "libQt6Help", "qt_help"},
+    {"network", "libQt6Network", "qtbase"},
+    {"opengl", "libQt6OpenGL", ""},
+    {"openglwidgets", "libQt6OpenGLWidgets", ""},
+    {"printsupport", "libQt6PrintSupport", ""},
+    {"qmlmodels", "libQt6QmlModels", ""},
+    {"qml", "libQt6Qml", "qtdeclarative"},
+    {"qmlworkerscript", "libQt6QmlWorkerScript", ""},
+    {"quick3dassetimport", "libQt6Quick3DAssetImport", ""},
+    {"quick3druntimerender", "libQt6Quick3DRuntimeRender", ""},
+    {"quick3d", "libQt6Quick3D", ""},
+    {"quick3dutils", "libQt6Quick3DUtils", ""},
+    {"quickcontrols2impl", "libQt6QuickControls2Impl", ""},
+    {"quickcontrols2", "libQt6QuickControls2", ""},
+    {"quickparticles", "libQt6QuickParticles", ""},
+    {"quickshapes", "libQt6QuickShapes", ""},
+    {"quick", "libQt6Quick", "qtdeclarative"},
+    {"quicktemplates2", "libQt6QuickTemplates2", ""},
+    {"quicktest", "libQt6QuickTest", ""},
+    {"quickwidgets", "libQt6QuickWidgets", ""},
+    {"shadertools", "libQt6ShaderTools", ""},
+    {"sql", "libQt6Sql", "qtbase"},
+    {"svg", "libQt6Svg", ""},
+    {"svgwidgets", "libQt6SvgWidgets", ""},
+    {"test", "libQt6Test", "qtbase"},
+    {"uitools", "libQt6UiTools", ""},
+    {"waylandclient", "libQt6WaylandClient", ""},
+    {"waylandcompositor", "libQt6WaylandCompositor", ""},
+    {"widgets", "libQt6Widgets", "qtbase"},
+    {"xcbqpa", "libQt6XcbQpa", ""},
+    {"xml", "libQt6Xml", "qtbase"},
+
+    /* Not Included in Qt6.0.0, maybe some of them will be added back in 6.1, 6.2
+
+    {"3danimation", "libQt63DAnimation", ""},
+    {"3dcore", "libQt63DCore", ""},
+    {"3dextras", "libQt63DExtras", ""},
+    {"3dinput", "libQt63DInput", ""},
+    {"3dlogic", "libQt63DLogic", ""},
+    {"3drender", "libQt63DRender", ""},
+    {"3dquickanimation", "libQt63DQuickAnimation", ""},
+    {"3dquickextras", "libQt63DQuickExtras", ""},
+    {"3dquickinput", "libQt63DQuickInput", ""},
+    {"3dquickrender", "libQt63DQuickRender", ""},
+    {"3dquickscene2d", "libQt63DQuickScene2D", ""},
+    {"3dquick", "libQt63DQuick", ""},
+    {"bluetooth", "libQt6Bluetooth", ""},
+    {"clucene", "libQt6CLucene", "qt_help"},
+    {"declarative", "libQt6Declarative", "qtquick1"},
+    {"gamepad", "libQt6Gamepad", ""},
+    {"location", "libQt6Location", ""},
+    {"multimediagsttools", "libQt6MultimediaGstTools", "qtmultimedia"},
+    {"multimediaquick", "libQt6MultimediaQuick", "qtmultimedia"},
+    {"multimedia", "libQt6Multimedia", "qtmultimedia"},
+    {"multimediawidgets", "libQt6MultimediaWidgets", "qtmultimedia"},
+    {"nfc", "libQt6Nfc", ""},
+    {"positioning", "libQt6Positioning", ""},
+    {"remoteobjects", "libQt6RemoteObjects", ""},
+    {"script", "libQt6Script", "qtscript"},
+    {"scripttools", "libQt6ScriptTools", "qtscript"},
+    {"scxml", "libQt6Scxml", ""},
+    {"sensors", "libQt6Sensors", ""},
+    {"serialbus", "libQt6SerialBus", ""},
+    {"serialport", "libQt6SerialPort", "qtserialport"},
+    {"texttospeech", "libQt6TextToSpeech", ""},
+    {"webchannel", "libQt6WebChannel", ""},
+    {"webenginecore", "libQt6WebEngineCore", ""},
+    {"webengine", "libQt6WebEngine", "qtwebengine"},
+    {"webenginewidgets", "libQt6WebEngineWidgets", ""},
+    {"websockets", "libQt6WebSockets", "qtwebsockets"},
+    {"x11extras", "libQt6X11Extras", ""},
+    {"xmlpatterns", "libQt6XmlPatterns", "qtxmlpatterns"},
+    */
+   
+};
+
+inline const std::vector<QtModule>& getQtModules(const int version) {
+    if (version == 5) {
+        return Qt5Modules;
+    }
+    else if (version == 6) {
+        return Qt6Modules;
+    }
+    throw std::runtime_error("Unknown Qt version: " + std::to_string(version));
+}

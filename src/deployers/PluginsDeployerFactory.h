@@ -23,6 +23,7 @@ namespace linuxdeploy {
                 const boost::filesystem::path qtInstallQmlPath;
                 const boost::filesystem::path qtTranslationsPath;
                 const boost::filesystem::path qtDataPath;
+                const int qtMajorVersion;
 
                 template<typename T>
                 std::shared_ptr<PluginsDeployer> getInstance(const std::string& moduleName) {
@@ -45,7 +46,8 @@ namespace linuxdeploy {
                                                 boost::filesystem::path qtLibexecsPath,
                                                 boost::filesystem::path qtInstallQmlPath,
                                                 boost::filesystem::path qtTranslationsPath,
-                                                boost::filesystem::path qtDataPath);
+                                                boost::filesystem::path qtDataPath,
+                                                int qtMajorVersion);
 
                 std::vector<std::shared_ptr<PluginsDeployer>> getDeployers(const std::string& moduleName);
             };
