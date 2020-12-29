@@ -1,6 +1,6 @@
 # linuxdeploy-plugin-qt
 
-Plugin for linuxdeploy to bundle Qt dependencies of applications and libraries.
+Plugin for linuxdeploy to bundle Qt dependencies of applications and libraries. It supports the Qt versions 5 and 6.
 
 
 ## About
