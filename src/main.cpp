@@ -185,7 +185,7 @@ int main(const int argc, const char *const *const argv) {
     std::vector<std::string> extraPluginsFromEnv;
     const auto* const extraPluginsFromEnvData = getenv("EXTRA_QT_PLUGINS");
     if (extraPluginsFromEnvData != nullptr)
-        extraPluginsFromEnv = linuxdeploy::util::split(std::string(extraPluginsFromEnvData), ';');
+        extraPluginsFromEnv = linuxdeploy::util::split(std::string(extraPluginsFromEnvData), ':');
 
     for (const auto& pluginsList : {static_cast<std::vector<std::string>>(extraPlugins.Get()), extraPluginsFromEnv}) {
         std::copy_if(qtModules.begin(), qtModules.end(), std::back_inserter(extraQtModules),
