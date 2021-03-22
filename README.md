@@ -57,6 +57,7 @@ Just like all linuxdeploy plugins, the Qt plugin's behavior can be configured so
 **Qt specific:**
 - `$QMAKE=/path/to/my/qmake`: use another `qmake` binary to detect paths of plugins and other resources (usually doesn't need to be set manually, most Qt environments ship scripts changing `$PATH`)
 - `$EXTRA_QT_PLUGINS=pluginA;pluginB`: Plugins to deploy even if not found automatically by linuxdeploy-plugin-qt
+- `$PLATFORM_PLUGIN=pltformA.so;platformB.so`: Platforms to deploy, defaults to `libqxcb.so`. Platform must be available from `QT_INSTALL_PLUGINS/platforms`.
 
 QML related:
 - `$QML_SOURCES_PATHS`: directory containing the application's QML files — useful/needed if QML files are "baked" into the binaries. `$QT_INSTALL_QML` is prepended to this list internally.
