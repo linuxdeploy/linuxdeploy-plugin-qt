@@ -48,7 +48,9 @@ export APPIMAGE_EXTRACT_AND_RUN=1
 
 wget https://github.com/TheAssassin/linuxdeploy/releases/download/continuous/linuxdeploy-"$ARCH".AppImage
 chmod +x linuxdeploy*.AppImage
-sed -i 's|AI\x02|\x00\x00\x00|' *.AppImage
+
+dd if=/dev/zero of=linuxdeploy-"$ARCH".AppImage bs=1 count=3 seek=8 conv=notrunc
+
 ./linuxdeploy-"$ARCH".AppImage --appdir AppDir \
     -d "$REPO_ROOT"/resources/linuxdeploy-plugin-qt.desktop \
     -i "$REPO_ROOT"/resources/linuxdeploy-plugin-qt.svg \
