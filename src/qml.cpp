@@ -5,7 +5,8 @@
 #include <json.hpp>
 #include <linuxdeploy/core/appdir.h>
 #include <linuxdeploy/core/log.h>
-#include <linuxdeploy/core/elf.h>
+#include <linuxdeploy/core/elf_file.h>
+#include <linuxdeploy/subprocess/subprocess.h>
 #include <linuxdeploy/util/util.h>
 
 // local includes
@@ -15,6 +16,7 @@
 namespace bf = boost::filesystem;
 using namespace linuxdeploy::core;
 using namespace linuxdeploy::core::log;
+using namespace linuxdeploy::subprocess;
 using namespace linuxdeploy::util;
 using namespace nlohmann;
 
@@ -44,14 +46,14 @@ std::string runQmlImportScanner(const std::vector<boost::filesystem::path> &sour
         ldLog() << LD_INFO << string << " ";
     ldLog() << LD_INFO << std::endl;
 
-    auto output = check_command(command);
+    auto result = subprocess(command).run();
 
-    if (output.retcode != 0) {
-        ldLog() << LD_ERROR << output.stderrOutput << std::endl;
+    if (result.exit_code() != 0) {
+        ldLog() << LD_ERROR << result.stderr_string() << std::endl;
         throw QmlImportScannerError("Failed to run qmlimportscanner");
     }
 
-    return output.stdoutOutput;
+    return result.stdout_string();
 }
 
 std::vector<QmlModuleImport> parseQmlImportScannerOutput(const std::string &output) {
@@ -176,9 +178,9 @@ void deployQml(appdir::AppDir &appDir, const boost::filesystem::path &installQml
                         // lexically relative doesn't resolve symlinks, so the paths stay correct
                         auto relativeFilePath = qmlImport.relativePath / entry.path().lexically_relative(qmlImport.path);
                         try {
-                            elf::ElfFile file(entry.path());
+                            elf_file::ElfFile file(entry.path());
                             appDir.deployLibrary(entry.path(), targetQmlModulesPath / relativeFilePath);
-                        } catch (const elf::ElfFileParseError &) {
+                        } catch (const elf_file::ElfFileParseError &) {
                             appDir.deployFile(entry.path(), targetQmlModulesPath / relativeFilePath);
                         }
                     }

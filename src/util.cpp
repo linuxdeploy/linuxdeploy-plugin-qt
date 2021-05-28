@@ -1,41 +1,26 @@
 // library headers
 #include <linuxdeploy/util/util.h>
+#include <linuxdeploy/subprocess/subprocess.h>
 
 // local headers
 #include "util.h"
 
-procOutput check_command(const std::vector<std::string> &args) {
-    auto command = subprocess::util::join(args);
-    subprocess::Popen proc(command, subprocess::bufsize{-1 /* stands for dynamically allocated buffer */},
-                           subprocess::output(subprocess::PIPE), subprocess::error(subprocess::PIPE));
-    auto outputs = proc.communicate();
-
-    const auto &outBuf = outputs.first.buf;
-    auto outBufEnd = std::find(outBuf.begin(), outBuf.end(), '\0');
-    std::string out(outBuf.begin(), outBufEnd);
-
-    const auto &errBuf = outputs.second.buf;
-    auto errBufEnd = std::find(errBuf.begin(), errBuf.end(), '\0');
-    std::string err(errBuf.begin(),  errBufEnd);
-
-    int returnCode = proc.retcode();
-    return {returnCode == 0, returnCode, out, err};
-}
+using namespace linuxdeploy::subprocess;
 
 std::map<std::string, std::string> queryQmake(const boost::filesystem::path& qmakePath) {
-    auto qmakeCall = check_command({qmakePath.string(), "-query"});
+    auto qmakeCall = subprocess({qmakePath.string(), "-query"}).run();
 
     using namespace linuxdeploy::core::log;
 
-    if (!qmakeCall.success) {
-        ldLog() << LD_ERROR << "Call to qmake failed:" << qmakeCall.stderrOutput << std::endl;
+    if (qmakeCall.exit_code() != 0) {
+        ldLog() << LD_ERROR << "Call to qmake failed:" << qmakeCall.stderr_string() << std::endl;
         return {};
     }
 
     std::map<std::string, std::string> rv;
 
     std::stringstream ss;
-    ss << qmakeCall.stdoutOutput;
+    ss << qmakeCall.stdout_string();
 
     std::string line;
 

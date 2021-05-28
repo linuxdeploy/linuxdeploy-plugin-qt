@@ -9,7 +9,6 @@
 
 // library includes
 #include <boost/filesystem.hpp>
-#include <subprocess.hpp>
 #include <args.hxx>
 #include <linuxdeploy/core/log.h>
 

@@ -3,7 +3,7 @@
 // library includes
 #include <boost/filesystem.hpp>
 #include <linuxdeploy/core/appdir.h>
-#include <linuxdeploy/core/elf.h>
+#include <linuxdeploy/core/elf_file.h>
 #include <linuxdeploy/core/log.h>
 #include <linuxdeploy/util/util.h>
 

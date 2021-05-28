@@ -8,7 +8,7 @@
 // library includes
 #include <boost/filesystem.hpp>
 #include <linuxdeploy/core/appdir.h>
-#include <linuxdeploy/core/elf.h>
+#include <linuxdeploy/core/elf_file.h>
 #include <linuxdeploy/core/log.h>
 #include <linuxdeploy/util/util.h>
 
@@ -130,10 +130,10 @@ int main(const int argc, const char *const *const argv) {
     for (const auto &path : appDir.listSharedLibraries()) {
         libraryNames.insert(path.filename().string());
         try {
-            for (const auto &dependency : elf::ElfFile(path).traceDynamicDependencies()) {
+            for (const auto &dependency : elf_file::ElfFile(path).traceDynamicDependencies()) {
                 libraryNames.insert(dependency.filename().string());
             }
-        } catch (const elf::ElfFileParseError &e) {
+        } catch (const elf_file::ElfFileParseError &e) {
             ldLog() << LD_DEBUG << "Failed to parse file as ELF file:" << path << std::endl;
         }
     }
