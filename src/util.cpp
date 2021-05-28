@@ -114,3 +114,11 @@ bool strEndsWith(const std::string &str, const std::string &suffix) {
     return strncmp(str.c_str() + (str.size() - suffix.size()), suffix.c_str(), suffix.size()) == 0;
 }
 
+bool isQtDebugSymbolFile(const std::string& filename) {
+    // the official Qt build pipeline calls those <library name>.so.debug, so we just filter that suffix
+    return strEndsWith(filename, ".debug");
+}
+
+bool isQtDebugSymbolFile(const boost::filesystem::path& path) {
+    return strEndsWith(path.filename().string(), ".debug");
+}

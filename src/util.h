@@ -50,3 +50,5 @@ bool strStartsWith(const std::string &str, const std::string &prefix);
 
 bool strEndsWith(const std::string &str, const std::string &suffix);
 
+bool isQtDebugSymbolFile(const std::string& filename);
+bool isQtDebugSymbolFile(const boost::filesystem::path& path);

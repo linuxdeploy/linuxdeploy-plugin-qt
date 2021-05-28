@@ -175,6 +175,11 @@ void deployQml(appdir::AppDir &appDir, const boost::filesystem::path &installQml
                     const auto &entry = *i;
 
                     if (!bf::is_directory(entry)) {
+                        // debug symbol files shall not be deployed
+                        if (isQtDebugSymbolFile(entry.path())) {
+                            continue;
+                        }
+
                         // lexically relative doesn't resolve symlinks, so the paths stay correct
                         auto relativeFilePath = qmlImport.relativePath / entry.path().lexically_relative(qmlImport.path);
                         try {
