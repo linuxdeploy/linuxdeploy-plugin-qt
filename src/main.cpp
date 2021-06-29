@@ -228,9 +228,9 @@ int main(const int argc, const char *const *const argv) {
             << std::endl;
 
     std::ostringstream newPath;
-    newPath << qtBinsPath.string() << ":" << getenv("PATH");
+    newPath << qtBinsPath.string() << ":" << qtLibexecsPath.string() << ":" << getenv("PATH");
     setenv("PATH", newPath.str().c_str(), true);
-    ldLog() << "Prepending QT_INSTALL_BINS path to $PATH, new $PATH:" << newPath.str() << std::endl;
+    ldLog() << "Prepending QT_INSTALL_BINS and QT_INSTALL_LIBEXECS paths to $PATH, new $PATH:" << newPath.str() << std::endl;
 
 
     auto qtModulesToDeploy = foundQtModules;
