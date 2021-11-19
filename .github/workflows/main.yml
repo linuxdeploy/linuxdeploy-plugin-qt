@@ -40,9 +40,9 @@ jobs:
           path: linuxdeploy-plugin-qt*.AppImage*
 
   # TODO: build and test on i386 as well!
-  build-text-xenial-x86_64:
+  build-test-bionic-x86_64:
     name: Build and test on Ubuntu xenial x86_64 (no binaries uploaded)
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-18.04
     env:
       ARCH: x86_64
       BUILD_TYPE: test
@@ -60,9 +60,9 @@ jobs:
           bash -xe ci/test.sh linuxdeploy-plugin-qt-"$ARCH".AppImage
 
   # TODO: build and test on i386 as well!
-  build-text-bionic-x86_64:
+  build-test-focal-x86_64:
     name: Build and test on Ubuntu bionic x86_64 (no binaries uploaded)
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       ARCH: x86_64
       BUILD_TYPE: test
