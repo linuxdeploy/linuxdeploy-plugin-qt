@@ -31,11 +31,11 @@ OLD_CWD=$(readlink -f .)
 
 pushd "$BUILD_DIR"
 
-cmake "$REPO_ROOT" -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RelWithDebInfo "${EXTRA_CMAKE_ARGS[@]}" -DUSE_SYSTEM_CIMG=Off
+cmake "$REPO_ROOT" -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RelWithDebInfo "${EXTRA_CMAKE_ARGS[@]}" -DUSE_SYSTEM_CIMG=Off -DBUILD_TESTING=On
 
 make -j$(nproc)
 
-ctest -V
+ctest -V --no-tests=error
 
 make install DESTDIR=AppDir
 

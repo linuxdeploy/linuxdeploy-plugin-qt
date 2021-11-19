@@ -35,11 +35,11 @@ if [ "$ARCH" == "i386" ]; then
     EXTRA_CMAKE_ARGS=("-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/toolchains/i386-linux-gnu.cmake" "-DUSE_SYSTEM_CIMG=OFF")
 fi
 
-cmake "$REPO_ROOT" -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RelWithDebInfo "${EXTRA_CMAKE_ARGS[@]}"
+cmake "$REPO_ROOT" -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=RelWithDebInfo "${EXTRA_CMAKE_ARGS[@]}" -DBUILD_TESTING=On
 
 make -j$(nproc)
 
-ctest -V
+ctest -V --no-tests=error
 
 make install DESTDIR=AppDir
 
