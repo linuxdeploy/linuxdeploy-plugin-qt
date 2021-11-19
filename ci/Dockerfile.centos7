@@ -1,5 +1,9 @@
 FROM centos:7
 
+# work around Let's Encrypt base certificate expiry
+# https://blog.devgenius.io/rhel-centos-7-fix-for-lets-encrypt-change-8af2de587fe4
+RUN yum update -y ca-certificates
+
 RUN yum install -y centos-release-scl && \
     yum install -y devtoolset-8 wget curl patchelf vim-common fuse libfuse2 libtool autoconf automake zlib-devel libjpeg-devel libpng-devel nano git file gcc-c++ && \
     wget https://artifacts.assassinate-you.net/prebuilt-cmake/cmake-v3.19.1-centos7-x86_64.tar.gz -O- | tar xz --strip-components=1 -C/usr/local
