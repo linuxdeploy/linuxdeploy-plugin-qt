@@ -14,6 +14,7 @@
 #include "TextToSpeechPluginsDeployer.h"
 #include "WebEnginePluginsDeployer.h"
 #include "XcbglIntegrationPluginsDeployer.h"
+#include "TlsBackendsDeployer.h"
 
 using namespace linuxdeploy::plugin::qt;
 using namespace linuxdeploy::core::appdir;
@@ -42,8 +43,12 @@ std::vector<std::shared_ptr<PluginsDeployer>> PluginsDeployerFactory::getDeploye
         return {getInstance<XcbglIntegrationPluginsDeployer>(moduleName)};
     }
 
-    if (moduleName == "network" && qtMajorVersion < 6) {
-        return {getInstance<BearerPluginsDeployer>(moduleName)};
+    if (moduleName == "network") {
+        if (qtMajorVersion < 6) {
+            return {getInstance<BearerPluginsDeployer>(moduleName)};
+        } else {
+            return {getInstance<TlsBackendsDeployer>(moduleName)};
+        }
     }
 
     if (moduleName == "svg") {
