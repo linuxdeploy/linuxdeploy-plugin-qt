@@ -9,7 +9,7 @@ jobs:
         ARCH: [x86_64, i386]
       fail-fast: false
 
-    name: ${{ matrix.BUILD_TYPE }} ${{ matrix.ARCH }}
+    name: ${{ matrix.ARCH }}
     runs-on: ubuntu-latest
 
     env:
