@@ -3,87 +3,55 @@ name: CI
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  appimage-x86_64:
-    name: Build x86_64 AppImage on CentOS 7
+  build-and-test:
+    strategy:
+      matrix:
+        ARCH: [x86_64, i386]
+      fail-fast: false
+
+    name: ${{ matrix.BUILD_TYPE }} ${{ matrix.ARCH }}
     runs-on: ubuntu-latest
+
     env:
-      ARCH: x86_64
-      BUILD_TYPE: centos7
+      ARCH: ${{ matrix.ARCH }}
+      BUILD_TYPE: ${{ matrix.BUILD_TYPE }}
+
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: Build AppImage in CentOS 7
-        run: ci/build-centos7-docker.sh
+
+      - name: Install dependencies (x86_64)
+        if: matrix.ARCH == 'x86_64'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcovr libmagic-dev libjpeg-dev libpng-dev libboost-filesystem-dev libboost-regex-dev cimg-dev qtbase5-dev
+
+      - name: Install dependencies (i386)
+        if: matrix.ARCH == 'i386'
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y gcovr libmagic-dev:i386 libjpeg-dev:i386 libpng-dev:i386 libboost-filesystem-dev:i386 libboost-regex-dev:i386 cimg-dev gcc-multilib g++-multilib libfuse2:i386
+
+      - name: Build AppImage
+        run: bash -ex ci/build.sh
+
+      - name: Test AppImage
+        run: |
+          bash -ex ci/build.sh
+          bash -ex ci/test.sh linuxdeploy-plugin-qt-"$ARCH".AppImage
+
       - name: Archive artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: AppImage x86_64
-          path: linuxdeploy-plugin-qt*.AppImage*
-
-  appimage-i386:
-    name: Build i386 AppImage on CentOS 7
-    runs-on: ubuntu-latest
-    env:
-      ARCH: i386
-      BUILD_TYPE: centos7
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
-      - name: Build AppImage in CentOS 7
-        run: ci/build-centos7-docker.sh
-      - name: Archive artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: AppImage i386
-          path: linuxdeploy-plugin-qt*.AppImage*
-
-  # TODO: build and test on i386 as well!
-  build-test-bionic-x86_64:
-    name: Build and test on Ubuntu xenial x86_64 (no binaries uploaded)
-    runs-on: ubuntu-18.04
-    env:
-      ARCH: x86_64
-      BUILD_TYPE: test
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
-      - name: Install dependencies
-        run: bash ci/install-dependencies.sh
-      - name: Build and install patchelf
-        run: bash -ex ci/install-patchelf.sh
-      - name: Build and test AppImage
-        run: |
-          bash -ex ci/build.sh
-          bash -xe ci/test.sh linuxdeploy-plugin-qt-"$ARCH".AppImage
-
-  # TODO: build and test on i386 as well!
-  build-test-focal-x86_64:
-    name: Build and test on Ubuntu bionic x86_64 (no binaries uploaded)
-    runs-on: ubuntu-20.04
-    env:
-      ARCH: x86_64
-      BUILD_TYPE: test
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
-      - name: Install dependencies
-        run: bash ci/install-dependencies.sh
-      - name: Build and install patchelf
-        run: bash -ex ci/install-patchelf.sh
-      - name: Build and test AppImage
-        run: |
-          bash -ex ci/build.sh
-          bash -xe ci/test.sh linuxdeploy-plugin-qt-"$ARCH".AppImage
+          name: AppImage
+          path: linuxdeploy*.AppImage*
 
   upload:
     name: Create release and upload artifacts
     needs:
-      - appimage-x86_64
-      - appimage-i386
+      - build-and-test
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts
