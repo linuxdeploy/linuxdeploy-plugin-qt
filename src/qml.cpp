@@ -2,7 +2,7 @@
 #include <boost/filesystem.hpp>
 
 // library includes
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 #include <linuxdeploy/core/appdir.h>
 #include <linuxdeploy/core/log.h>
 #include <linuxdeploy/core/elf_file.h>

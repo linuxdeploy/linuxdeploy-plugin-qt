@@ -17,7 +17,7 @@ if(NOT COMMAND ld_add_test)
 endif()
 
 add_executable(linuxdeploy-plugin-qt-tests test_main.cpp test_deploy_qml.cpp ../src/qml.cpp)
-target_link_libraries(linuxdeploy-plugin-qt-tests linuxdeploy_core args json gtest linuxdeploy-plugin-qt_util)
+target_link_libraries(linuxdeploy-plugin-qt-tests linuxdeploy_core args nlohmann_json::nlohmann_json gtest linuxdeploy-plugin-qt_util)
 target_compile_definitions(linuxdeploy-plugin-qt-tests PRIVATE TESTS_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data")
 
 ld_add_test(linuxdeploy-plugin-qt-tests)

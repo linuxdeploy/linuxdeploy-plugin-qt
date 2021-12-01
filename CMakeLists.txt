@@ -13,6 +13,9 @@ if(BUILD_TESTING)
     include(${PROJECT_SOURCE_DIR}/lib/cmake-scripts/include-or-build-gtest.cmake)
 endif()
 
+# dependencies
+find_package(nlohmann_json REQUIRED)
+
 add_subdirectory(lib)
 
 add_subdirectory(src)
