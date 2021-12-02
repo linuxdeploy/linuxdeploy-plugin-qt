@@ -46,7 +46,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: AppImage
-          path: linuxdeploy*.AppImage*
+          path: linuxdeploy-plugin-qt-"$ARCH".AppImage*
 
   upload:
     name: Create release and upload artifacts
