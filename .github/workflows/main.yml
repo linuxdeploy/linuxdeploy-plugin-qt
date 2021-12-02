@@ -47,6 +47,12 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Configure i386 Qt installation
+        if: matrix.ARCH == 'i386'
+        run: |
+          qtchooser -install qt5-i386-linux-gnu /usr/lib/i386-linux-gnu/qt5/bin/qmake
+          echo QT_SELECT=qt5-i386-linux-gnu >> $GITHUB_ENV
+
       - name: Build AppImage
         run: bash ci/build.sh
 
