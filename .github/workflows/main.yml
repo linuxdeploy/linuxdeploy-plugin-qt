@@ -40,7 +40,6 @@ jobs:
       - name: Test AppImage
         if: matrix.ARCH != 'i386'
         run: |
-          bash -ex ci/build.sh
           bash -ex ci/test.sh linuxdeploy-plugin-qt-"$ARCH".AppImage
 
       - name: Archive artifacts
