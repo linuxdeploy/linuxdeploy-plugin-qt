@@ -19,19 +19,19 @@ jobs:
     env:
       ARCH: ${{ matrix.ARCH }}
       BUILD_TYPE: ${{ matrix.BUILD_TYPE }}
+      DEBIAN_FRONTEND: interactive
+      APPIMAGE_EXTRACT_AND_RUN: 1
 
     steps:
       - name: Install dependencies (x86_64)
         if: matrix.ARCH == 'x86_64'
         run: |
-          export DEBIAN_FRONTEND=noninteractive
           apt-get update
           apt-get install -y build-essential cmake git gcovr libmagic-dev libjpeg-dev libpng-dev libboost-filesystem-dev libboost-regex-dev cimg-dev qt5-default qtdeclarative5-dev-tools nlohmann-json3-dev qml-module-qtquick2 patchelf wget
 
       - name: Install dependencies (i386)
         if: matrix.ARCH == 'i386'
         run: |
-          export DEBIAN_FRONTEND=noninteractive
           dpkg --add-architecture i386
           apt-get update
           apt-get install -y build-essential cmake git gcovr libmagic-dev:i386 libjpeg-dev:i386 libpng-dev:i386 libboost-filesystem-dev:i386 libboost-regex-dev:i386 cimg-dev nlohmann-json3-dev gcc-multilib g++-multilib libfuse2:i386 patchelf wget
