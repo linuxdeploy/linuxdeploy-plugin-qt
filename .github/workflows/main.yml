@@ -21,10 +21,6 @@ jobs:
       BUILD_TYPE: ${{ matrix.BUILD_TYPE }}
 
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
-
       - name: Install dependencies (x86_64)
         if: matrix.ARCH == 'x86_64'
         run: |
@@ -37,6 +33,11 @@ jobs:
           sudo dpkg --add-architecture i386
           sudo apt-get update
           sudo apt-get install -y build-essential cmake git gcovr libmagic-dev:i386 libjpeg-dev:i386 libpng-dev:i386 libboost-filesystem-dev:i386 libboost-regex-dev:i386 cimg-dev nlohmann-json3-dev gcc-multilib g++-multilib libfuse2:i386 patchelf wget
+
+      # check out once git command is available
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       - name: Build AppImage
         run: bash ci/build.sh
