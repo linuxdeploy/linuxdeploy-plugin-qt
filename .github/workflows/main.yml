@@ -12,6 +12,10 @@ jobs:
     name: ${{ matrix.ARCH }}
     runs-on: ubuntu-latest
 
+    # running in a container using a standard image instead of the GitHub worker environment makes sure the process is reproducible elsewhere
+    # latest = latest LTS
+    container: ubuntu:latest
+
     env:
       ARCH: ${{ matrix.ARCH }}
       BUILD_TYPE: ${{ matrix.BUILD_TYPE }}
@@ -25,22 +29,22 @@ jobs:
         if: matrix.ARCH == 'x86_64'
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcovr libmagic-dev libjpeg-dev libpng-dev libboost-filesystem-dev libboost-regex-dev cimg-dev qt5-default qtdeclarative5-dev-tools nlohmann-json3-dev
+          sudo apt-get install -y build-essential cmake git gcovr libmagic-dev libjpeg-dev libpng-dev libboost-filesystem-dev libboost-regex-dev cimg-dev qt5-default qtdeclarative5-dev-tools nlohmann-json3-dev qml-module-qtquick2 patchelf wget
 
       - name: Install dependencies (i386)
         if: matrix.ARCH == 'i386'
         run: |
           sudo dpkg --add-architecture i386
           sudo apt-get update
-          sudo apt-get install -y gcovr libmagic-dev:i386 libjpeg-dev:i386 libpng-dev:i386 libboost-filesystem-dev:i386 libboost-regex-dev:i386 cimg-dev nlohmann-json3-dev gcc-multilib g++-multilib libfuse2:i386
+          sudo apt-get install -y build-essential cmake git gcovr libmagic-dev:i386 libjpeg-dev:i386 libpng-dev:i386 libboost-filesystem-dev:i386 libboost-regex-dev:i386 cimg-dev nlohmann-json3-dev gcc-multilib g++-multilib libfuse2:i386 patchelf wget
 
       - name: Build AppImage
-        run: bash -ex ci/build.sh
+        run: bash ci/build.sh
 
       - name: Test AppImage
         if: matrix.ARCH != 'i386'
         run: |
-          bash -ex ci/test.sh linuxdeploy-plugin-qt-"$ARCH".AppImage
+          env CI=1 bash ci/test.sh linuxdeploy-plugin-qt-"$ARCH".AppImage
 
       - name: Archive artifacts
         uses: actions/upload-artifact@v2
