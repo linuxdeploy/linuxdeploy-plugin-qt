@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 set -e
-set -x
 
 if [ "$ARCH" == "" ]; then
     echo 'Error: $ARCH is not set'
@@ -10,10 +9,11 @@ fi
 
 TARGET="$1"
 if [ "$TARGET" == "" ]; then
-    echo 'Error: $TARGET is not set'
+    echo 'Usage: $0 <target.AppImage>'
     exit 1
 fi
 
+set -x
 
 # use RAM disk if possible
 if [ "$CI" == "" ] && [ -d /dev/shm ]; then
