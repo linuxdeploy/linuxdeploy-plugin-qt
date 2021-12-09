@@ -7,8 +7,8 @@ if [ "$ARCH" == "" ]; then
     exit 1
 fi
 
-TARGET="$1"
-if [ "$TARGET" == "" ]; then
+target="$1"
+if [ "$target" == "" ]; then
     echo 'Usage: $0 <target.AppImage>'
     exit 1
 fi
@@ -22,33 +22,28 @@ else
     TEMP_BASE=/tmp
 fi
 
-BUILD_DIR=$(mktemp -d -p "$TEMP_BASE" linuxdeploy-plugin-qt-build-XXXXXX)
+build_dir="$(mktemp -d -p "$TEMP_BASE" linuxdeploy-plugin-qt-build-XXXXXX)"
 
 cleanup () {
-    if [ -d "$BUILD_DIR" ]; then
-        rm -rf "$BUILD_DIR"
+    if [ -d "$build_dir" ]; then
+        rm -rf "$build_dir"
     fi
 }
 
 trap cleanup EXIT
 
 wget -N https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-"$ARCH".AppImage
-export LINUXDEPLOY_BIN="$PWD"/linuxdeploy-"$ARCH".AppImage
-chmod +x "$LINUXDEPLOY_BIN"
 
-pushd "$BUILD_DIR"
+cp linuxdeploy-"$ARCH".AppImage "$build_dir"
+
+linuxdeploy_bin="$build_dir"/linuxdeploy-"$ARCH".AppImage
+chmod +x "$linuxdeploy_bin"
+
+cp "$target" "$build_dir"
+
+pushd "$build_dir"
 
 git clone --depth=1 https://github.com/linuxdeploy/linuxdeploy-plugin-qt-examples.git
-
-source /opt/qt5*/bin/qt5*-env.sh || echo ""   # hack required, the script returns 1 for some reason
-qt5_ver=$(echo "$QT_BASE_DIR" | cut -d/ -f3 | cut -d5 -f2-)
-mkdir -p "$HOME"/.config/qtchooser
-echo "${QTDIR}/bin" > "$HOME"/.config/qtchooser/qt5."$qt5_ver".conf
-echo "${QTDIR}/lib" >> "$HOME"/.config/qtchooser/qt5."$qt5_ver".conf
-
-export CMAKE_PREFIX_PATH="$QTDIR"/lib/cmake
-export QT_SELECT=qt5."$qt5_ver"
-
 
 ## Build projects
 pushd linuxdeploy-plugin-qt-examples/QtQuickControls2Application
@@ -61,8 +56,8 @@ pushd linuxdeploy-plugin-qt-examples/QtQuickControls2Application
         cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=/usr || exit 1
         DESTDIR="$PWD"/AppDir make install || exit 1
 
-        "$LINUXDEPLOY_BIN" --appdir "$PWD"/AppDir --plugin qt --output appimage || exit 1
-         mv -v *AppImage "$BUILD_DIR" || exit 1
+        "$linuxdeploy_bin" --appdir "$PWD"/AppDir --plugin qt --output appimage || exit 1
+        mv -v *AppImage "$build_dir" || exit 1
     popd
 popd
 
@@ -76,10 +71,10 @@ pushd linuxdeploy-plugin-qt-examples/QtWebEngineApplication
 
         # Include libnss related files
         mkdir -p "$PWD"/AppDir/usr/lib/
-        cp -r /usr/lib/x86_64-linux-gnu/nss "$PWD"/AppDir/usr/lib/
+        cp -r /usr/lib/"$ARCH"-linux-gnu/nss "$PWD"/AppDir/usr/lib/
 
-        "$LINUXDEPLOY_BIN" --appdir "$PWD"/AppDir --plugin qt --output appimage || exit 1
-         mv -v *AppImage "$BUILD_DIR" || exit 1
+        "$linuxdeploy_bin" --appdir "$PWD"/AppDir --plugin qt --output appimage || exit 1
+        mv -v *AppImage "$build_dir" || exit 1
     popd
 popd
 
@@ -89,7 +84,7 @@ pushd linuxdeploy-plugin-qt-examples/QtWidgetsApplication
         qmake CONFIG+=release PREFIX=/usr ../QtWidgetsApplication.pro || exit 1
         INSTALL_ROOT="$PWD"/AppDir make install || exit 1
 
-        "$LINUXDEPLOY_BIN" --appdir "$PWD"/AppDir --plugin qt --output appimage || exit 1
-         mv -v *AppImage "$BUILD_DIR" || exit 1
+        "$linuxdeploy_bin" --appdir "$PWD"/AppDir --plugin qt --output appimage || exit 1
+        mv -v *AppImage "$build_dir" || exit 1
     popd
 popd

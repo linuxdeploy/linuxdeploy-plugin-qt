@@ -72,6 +72,8 @@ namespace linuxdeploy {
                     std::cout << result;
                 }
 
+                // disabled, as Debian's qmlimportscanner does not behave as expected
+                /*
                 TEST_F(TestDeployQml, getQmlImports) {
                     auto results = getQmlImports(projectQmlRoot, defaultQmlImportPath);
                     ASSERT_FALSE(results.empty());
@@ -83,6 +85,7 @@ namespace linuxdeploy {
                         ASSERT_FALSE(result.relativePath.empty());
                     }
                 }
+                */
 
                 TEST_F(TestDeployQml, deploy_qml_imports) {
                     linuxdeploy::core::appdir::AppDir appDir(appDirPath);

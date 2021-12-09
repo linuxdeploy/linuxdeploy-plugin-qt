@@ -14,7 +14,21 @@ if(BUILD_TESTING)
 endif()
 
 # dependencies
-find_package(nlohmann_json REQUIRED)
+find_package(nlohmann_json)
+
+if(NOT nlohmann_json_FOUND)
+    message(STATUS "nlohmann_json not found on system, fetching from GitHub")
+
+    FetchContent_Declare(
+        nlohmann_json
+        GIT_REPOSITORY https://github.com/nlohmann/json
+        GIT_TAG v3.10.4
+    )
+
+    FetchContent_MakeAvailable(nlohmann_json)
+
+    add_library(nlohmann_json::nlohmann_json ALIAS nlohmann_json)
+endif()
 
 add_subdirectory(lib)
 

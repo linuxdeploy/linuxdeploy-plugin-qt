@@ -12,55 +12,19 @@ jobs:
     name: ${{ matrix.ARCH }}
     runs-on: ubuntu-latest
 
-    # running in a container using a standard image instead of the GitHub worker environment makes sure the process is reproducible elsewhere
-    # latest = latest LTS
-    container: ubuntu:latest
-
     env:
       ARCH: ${{ matrix.ARCH }}
       BUILD_TYPE: ${{ matrix.BUILD_TYPE }}
       DEBIAN_FRONTEND: interactive
-      APPIMAGE_EXTRACT_AND_RUN: 1
 
     steps:
-      - name: Install dependencies (x86_64)
-        if: matrix.ARCH == 'x86_64'
-        run: |
-          apt-get update
-          apt-get install -y build-essential cmake git gcovr patchelf wget \
-            libmagic-dev libjpeg-dev libpng-dev libboost-filesystem-dev libboost-regex-dev \
-            cimg-dev qt5-default qtdeclarative5-dev-tools nlohmann-json3-dev \
-            qml-module-qtquick2 qtdeclarative5-dev patchelf wget
-
-      - name: Install dependencies (i386)
-        if: matrix.ARCH == 'i386'
-        run: |
-          dpkg --add-architecture i386
-          apt-get update
-          apt-get install -y build-essential cmake git gcovr patchelf wget gcc-multilib g++-multilib \
-            libmagic-dev:i386 libjpeg-dev:i386 libpng-dev:i386 libboost-filesystem-dev:i386 libboost-regex-dev:i386 \
-            cimg-dev qt5-default:i386 qtdeclarative5-dev-tools:i386 nlohmann-json3-dev \
-            qt5-default:i386 qtdeclarative5-dev-tools:i386 libfuse2:i386
-
       # check out once git command is available
       - uses: actions/checkout@v2
         with:
           submodules: recursive
 
-      - name: Configure i386 Qt installation
-        if: matrix.ARCH == 'i386'
-        run: |
-          qtchooser -install qt5-i386-linux-gnu /usr/lib/i386-linux-gnu/qt5/bin/qmake
-          echo QT_SELECT=qt5-i386-linux-gnu >> $GITHUB_ENV
-
-      - name: Build AppImage
-        run: bash ci/build.sh
-
-      - name: Test AppImage
-        #if: matrix.ARCH != 'i386'
-        if: false
-        run: |
-          env CI=1 bash ci/test.sh linuxdeploy-plugin-qt-"$ARCH".AppImage
+      - name: Build and test AppImage
+        run: bash ci/build-in-docker.sh
 
       - name: Archive artifacts
         uses: actions/upload-artifact@v2
