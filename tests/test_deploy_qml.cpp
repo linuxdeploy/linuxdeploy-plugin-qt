@@ -18,6 +18,7 @@ namespace linuxdeploy {
                     boost::filesystem::path appDirPath;
                     boost::filesystem::path projectQmlRoot;
                     boost::filesystem::path defaultQmlImportPath;
+                    boost::filesystem::path qtLibexecsPath;
 
                     void SetUp() override {
                         appDirPath = getTempDirName();
@@ -29,7 +30,9 @@ namespace linuxdeploy {
 
                         setenv(ENV_KEY_QML_MODULES_PATHS, TESTS_DATA_DIR, 1);
 
-                        defaultQmlImportPath = getQmlImportPath();
+                        auto qmakeVars = queryQmake(findQmake());
+                        defaultQmlImportPath = qmakeVars["QT_INSTALL_QML"];
+                        qtLibexecsPath = qmakeVars["QT_INSTALL_LIBEXECS"];
                     }
 
                     std::string getTempDirName() const {
@@ -44,15 +47,10 @@ namespace linuxdeploy {
                         boost::filesystem::remove_all(appDirPath);
                         unsetenv(ENV_KEY_QML_MODULES_PATHS);
                     }
-
-                    bf::path getQmlImportPath() {
-                        const auto& qmakePath = findQmake();
-                        return queryQmake(qmakePath)["QT_INSTALL_QML"];
-                    }
                 };
 
                 TEST_F(TestDeployQml, find_qmlimporter_path) {
-                    auto result = findQmlImportScanner();
+                    auto result = findQmlImportScanner(qtLibexecsPath);
                     boost::filesystem::path expected = "/usr/bin/qmlimportscanner";
 
                     ASSERT_FALSE(result.empty());
@@ -60,14 +58,17 @@ namespace linuxdeploy {
                 }
 
                 TEST_F(TestDeployQml, runQmlImportScanner) {
-                    auto result = runQmlImportScanner({projectQmlRoot},
-                        {TESTS_DATA_DIR, defaultQmlImportPath});
+                    auto result = runQmlImportScanner(qtLibexecsPath,
+                                                      {projectQmlRoot},
+                                                      {TESTS_DATA_DIR, defaultQmlImportPath});
                     ASSERT_FALSE(result.empty());
                     std::cout << result;
                 }
 
                 TEST_F(TestDeployQml, run_qmlimportscanner_without_qml_import_paths) {
-                    auto result = runQmlImportScanner({projectQmlRoot}, {});
+                    auto result = runQmlImportScanner(qtLibexecsPath,
+                                                      {projectQmlRoot},
+                                                      {});
                     ASSERT_FALSE(result.empty());
                     std::cout << result;
                 }
@@ -93,7 +94,7 @@ namespace linuxdeploy {
                     // speed up test runs; we don't check for the copyright files anyway
                     appDir.setDisableCopyrightFilesDeployment(true);
 
-                    deployQml(appDir, defaultQmlImportPath);
+                    deployQml(appDir, defaultQmlImportPath, qtLibexecsPath);
                     appDir.executeDeferredOperations();
 
                     ASSERT_TRUE(boost::filesystem::exists(projectQmlRoot.string() + "/QtQuick.2"));

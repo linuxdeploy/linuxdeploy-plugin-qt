@@ -20,12 +20,21 @@ using namespace linuxdeploy::subprocess;
 using namespace linuxdeploy::util;
 using namespace nlohmann;
 
-bf::path findQmlImportScanner() {
+bf::path findQmlImportScanner(const bf::path &qtLibexecsPath) {
+    auto path = qtLibexecsPath / "qmlimportscanner";
+    if (bf::exists(path))
+        return path;
+
     return which("qmlimportscanner");
 }
 
-std::string runQmlImportScanner(const std::vector<boost::filesystem::path> &sourcesPaths, const std::vector<bf::path> &qmlImportPaths) {
-    auto qmlImportScannerPath = findQmlImportScanner();
+std::string runQmlImportScanner(const bf::path &qtLibexecsPath,
+                                const std::vector<boost::filesystem::path> &sourcesPaths,
+                                const std::vector<bf::path> &qmlImportPaths) {
+    auto qmlImportScannerPath = findQmlImportScanner(qtLibexecsPath);
+    if (qmlImportScannerPath.empty())
+        throw QmlImportScannerError("Failed to find qmlimportscanner");
+
     std::vector<std::string> command{qmlImportScannerPath.string()};
 
     for (const auto &sourcesPath : sourcesPaths)
@@ -34,12 +43,11 @@ std::string runQmlImportScanner(const std::vector<boost::filesystem::path> &sour
             command.emplace_back(sourcesPath.string());
         }
 
-
     for (const auto &qmlImportPath : qmlImportPaths)
         if (!qmlImportPath.empty()){
-        command.emplace_back("-importPath");
-        command.emplace_back(qmlImportPath.string());
-    }
+            command.emplace_back("-importPath");
+            command.emplace_back(qmlImportPath.string());
+        }
 
     ldLog() << LD_INFO << "Calling: ";
     for (const auto &string : command)
@@ -110,7 +118,9 @@ std::vector<bf::path> getExtraQmlSourcesPaths() {
     return extraQmlSourcesPaths;
 }
 
-std::vector<QmlModuleImport> getQmlImports(const bf::path &projectRootPath, const bf::path &installQmlPath) {
+std::vector<QmlModuleImport> getQmlImports(const bf::path &projectRootPath,
+                                           const bf::path &installQmlPath,
+                                           const bf::path &qtLibexecsPath) {
     std::vector<QmlModuleImport> moduleImports;
 
     auto qmlImportPaths = getExtraQmlModulesPaths();
@@ -127,7 +137,7 @@ std::vector<QmlModuleImport> getQmlImports(const bf::path &projectRootPath, cons
         ldLog() << " " << path;
     ldLog() << std::endl;
 
-    auto output = runQmlImportScanner(qmlSourcesPaths, qmlImportPaths);
+    auto output = runQmlImportScanner(qtLibexecsPath, qmlSourcesPaths, qmlImportPaths);
 
     try {
         moduleImports = parseQmlImportScannerOutput(output);
@@ -164,8 +174,10 @@ boost::filesystem::path getQmlModuleRelativePath(const std::vector<boost::filesy
     return relativePath;
 }
 
-void deployQml(appdir::AppDir &appDir, const boost::filesystem::path &installQmlPath) {
-    auto qmlImports = getQmlImports(appDir.path(), installQmlPath);
+void deployQml(appdir::AppDir &appDir,
+               const boost::filesystem::path &installQmlPath,
+               const boost::filesystem::path &qtLibexecsPath) {
+    auto qmlImports = getQmlImports(appDir.path(), installQmlPath, qtLibexecsPath);
     bf::path targetQmlModulesPath = appDir.path().string() + "/usr/qml/";
 
     for (const auto &qmlImport: qmlImports) {

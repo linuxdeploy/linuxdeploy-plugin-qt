@@ -14,7 +14,7 @@ bool QmlPluginsDeployer::deploy() {
         return false;
 
     try {
-        deployQml(appDir, qtInstallQmlPath);
+        deployQml(appDir, qtInstallQmlPath, qtLibexecsPath);
     } catch (const QmlImportScannerError &) {
         return false;
     }
