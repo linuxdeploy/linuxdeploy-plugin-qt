@@ -100,12 +100,13 @@ int main(const int argc, const char *const *const argv) {
     const bf::path qtInstallQmlPath = qmakeVars["QT_INSTALL_QML"];
     const std::string qtVersion = qmakeVars["QT_VERSION"];
 
-    if (qtVersion.empty()) {
+    if (qtVersion.length() < 2) {
         ldLog() << LD_ERROR << "Failed to query QT_VERSION using qmake -query" << std::endl;
         return 1;
     }
 
     int qtMajorVersion = std::stoi(qtVersion, nullptr, 10);
+    int qtMinorVersion = std::stoi(qtVersion.substr(2), nullptr, 10);
     if (qtMajorVersion < 5) {
         ldLog() << std::endl << LD_WARNING << "Minimum Qt version supported is 5" << std::endl;
         qtMajorVersion = 5;
@@ -244,7 +245,8 @@ int main(const int argc, const char *const *const argv) {
         qtInstallQmlPath,
         qtTranslationsPath,
         qtDataPath,
-        qtMajorVersion
+        qtMajorVersion,
+        qtMinorVersion
     );
 
     for (const auto& module : qtModulesToDeploy) {
