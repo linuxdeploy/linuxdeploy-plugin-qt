@@ -26,13 +26,15 @@ PluginsDeployerFactory::PluginsDeployerFactory(AppDir& appDir,
                                                bf::path qtInstallQmlPath,
                                                bf::path qtTranslationsPath,
                                                bf::path qtDataPath,
-                                               int qtMajorVersion) : appDir(appDir),
+                                               int qtMajorVersion,
+                                               int qtMinorVersion) : appDir(appDir),
                                                                       qtPluginsPath(std::move(qtPluginsPath)),
                                                                       qtLibexecsPath(std::move(qtLibexecsPath)),
                                                                       qtInstallQmlPath(std::move(qtInstallQmlPath)),
                                                                       qtTranslationsPath(std::move(qtTranslationsPath)),
                                                                       qtDataPath(std::move(qtDataPath)),
-                                                                      qtMajorVersion(qtMajorVersion) {}
+                                                                      qtMajorVersion(qtMajorVersion),
+                                                                      qtMinorVersion(qtMinorVersion) {}
 
 std::vector<std::shared_ptr<PluginsDeployer>> PluginsDeployerFactory::getDeployers(const std::string& moduleName) {
     if (moduleName == "gui") {
@@ -46,7 +48,7 @@ std::vector<std::shared_ptr<PluginsDeployer>> PluginsDeployerFactory::getDeploye
     if (moduleName == "network") {
         if (qtMajorVersion < 6) {
             return {getInstance<BearerPluginsDeployer>(moduleName)};
-        } else {
+        } else if (qtMinorVersion >= 2) {
             return {getInstance<TlsBackendsDeployer>(moduleName)};
         }
     }
