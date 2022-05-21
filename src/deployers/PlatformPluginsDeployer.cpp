@@ -51,17 +51,11 @@ bool PlatformPluginsDeployer::deploy() {
                 if (!appDir.deployLibrary(*i, stylesDestination))
                     return false;
     } else {
-        ldLog() << "Trying to deploy Gtk 2 platform theme and/or style" << std::endl;
+        ldLog() << "Trying to deploy platform themes and style" << std::endl;
 
-        // according to probono, only the files shall be deployed, not their dependencies
-        // either loading succeeds, then the system Gtk shall be used anyway, otherwise loading fails and Qt will fall
-        // back to the default UI theme
-        // we don't care whether this works (it's an experimental feature), therefore we ignore the return values
-        const auto libqgtk2Path = platformThemesPath / "libqgtk2.so";
-        const auto libqgtk3Path = platformThemesPath / "libqgtk3.so";
         const auto libqxdgPath = platformThemesPath / "libqxdgdesktopportal.so";
 
-        for (const auto &file : {libqgtk2Path, libqgtk3Path, libqxdgPath}) {
+        for (const auto &file : {libqxdgPath}) {
             // we need to check whether the files exist at least, otherwise the deferred deployment operation fails
             if (bf::is_regular_file(file)) {
                 ldLog() << "Attempting to deploy" << file.filename() << "found at path" << file.parent_path() << std::endl;
@@ -69,14 +63,6 @@ bool PlatformPluginsDeployer::deploy() {
             } else {
                 ldLog() << "Could not find" << file.filename() << "on system, skipping deployment" << std::endl;
             }
-        }
-
-        const auto libqgtk2stylePath = stylesPath / "libqgtk2style.so";
-        if (bf::is_regular_file(libqgtk2stylePath)) {
-            ldLog() << "Attempting to deploy" << libqgtk2stylePath.filename() << "found at path" << libqgtk2stylePath << std::endl;
-            appDir.deployFile(libqgtk2stylePath, stylesDestination);
-        } else {
-            ldLog() << "Could not find" << libqgtk2stylePath.filename() << "on system, skipping deployment" << std::endl;
         }
     }
 
