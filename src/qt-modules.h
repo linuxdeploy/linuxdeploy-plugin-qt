@@ -127,7 +127,7 @@ static const std::vector<QtModule> Qt6Modules = {
     {"xcbqpa", "libQt6XcbQpa", ""},
     {"xml", "libQt6Xml", "qtbase"},
 
-    /* Not Included in Qt6.0.0, maybe some of them will be added back in 6.1, 6.2
+    /* Re-introduce for testing in 6.2+ */
 
     {"3danimation", "libQt63DAnimation", ""},
     {"3dcore", "libQt63DCore", ""},
@@ -143,7 +143,7 @@ static const std::vector<QtModule> Qt6Modules = {
     {"3dquick", "libQt63DQuick", ""},
     {"bluetooth", "libQt6Bluetooth", ""},
     {"clucene", "libQt6CLucene", "qt_help"},
-    {"declarative", "libQt6Declarative", "qtquick1"},
+    {"declarative", "libQt6Declarative", "qtquick2"},
     {"gamepad", "libQt6Gamepad", ""},
     {"location", "libQt6Location", ""},
     {"multimediagsttools", "libQt6MultimediaGstTools", "qtmultimedia"},
@@ -164,7 +164,6 @@ static const std::vector<QtModule> Qt6Modules = {
     {"websockets", "libQt6WebSockets", "qtwebsockets"},
     {"x11extras", "libQt6X11Extras", ""},
     {"xmlpatterns", "libQt6XmlPatterns", "qtxmlpatterns"},
-    */
    
 };
 
