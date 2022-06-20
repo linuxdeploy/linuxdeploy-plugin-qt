@@ -1,14 +1,38 @@
 // library headers
 #include <linuxdeploy/core/log.h>
-#include <boost/filesystem.hpp>
 
 // local headers
 #include "PlatformPluginsDeployer.h"
+#include "linuxdeploy/util/util.h"
 
 using namespace linuxdeploy::plugin::qt;
 using namespace linuxdeploy::core::log;
 
 namespace bf = boost::filesystem;
+
+PlatformPluginsDeployer::PlatformPluginsDeployer(std::string moduleName,
+                                                 core::appdir::AppDir& appDir,
+                                                 bf::path qtPluginsPath,
+                                                 bf::path qtLibexecsPath,
+                                                 bf::path installLibsPath,
+                                                 bf::path qtTranslationsPath,
+                                                 bf::path qtDataPath):
+                                                 BasicPluginsDeployer(std::move(moduleName),
+                                                                      appDir,
+                                                                      std::move(qtPluginsPath),
+                                                                      std::move(qtLibexecsPath),
+                                                                      std::move(installLibsPath),
+                                                                      std::move(qtTranslationsPath),
+                                                                      std::move(qtDataPath)) {
+    // check if the platform plugins are set in env
+    const auto* const platformPluginsFromEnvData = getenv("PLATFORM_PLUGINS");
+    if (platformPluginsFromEnvData != nullptr)
+        platformToDeploy = linuxdeploy::util::split(std::string(platformPluginsFromEnvData), ';');
+    else {
+        // default to libqxcb if nothing is provided
+        platformToDeploy.emplace_back("libqxcb.so");
+    }
+}
 
 bool PlatformPluginsDeployer::deploy() {
     // calling the default code is optional, but it won't hurt for now
@@ -16,9 +40,11 @@ bool PlatformPluginsDeployer::deploy() {
         return false;
 
     ldLog() << "Deploying platform plugins" << std::endl;
+    for (auto& platform : platformToDeploy) {
+        if (!appDir.deployLibrary(qtPluginsPath / "platforms" / platform, appDir.path() / "usr/plugins/platforms/"))
+            return false;
+    }
 
-    if (!appDir.deployLibrary(qtPluginsPath / "platforms/libqxcb.so", appDir.path() / "usr/plugins/platforms/"))
-        return false;
 
     for (bf::directory_iterator i(qtPluginsPath / "platforminputcontexts"); i != bf::directory_iterator(); ++i) {
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/platforminputcontexts/"))
