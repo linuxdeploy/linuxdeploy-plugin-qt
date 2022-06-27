@@ -17,8 +17,23 @@ bool PlatformPluginsDeployer::deploy() {
 
     ldLog() << "Deploying platform plugins" << std::endl;
 
-    if (!appDir.deployLibrary(qtPluginsPath / "platforms/libqxcb.so", appDir.path() / "usr/plugins/platforms/"))
-        return false;
+    if (getenv("ENABLE_EGLFS")){
+        if (!appDir.deployLibrary(qtPluginsPath / "platforms/libqxcb.so", appDir.path() / "usr/plugins/platforms/"))
+            ldLog() << "No XCB platform plugin found, skipping" << std::endl;
+        if (!appDir.deployLibrary(qtPluginsPath / "platforms/libqeglfs.so", appDir.path() / "usr/plugins/platforms/"))
+            ldLog() << "No EGLFS platform plugin found, skipping" << std::endl;
+        if (!appDir.deployLibrary(qtPluginsPath / "egldeviceintegrations/libqeglfs-kms-integration.so", appDir.path() / "usr/plugins/egldeviceintegrations/"))
+            ldLog() << "No EGLFS KMS Integration plugin found, skipping" << std::endl;
+        if (!appDir.deployLibrary(qtPluginsPath / "egldeviceintegrations/libqeglfs-x11-integration.so", appDir.path() / "usr/plugins/egldeviceintegrations/"))
+            ldLog() << "No EGLFS X11 Integration plugin found, skipping" << std::endl;
+        if (!appDir.deployLibrary(qtPluginsPath / "egldeviceintegrations/libqeglfs-kms-egldevice-integration.so", appDir.path() / "usr/plugins/egldeviceintegrations/"))
+            ldLog() << "No EGLFS KMS EGLDEVICE Integration plugin found, skipping" << std::endl;
+        if (!appDir.deployLibrary(qtPluginsPath / "egldeviceintegrations/libqeglfs-kms-emu-integration.so", appDir.path() / "usr/plugins/egldeviceintegrations/"))
+            ldLog() << "No EGLFS EMU Integration plugin found, skipping" << std::endl;
+    } else {
+        if (!appDir.deployLibrary(qtPluginsPath / "platforms/libqxcb.so", appDir.path() / "usr/plugins/platforms/"))
+            return false;        
+    }
 
     for (bf::directory_iterator i(qtPluginsPath / "platforminputcontexts"); i != bf::directory_iterator(); ++i) {
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/platforminputcontexts/"))
