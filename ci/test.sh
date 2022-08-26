@@ -87,4 +87,14 @@ pushd linuxdeploy-plugin-qt-examples/QtWidgetsApplication
         "$linuxdeploy_bin" --appdir "$PWD"/AppDir --plugin qt --output appimage || exit 1
         mv -v *AppImage "$build_dir" || exit 1
     popd
+
+    mkdir build-platforms
+    pushd build-platforms
+        export EXTRA_PLATFORM_PLUGINS="libqoffscreen.so;libqminimal.so"
+        qmake CONFIG+=release PREFIX=/usr ../QtWidgetsApplication.pro || exit 1
+        INSTALL_ROOT="$PWD"/AppDir make install || exit 1
+
+        env OUTPUT=platforms.AppImage "$linuxdeploy_bin" --appdir "$PWD"/AppDir --plugin qt --output appimage || exit 1
+        mv -v platforms.AppImage "$build_dir" || exit 1
+    popd
 popd

@@ -1,5 +1,6 @@
 // library headers
 #include <linuxdeploy/core/log.h>
+#include <linuxdeploy/util/util.h>
 #include <boost/filesystem.hpp>
 
 // local headers
@@ -17,8 +18,19 @@ bool PlatformPluginsDeployer::deploy() {
 
     ldLog() << "Deploying platform plugins" << std::endl;
 
+    // always deploy default platform
     if (!appDir.deployLibrary(qtPluginsPath / "platforms/libqxcb.so", appDir.path() / "usr/plugins/platforms/"))
         return false;
+
+    // deploy extra platform plugins, if any
+    const auto* const platformPluginsFromEnvData = getenv("EXTRA_PLATFORM_PLUGINS");
+    if (platformPluginsFromEnvData != nullptr) {
+        for (const auto& platformToDeploy : linuxdeploy::util::split(std::string(platformPluginsFromEnvData), ';')) {
+            ldLog() << "Deploying extra platform plugin: " << platformToDeploy << std::endl;
+            if (!appDir.deployLibrary(qtPluginsPath / "platforms" / platformToDeploy, appDir.path() / "usr/plugins/platforms/"))
+                return false;
+        }
+     }
 
     for (bf::directory_iterator i(qtPluginsPath / "platforminputcontexts"); i != bf::directory_iterator(); ++i) {
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/platforminputcontexts/"))
