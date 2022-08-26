@@ -23,7 +23,8 @@ bool PlatformPluginsDeployer::deploy() {
         return false;
 
     // deploy extra platform plugins, if any
-    if (const auto* const platformPluginsFromEnvData = getenv("EXTRA_PLATFORM_PLUGINS")) {
+    const auto* const platformPluginsFromEnvData = getenv("EXTRA_PLATFORM_PLUGINS");
+    if (platformPluginsFromEnvData != nullptr) {
         for (const auto& platformToDeploy : linuxdeploy::util::split(std::string(platformPluginsFromEnvData), ';')) {
             ldLog() << "Deploying extra platform plugin: " << platformToDeploy << std::endl;
             if (!appDir.deployLibrary(qtPluginsPath / "platforms" / platformToDeploy, appDir.path() / "usr/plugins/platforms/"))
