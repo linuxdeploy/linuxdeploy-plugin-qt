@@ -4,6 +4,7 @@
 #include "PlatformPluginsDeployer.h"
 #include "BearerPluginsDeployer.h"
 #include "GamepadPluginsDeployer.h"
+#include "LocationPluginsDeployer.h"
 #include "MultimediaPluginsDeployer.h"
 #include "PrintSupportPluginsDeployer.h"
 #include "PositioningPluginsDeployer.h"
@@ -59,6 +60,10 @@ std::vector<std::shared_ptr<PluginsDeployer>> PluginsDeployerFactory::getDeploye
 
     if (moduleName == "sql") {
         return {getInstance<SqlPluginsDeployer>(moduleName)};
+    }
+
+    if (moduleName == "location") {
+        return {getInstance<LocationPluginsDeployer>(moduleName)};
     }
 
     if (moduleName == "positioning") {

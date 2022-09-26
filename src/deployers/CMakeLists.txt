@@ -11,6 +11,7 @@ set(CLASSES
     SvgPluginsDeployer
     SqlPluginsDeployer
     PositioningPluginsDeployer
+    LocationPluginsDeployer
     MultimediaPluginsDeployer
     WebEnginePluginsDeployer
     QmlPluginsDeployer
