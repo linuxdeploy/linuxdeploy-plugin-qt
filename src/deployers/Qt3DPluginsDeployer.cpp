@@ -1,6 +1,8 @@
+// system headers
+#include <filesystem>
+
 // library headers
 #include <linuxdeploy/core/log.h>
-#include <boost/filesystem.hpp>
 
 // local headers
 #include "Qt3DPluginsDeployer.h"
@@ -8,7 +10,7 @@
 using namespace linuxdeploy::plugin::qt;
 using namespace linuxdeploy::core::log;
 
-namespace bf = boost::filesystem;
+namespace fs = std::filesystem;
 
 bool Qt3DPluginsDeployer::deploy() {
     // calling the default code is optional, but it won't hurt for now
@@ -17,12 +19,12 @@ bool Qt3DPluginsDeployer::deploy() {
 
     ldLog() << "Deploying Qt 3D plugins" << std::endl;
 
-    for (bf::directory_iterator i(qtPluginsPath / "geometryloaders"); i != bf::directory_iterator(); ++i) {
+    for (fs::directory_iterator i(qtPluginsPath / "geometryloaders"); i != fs::directory_iterator(); ++i) {
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/geometryloaders/"))
             return false;
     }
 
-    for (bf::directory_iterator i(qtPluginsPath / "sceneparsers"); i != bf::directory_iterator(); ++i) {
+    for (fs::directory_iterator i(qtPluginsPath / "sceneparsers"); i != fs::directory_iterator(); ++i) {
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/sceneparsers/"))
             return false;
     }

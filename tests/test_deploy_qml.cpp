@@ -1,12 +1,11 @@
 // library includes
-#include <boost/filesystem.hpp>
 #include <gtest/gtest.h>
 
 // local includes
 #include "../src/qml.h"
 #include "../src/util.h"
 
-namespace bf = boost::filesystem;
+namespace fs = std::filesystem;
 
 namespace linuxdeploy {
     namespace plugin {
@@ -15,16 +14,16 @@ namespace linuxdeploy {
                 class TestDeployQml : public testing::Test {
 
                 public:
-                    boost::filesystem::path appDirPath;
-                    boost::filesystem::path projectQmlRoot;
-                    boost::filesystem::path defaultQmlImportPath;
+                    std::filesystem::path appDirPath;
+                    std::filesystem::path projectQmlRoot;
+                    std::filesystem::path defaultQmlImportPath;
 
                     void SetUp() override {
                         appDirPath = getTempDirName();
                         projectQmlRoot = appDirPath.string() + "/usr/qml";
 
-                        boost::filesystem::create_directories(projectQmlRoot);
-                        boost::filesystem::copy_file(TESTS_DATA_DIR "/qml_project/file.qml",
+                        std::filesystem::create_directories(projectQmlRoot);
+                        std::filesystem::copy_file(TESTS_DATA_DIR "/qml_project/file.qml",
                             projectQmlRoot.string() + "/file.qml");
 
                         setenv(ENV_KEY_QML_MODULES_PATHS, TESTS_DATA_DIR, 1);
@@ -41,11 +40,11 @@ namespace linuxdeploy {
                     }
 
                     void TearDown() override {
-                        boost::filesystem::remove_all(appDirPath);
+                        std::filesystem::remove_all(appDirPath);
                         unsetenv(ENV_KEY_QML_MODULES_PATHS);
                     }
 
-                    bf::path getQmlImportPath() {
+                    fs::path getQmlImportPath() {
                         const auto& qmakePath = findQmake();
                         return queryQmake(qmakePath)["QT_INSTALL_QML"];
                     }
@@ -53,7 +52,7 @@ namespace linuxdeploy {
 
                 TEST_F(TestDeployQml, find_qmlimporter_path) {
                     auto result = findQmlImportScanner();
-                    boost::filesystem::path expected = "/usr/bin/qmlimportscanner";
+                    std::filesystem::path expected = "/usr/bin/qmlimportscanner";
 
                     ASSERT_FALSE(result.empty());
                     ASSERT_EQ(result.string(), expected.string());
@@ -96,12 +95,12 @@ namespace linuxdeploy {
                     deployQml(appDir, defaultQmlImportPath);
                     appDir.executeDeferredOperations();
 
-                    ASSERT_TRUE(boost::filesystem::exists(projectQmlRoot.string() + "/QtQuick.2"));
-                    ASSERT_TRUE(boost::filesystem::exists(projectQmlRoot.string() + "/qml_module"));
+                    ASSERT_TRUE(std::filesystem::exists(projectQmlRoot.string() + "/QtQuick.2"));
+                    ASSERT_TRUE(std::filesystem::exists(projectQmlRoot.string() + "/qml_module"));
                 }
 
                 TEST_F(TestDeployQml, getQmlModuleRelativePath) {
-                    std::vector<bf::path> qmlModulesImportPaths = {"/usr/lib/x86_64-linux-gnu/qt5/qml", "/usr/lib/",
+                    std::vector<fs::path> qmlModulesImportPaths = {"/usr/lib/x86_64-linux-gnu/qt5/qml", "/usr/lib/",
                                                                    "/usr/lib/qt5.10/qml", TESTS_DATA_DIR};
 
                     auto rpath = getQmlModuleRelativePath(qmlModulesImportPaths,

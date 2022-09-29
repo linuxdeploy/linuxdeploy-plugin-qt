@@ -1,3 +1,6 @@
+// system headers
+#include <assert.h>
+
 // library headers
 #include <linuxdeploy/util/util.h>
 #include <linuxdeploy/subprocess/subprocess.h>
@@ -7,7 +10,7 @@
 
 using namespace linuxdeploy::subprocess;
 
-std::map<std::string, std::string> queryQmake(const boost::filesystem::path& qmakePath) {
+std::map<std::string, std::string> queryQmake(const std::filesystem::path& qmakePath) {
     auto qmakeCall = subprocess({qmakePath.string(), "-query"}).run();
 
     using namespace linuxdeploy::core::log;
@@ -50,10 +53,10 @@ std::map<std::string, std::string> queryQmake(const boost::filesystem::path& qma
     return rv;
 };
 
-boost::filesystem::path findQmake() {
+std::filesystem::path findQmake() {
     using namespace linuxdeploy::core::log;
 
-    boost::filesystem::path qmakePath;
+    std::filesystem::path qmakePath;
 
     // allow user to specify absolute path to qmake
     if (getenv("QMAKE")) {
@@ -70,7 +73,7 @@ boost::filesystem::path findQmake() {
     return qmakePath;
 }
 
-bool pathContainsFile(boost::filesystem::path dir, boost::filesystem::path file) {
+bool pathContainsFile(std::filesystem::path dir, std::filesystem::path file) {
     // If dir ends with "/" and isn't the root directory, then the final
     // component returned by iterators will include "." and will interfere
     // with the std::equal check below, so we strip it before proceeding.
@@ -119,6 +122,6 @@ bool isQtDebugSymbolFile(const std::string& filename) {
     return strEndsWith(filename, ".debug");
 }
 
-bool isQtDebugSymbolFile(const boost::filesystem::path& path) {
+bool isQtDebugSymbolFile(const std::filesystem::path& path) {
     return strEndsWith(path.filename().string(), ".debug");
 }

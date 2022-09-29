@@ -1,7 +1,9 @@
+// system headers
+#include <filesystem>
+
 // library headers
 #include <linuxdeploy/core/log.h>
 #include <linuxdeploy/util/util.h>
-#include <boost/filesystem.hpp>
 
 // local headers
 #include "PlatformPluginsDeployer.h"
@@ -9,7 +11,7 @@
 using namespace linuxdeploy::plugin::qt;
 using namespace linuxdeploy::core::log;
 
-namespace bf = boost::filesystem;
+namespace fs = std::filesystem;
 
 bool PlatformPluginsDeployer::deploy() {
     // calling the default code is optional, but it won't hurt for now
@@ -32,34 +34,34 @@ bool PlatformPluginsDeployer::deploy() {
         }
      }
 
-    for (bf::directory_iterator i(qtPluginsPath / "platforminputcontexts"); i != bf::directory_iterator(); ++i) {
+    for (fs::directory_iterator i(qtPluginsPath / "platforminputcontexts"); i != fs::directory_iterator(); ++i) {
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/platforminputcontexts/"))
             return false;
     }
 
-    for (bf::directory_iterator i(qtPluginsPath / "imageformats"); i != bf::directory_iterator(); ++i) {
+    for (fs::directory_iterator i(qtPluginsPath / "imageformats"); i != fs::directory_iterator(); ++i) {
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/imageformats/"))
             return false;
     }
 
     // TODO: platform themes -- https://github.com/probonopd/linuxdeployqt/issues/236
 
-    const bf::path platformThemesPath = qtPluginsPath / "platformthemes";
-    const bf::path stylesPath = qtPluginsPath / "styles";
+    const fs::path platformThemesPath = qtPluginsPath / "platformthemes";
+    const fs::path stylesPath = qtPluginsPath / "styles";
 
-    const bf::path platformThemesDestination = appDir.path() / "usr/plugins/platformthemes/";
-    const bf::path stylesDestination = appDir.path() / "usr/plugins/styles/";
+    const fs::path platformThemesDestination = appDir.path() / "usr/plugins/platformthemes/";
+    const fs::path stylesDestination = appDir.path() / "usr/plugins/styles/";
 
     if (getenv("DEPLOY_PLATFORM_THEMES") != nullptr) {
         ldLog() << LD_WARNING << "Deploying all platform themes and styles [experimental feature]" << std::endl;
 
-        if (bf::is_directory(platformThemesPath))
-            for (bf::directory_iterator i(platformThemesPath); i != bf::directory_iterator(); ++i)
+        if (fs::is_directory(platformThemesPath))
+            for (fs::directory_iterator i(platformThemesPath); i != fs::directory_iterator(); ++i)
                 if (!appDir.deployLibrary(*i, platformThemesDestination))
                     return false;
 
-        if (bf::is_directory(stylesPath))
-            for (bf::directory_iterator i(stylesPath); i != bf::directory_iterator(); ++i)
+        if (fs::is_directory(stylesPath))
+            for (fs::directory_iterator i(stylesPath); i != fs::directory_iterator(); ++i)
                 if (!appDir.deployLibrary(*i, stylesDestination))
                     return false;
     } else {
@@ -69,7 +71,7 @@ bool PlatformPluginsDeployer::deploy() {
 
         for (const auto &file : {libqxdgPath}) {
             // we need to check whether the files exist at least, otherwise the deferred deployment operation fails
-            if (bf::is_regular_file(file)) {
+            if (fs::is_regular_file(file)) {
                 ldLog() << "Attempting to deploy" << file.filename() << "found at path" << file.parent_path() << std::endl;
                 appDir.deployFile(file, platformThemesDestination);
             } else {

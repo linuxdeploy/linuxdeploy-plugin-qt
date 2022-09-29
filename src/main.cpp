@@ -1,4 +1,5 @@
 // system includes
+#include <filesystem>
 #include <iostream>
 #include <set>
 #include <sstream>
@@ -6,7 +7,6 @@
 #include <vector>
 
 // library includes
-#include <boost/filesystem.hpp>
 #include <linuxdeploy/core/appdir.h>
 #include <linuxdeploy/core/elf_file.h>
 #include <linuxdeploy/core/log.h>
@@ -18,7 +18,7 @@
 #include "deployment.h"
 #include "deployers/PluginsDeployerFactory.h"
 
-namespace bf = boost::filesystem;
+namespace fs = std::filesystem;
 
 using namespace linuxdeploy::core;
 using namespace linuxdeploy::util::misc;
@@ -34,7 +34,7 @@ int main(const int argc, const char *const *const argv) {
     args::ArgumentParser parser("linuxdeploy Qt plugin",
                                 "Bundles Qt resources. For use with an existing AppDir, created by linuxdeploy.");
 
-    args::ValueFlag<bf::path> appDirPath(parser, "appdir path", "Path to an existing AppDir", {"appdir"});
+    args::ValueFlag<fs::path> appDirPath(parser, "appdir path", "Path to an existing AppDir", {"appdir"});
     args::ValueFlagList<std::string> extraPlugins(parser, "plugin",
                                                   "Extra Qt plugin to deploy (specified by name, filename or path)",
                                                   {'p', "extra-plugin"});
@@ -65,7 +65,7 @@ int main(const int argc, const char *const *const argv) {
         return 1;
     }
 
-    if (!bf::is_directory(appDirPath.Get())) {
+    if (!fs::is_directory(appDirPath.Get())) {
         ldLog() << LD_ERROR << "No such directory:" << appDirPath.Get() << std::endl;
         return 1;
     }
@@ -77,7 +77,7 @@ int main(const int argc, const char *const *const argv) {
         return 1;
     }
 
-    if (!bf::exists(qmakePath)) {
+    if (!fs::exists(qmakePath)) {
         ldLog() << LD_ERROR << "No such file or directory:" << qmakePath << std::endl;
         return 1;
     }
@@ -91,13 +91,13 @@ int main(const int argc, const char *const *const argv) {
         return 1;
     }
 
-    const bf::path qtPluginsPath = qmakeVars["QT_INSTALL_PLUGINS"];
-    const bf::path qtLibexecsPath = qmakeVars["QT_INSTALL_LIBEXECS"];
-    const bf::path qtDataPath = qmakeVars["QT_INSTALL_DATA"];
-    const bf::path qtTranslationsPath = qmakeVars["QT_INSTALL_TRANSLATIONS"];
-    const bf::path qtBinsPath = qmakeVars["QT_INSTALL_BINS"];
-    const bf::path qtLibsPath = qmakeVars["QT_INSTALL_LIBS"];
-    const bf::path qtInstallQmlPath = qmakeVars["QT_INSTALL_QML"];
+    const fs::path qtPluginsPath = qmakeVars["QT_INSTALL_PLUGINS"];
+    const fs::path qtLibexecsPath = qmakeVars["QT_INSTALL_LIBEXECS"];
+    const fs::path qtDataPath = qmakeVars["QT_INSTALL_DATA"];
+    const fs::path qtTranslationsPath = qmakeVars["QT_INSTALL_TRANSLATIONS"];
+    const fs::path qtBinsPath = qmakeVars["QT_INSTALL_BINS"];
+    const fs::path qtLibsPath = qmakeVars["QT_INSTALL_LIBS"];
+    const fs::path qtInstallQmlPath = qmakeVars["QT_INSTALL_QML"];
     const std::string qtVersion = qmakeVars["QT_VERSION"];
 
     if (qtVersion.length() < 2) {
@@ -152,8 +152,8 @@ int main(const int argc, const char *const *const argv) {
 
     auto matchesQtModule = [](std::string libraryName, const QtModule &module) {
         // extract filename if argument is path
-        if (bf::is_regular_file(libraryName))
-            libraryName = bf::path(libraryName).filename().string();
+        if (fs::is_regular_file(libraryName))
+            libraryName = fs::path(libraryName).filename().string();
 
         // adding the trailing dot makes sure e.g., libQt5WebEngineCore won't be matched as webengine and webenginecore
         const auto &libraryPrefix = module.libraryFilePrefix + ".";

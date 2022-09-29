@@ -1,5 +1,5 @@
-// system includes
-#include <boost/filesystem.hpp>
+// system headers
+#include <filesystem>
 
 // library includes
 #include <nlohmann/json.hpp>
@@ -13,18 +13,19 @@
 #include "util.h"
 #include "qml.h"
 
-namespace bf = boost::filesystem;
 using namespace linuxdeploy::core;
 using namespace linuxdeploy::core::log;
 using namespace linuxdeploy::subprocess;
 using namespace linuxdeploy::util;
 using namespace nlohmann;
 
-bf::path findQmlImportScanner() {
+namespace fs = std::filesystem;
+
+fs::path findQmlImportScanner() {
     return which("qmlimportscanner");
 }
 
-std::string runQmlImportScanner(const std::vector<boost::filesystem::path> &sourcesPaths, const std::vector<bf::path> &qmlImportPaths) {
+std::string runQmlImportScanner(const std::vector<std::filesystem::path> &sourcesPaths, const std::vector<fs::path> &qmlImportPaths) {
     auto qmlImportScannerPath = findQmlImportScanner();
     std::vector<std::string> command{qmlImportScannerPath.string()};
 
@@ -82,35 +83,35 @@ std::vector<QmlModuleImport> parseQmlImportScannerOutput(const std::string &outp
     return imports;
 }
 
-std::vector<bf::path> getExtraQmlModulesPaths() {
+std::vector<fs::path> getExtraQmlModulesPaths() {
     const auto* envVarContents = std::getenv(ENV_KEY_QML_MODULES_PATHS);
 
     if (envVarContents == nullptr)
         return {};
 
     auto paths = split(envVarContents, ':');
-    std::vector<bf::path> extraQmlSourcesPaths;
+    std::vector<fs::path> extraQmlSourcesPaths;
 
     std::copy(paths.begin(), paths.end(), std::back_inserter(extraQmlSourcesPaths));
 
     return extraQmlSourcesPaths;
 }
 
-std::vector<bf::path> getExtraQmlSourcesPaths() {
+std::vector<fs::path> getExtraQmlSourcesPaths() {
     const auto* envVarContents = std::getenv(ENV_KEY_QML_SOURCES_PATHS);
 
     if (envVarContents == nullptr)
         return {};
 
     auto paths = split(envVarContents, ':');
-    std::vector<bf::path> extraQmlSourcesPaths;
+    std::vector<fs::path> extraQmlSourcesPaths;
 
     std::copy(paths.begin(), paths.end(), std::back_inserter(extraQmlSourcesPaths));
 
     return extraQmlSourcesPaths;
 }
 
-std::vector<QmlModuleImport> getQmlImports(const bf::path &projectRootPath, const bf::path &installQmlPath) {
+std::vector<QmlModuleImport> getQmlImports(const fs::path &projectRootPath, const fs::path &installQmlPath) {
     std::vector<QmlModuleImport> moduleImports;
 
     auto qmlImportPaths = getExtraQmlModulesPaths();
@@ -152,9 +153,9 @@ std::vector<QmlModuleImport> getQmlImports(const bf::path &projectRootPath, cons
     return moduleImports;
 }
 
-boost::filesystem::path getQmlModuleRelativePath(const std::vector<boost::filesystem::path> &qmlModulesImportPaths,
-                                                 const boost::filesystem::path &qmlModulePath) {
-    boost::filesystem::path relativePath;
+std::filesystem::path getQmlModuleRelativePath(const std::vector<std::filesystem::path> &qmlModulesImportPaths,
+                                                 const std::filesystem::path &qmlModulePath) {
+    std::filesystem::path relativePath;
     for (const auto &qmlImportPath: qmlModulesImportPaths) {
         auto candidate = relative(qmlModulePath, qmlImportPath);
         if (qmlImportPath / candidate == qmlModulePath && (candidate < relativePath || relativePath.empty()))
@@ -164,17 +165,17 @@ boost::filesystem::path getQmlModuleRelativePath(const std::vector<boost::filesy
     return relativePath;
 }
 
-void deployQml(appdir::AppDir &appDir, const boost::filesystem::path &installQmlPath) {
+void deployQml(appdir::AppDir &appDir, const std::filesystem::path &installQmlPath) {
     auto qmlImports = getQmlImports(appDir.path(), installQmlPath);
-    bf::path targetQmlModulesPath = appDir.path().string() + "/usr/qml/";
+    fs::path targetQmlModulesPath = appDir.path().string() + "/usr/qml/";
 
     for (const auto &qmlImport: qmlImports) {
         if (!qmlImport.path.empty()) {
-            if (bf::is_directory(qmlImport.path)) {
-                for (bf::recursive_directory_iterator i(qmlImport.path); i != bf::recursive_directory_iterator(); ++i) {
+            if (fs::is_directory(qmlImport.path)) {
+                for (fs::recursive_directory_iterator i(qmlImport.path); i != fs::recursive_directory_iterator(); ++i) {
                     const auto &entry = *i;
 
-                    if (!bf::is_directory(entry)) {
+                    if (!fs::is_directory(entry)) {
                         // debug symbol files shall not be deployed
                         if (isQtDebugSymbolFile(entry.path())) {
                             continue;

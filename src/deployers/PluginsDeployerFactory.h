@@ -1,12 +1,12 @@
 #pragma once
 
 // system headers
+#include <filesystem>
 #include <memory>
 #include <string>
 
 // library headers
 #include <linuxdeploy/core/appdir.h>
-#include <boost/filesystem.hpp>
 
 // local headers
 #include "PluginsDeployer.h"
@@ -18,11 +18,11 @@ namespace linuxdeploy {
             class PluginsDeployerFactory {
             private:
                 core::appdir::AppDir& appDir;
-                const boost::filesystem::path qtPluginsPath;
-                const boost::filesystem::path qtLibexecsPath;
-                const boost::filesystem::path qtInstallQmlPath;
-                const boost::filesystem::path qtTranslationsPath;
-                const boost::filesystem::path qtDataPath;
+                const std::filesystem::path qtPluginsPath;
+                const std::filesystem::path qtLibexecsPath;
+                const std::filesystem::path qtInstallQmlPath;
+                const std::filesystem::path qtTranslationsPath;
+                const std::filesystem::path qtDataPath;
                 const int qtMajorVersion;
                 const int qtMinorVersion;
 
@@ -43,11 +43,11 @@ namespace linuxdeploy {
 
             public:
                 explicit PluginsDeployerFactory(core::appdir::AppDir& appDir,
-                                                boost::filesystem::path qtPluginsPath,
-                                                boost::filesystem::path qtLibexecsPath,
-                                                boost::filesystem::path qtInstallQmlPath,
-                                                boost::filesystem::path qtTranslationsPath,
-                                                boost::filesystem::path qtDataPath,
+                                                std::filesystem::path qtPluginsPath,
+                                                std::filesystem::path qtLibexecsPath,
+                                                std::filesystem::path qtInstallQmlPath,
+                                                std::filesystem::path qtTranslationsPath,
+                                                std::filesystem::path qtDataPath,
                                                 int qtMajorVersion,
                                                 int qtMinorVersion);
 

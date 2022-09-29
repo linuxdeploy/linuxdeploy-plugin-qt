@@ -9,7 +9,6 @@
 #include <vector>
 
 // library includes
-#include <boost/filesystem.hpp>
 #include <args.hxx>
 #include <linuxdeploy/core/log.h>
 
@@ -37,11 +36,11 @@ std::string join(Iter beg, Iter end) {
     return rv.str();
 }
 
-std::map<std::string, std::string> queryQmake(const boost::filesystem::path& qmakePath);
+std::map<std::string, std::string> queryQmake(const std::filesystem::path& qmakePath);
 
-boost::filesystem::path findQmake();
+std::filesystem::path findQmake();
 
-bool pathContainsFile(boost::filesystem::path dir, boost::filesystem::path file);
+bool pathContainsFile(std::filesystem::path dir, std::filesystem::path file);
 
 std::string join(const std::vector<std::string> &list);
 
@@ -52,4 +51,4 @@ bool strStartsWith(const std::string &str, const std::string &prefix);
 bool strEndsWith(const std::string &str, const std::string &suffix);
 
 bool isQtDebugSymbolFile(const std::string& filename);
-bool isQtDebugSymbolFile(const boost::filesystem::path& path);
+bool isQtDebugSymbolFile(const std::filesystem::path& path);

@@ -1,6 +1,8 @@
+// system headers
+#include <filesystem>
+
 // library headers
 #include <linuxdeploy/core/log.h>
-#include <boost/filesystem.hpp>
 
 // local headers
 #include "MultimediaPluginsDeployer.h"
@@ -8,7 +10,7 @@
 using namespace linuxdeploy::plugin::qt;
 using namespace linuxdeploy::core::log;
 
-namespace bf = boost::filesystem;
+namespace fs = std::filesystem;
 
 bool MultimediaPluginsDeployer::deploy() {
     // calling the default code is optional, but it won't hurt for now
@@ -17,14 +19,14 @@ bool MultimediaPluginsDeployer::deploy() {
 
     ldLog() << "Deploying mediaservice plugins" << std::endl;
 
-    for (bf::directory_iterator i(qtPluginsPath / "mediaservice"); i != bf::directory_iterator(); ++i) {
+    for (fs::directory_iterator i(qtPluginsPath / "mediaservice"); i != fs::directory_iterator(); ++i) {
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/mediaservice/"))
             return false;
     }
 
     ldLog() << "Deploying audio plugins" << std::endl;
 
-    for (bf::directory_iterator i(qtPluginsPath / "audio"); i != bf::directory_iterator(); ++i) {
+    for (fs::directory_iterator i(qtPluginsPath / "audio"); i != fs::directory_iterator(); ++i) {
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/audio/"))
             return false;
     }

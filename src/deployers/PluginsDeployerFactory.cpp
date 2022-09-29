@@ -18,14 +18,14 @@
 
 using namespace linuxdeploy::plugin::qt;
 using namespace linuxdeploy::core::appdir;
-namespace bf = boost::filesystem;
+namespace fs = std::filesystem;
 
 PluginsDeployerFactory::PluginsDeployerFactory(AppDir& appDir,
-                                               bf::path qtPluginsPath,
-                                               bf::path qtLibexecsPath,
-                                               bf::path qtInstallQmlPath,
-                                               bf::path qtTranslationsPath,
-                                               bf::path qtDataPath,
+                                               fs::path qtPluginsPath,
+                                               fs::path qtLibexecsPath,
+                                               fs::path qtInstallQmlPath,
+                                               fs::path qtTranslationsPath,
+                                               fs::path qtDataPath,
                                                int qtMajorVersion,
                                                int qtMinorVersion) : appDir(appDir),
                                                                       qtPluginsPath(std::move(qtPluginsPath)),

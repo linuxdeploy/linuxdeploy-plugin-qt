@@ -1,4 +1,5 @@
 // system headers
+#include <filesystem>
 #include <utility>
 
 // library headers
@@ -10,15 +11,16 @@
 using namespace linuxdeploy::core::log;
 using namespace linuxdeploy::core::appdir;
 using namespace linuxdeploy::plugin::qt;
-namespace bf = boost::filesystem;
+
+namespace fs = std::filesystem;
 
 BasicPluginsDeployer::BasicPluginsDeployer(std::string moduleName,
                                            core::appdir::AppDir& appDir,
-                                           bf::path qtPluginsPath,
-                                           bf::path qtLibexecsPath,
-                                           bf::path installLibsPath,
-                                           bf::path qtTranslationsPath,
-                                           bf::path qtDataPath) : moduleName(std::move(moduleName)),
+                                           fs::path qtPluginsPath,
+                                           fs::path qtLibexecsPath,
+                                           fs::path installLibsPath,
+                                           fs::path qtTranslationsPath,
+                                           fs::path qtDataPath) : moduleName(std::move(moduleName)),
                                                                   appDir(appDir),
                                                                   qtPluginsPath(std::move(qtPluginsPath)),
                                                                   qtLibexecsPath(std::move(qtLibexecsPath)),

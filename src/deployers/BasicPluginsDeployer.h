@@ -1,6 +1,7 @@
 #pragma once
 
 // system headers
+#include <filesystem>
 #include <memory>
 
 // library headers
@@ -22,11 +23,11 @@ namespace linuxdeploy {
                 core::appdir::AppDir& appDir;
 
                 // Qt data
-                const boost::filesystem::path qtPluginsPath;
-                const boost::filesystem::path qtLibexecsPath;
-                const boost::filesystem::path qtInstallQmlPath;
-                const boost::filesystem::path qtTranslationsPath;
-                const boost::filesystem::path qtDataPath;
+                const std::filesystem::path qtPluginsPath;
+                const std::filesystem::path qtLibexecsPath;
+                const std::filesystem::path qtInstallQmlPath;
+                const std::filesystem::path qtTranslationsPath;
+                const std::filesystem::path qtDataPath;
 
             public:
                 /**
@@ -35,11 +36,11 @@ namespace linuxdeploy {
                  * @param moduleName
                  */
                 explicit BasicPluginsDeployer(std::string moduleName, core::appdir::AppDir& appDir,
-                                              boost::filesystem::path qtPluginsPath,
-                                              boost::filesystem::path qtLibexecsPath,
-                                              boost::filesystem::path installLibsPath,
-                                              boost::filesystem::path qtTranslationsPath,
-                                              boost::filesystem::path qtDataPath);
+                                              std::filesystem::path qtPluginsPath,
+                                              std::filesystem::path qtLibexecsPath,
+                                              std::filesystem::path installLibsPath,
+                                              std::filesystem::path qtTranslationsPath,
+                                              std::filesystem::path qtDataPath);
 
                 /**
                  * Default destroyer is good enough for this class for now, but in case we need to change this we declare a virtual

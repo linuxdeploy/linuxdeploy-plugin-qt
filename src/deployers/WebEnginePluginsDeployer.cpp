@@ -1,6 +1,9 @@
+// system headers
+#include <filesystem>
+#include <fstream>
+
 // library headers
 #include <linuxdeploy/core/log.h>
-#include <boost/filesystem.hpp>
 #include <util.h>
 
 // local headers
@@ -9,7 +12,7 @@
 using namespace linuxdeploy::plugin::qt;
 using namespace linuxdeploy::core::log;
 
-namespace bf = boost::filesystem;
+namespace fs = std::filesystem;
 
 bool WebEnginePluginsDeployer::deploy() {
     // calling the default code is optional, but it won't hurt for now
@@ -21,9 +24,9 @@ bool WebEnginePluginsDeployer::deploy() {
     const auto newLibexecPath = appDir.path() / "usr/libexec/";
 
     // make sure directory is there before trying to write a qt.conf file
-    bf::create_directories(newLibexecPath);
+    fs::create_directories(newLibexecPath);
 
-    for (bf::directory_iterator i(qtLibexecsPath); i != bf::directory_iterator(); ++i) {
+    for (fs::directory_iterator i(qtLibexecsPath); i != fs::directory_iterator(); ++i) {
         auto &entry = *i;
         const std::string prefix = "QtWeb";
 
@@ -43,12 +46,12 @@ bool WebEnginePluginsDeployer::deploy() {
                                  "qtwebengine_resources_200p.pak", "icudtl.dat"}) {
         auto path = qtDataPath / "resources" / fileName;
 
-        if (bf::is_regular_file(path))
+        if (fs::is_regular_file(path))
             appDir.deployFile(path, appDir.path() / "usr/resources/");
     }
 
-    if (bf::is_directory(qtTranslationsPath / "qtwebengine_locales")) {
-        for (bf::directory_iterator i(qtTranslationsPath / "qtwebengine_locales"); i != bf::directory_iterator(); ++i) {
+    if (fs::is_directory(qtTranslationsPath / "qtwebengine_locales")) {
+        for (fs::directory_iterator i(qtTranslationsPath / "qtwebengine_locales"); i != fs::directory_iterator(); ++i) {
             appDir.deployFile(*i, appDir.path() / "usr/translations/qtwebengine_locales/");
         }
     }
