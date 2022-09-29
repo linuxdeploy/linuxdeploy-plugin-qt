@@ -25,7 +25,7 @@ using namespace linuxdeploy::core::log;
 inline bool deployIntegrationPlugins(appdir::AppDir& appDir, const fs::path& qtPluginsPath, const std::initializer_list<fs::path>& subDirs) {
     for (const fs::path& subDir : subDirs) {
         // make sure the path ends with a / so that liblinuxdeploy recognize the destination as a directory
-        auto dir = qtPluginsPath / subDir / "/";
+        auto dir = qtPluginsPath / subDir / "";
 
         if (!fs::is_directory(dir)) {
             ldLog() << "Directory" << dir << "doesn't exist, skipping deployment" << std::endl;
