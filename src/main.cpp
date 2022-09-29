@@ -42,6 +42,8 @@ int main(const int argc, const char *const *const argv) {
     args::Flag pluginType(parser, "", "Print plugin type and exit", {"plugin-type"});
     args::Flag pluginApiVersion(parser, "", "Print plugin API version and exit", {"plugin-api-version"});
 
+    args::Flag printVersion(parser, "", "Print plugin version and exit", {"plugin-version"});
+
     try {
         parser.ParseCLI(argc, argv);
     } catch (const args::ParseError &) {
@@ -56,6 +58,15 @@ int main(const int argc, const char *const *const argv) {
 
     if (pluginApiVersion) {
         std::cout << "0" << std::endl;
+        return 0;
+    }
+
+    // always show version statement
+    std::cerr << "linuxdeploy-plugin-qt version " << LD_VERSION
+              << " (git commit ID " << LD_GIT_COMMIT << "), "
+              << LD_BUILD_NUMBER << " built on " << LD_BUILD_DATE << std::endl;
+
+    if (printVersion) {
         return 0;
     }
 
