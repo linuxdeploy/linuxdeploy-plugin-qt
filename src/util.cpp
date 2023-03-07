@@ -60,7 +60,7 @@ std::filesystem::path findQmake() {
 
     // allow user to specify absolute path to qmake
     if (getenv("QMAKE")) {
-        qmakePath = getenv("QMAKE");
+        qmakePath = linuxdeploy::util::which(getenv("QMAKE"));
         ldLog() << "Using user specified qmake:" << qmakePath << std::endl;
     } else {
         // search for qmake
