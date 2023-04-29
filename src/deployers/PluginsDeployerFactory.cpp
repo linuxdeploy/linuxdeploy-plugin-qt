@@ -5,7 +5,8 @@
 #include "BearerPluginsDeployer.h"
 #include "GamepadPluginsDeployer.h"
 #include "LocationPluginsDeployer.h"
-#include "MultimediaPluginsDeployer.h"
+#include "Multimedia5PluginsDeployer.h"
+#include "Multimedia6PluginsDeployer.h"
 #include "PrintSupportPluginsDeployer.h"
 #include "PositioningPluginsDeployer.h"
 #include "QmlPluginsDeployer.h"
@@ -70,8 +71,12 @@ std::vector<std::shared_ptr<PluginsDeployer>> PluginsDeployerFactory::getDeploye
         return {getInstance<PositioningPluginsDeployer>(moduleName)};
     }
 
-    if (qtMajorVersion < 6 && moduleName == "multimedia") {
-        return {getInstance<MultimediaPluginsDeployer>(moduleName)};
+    if (moduleName == "multimedia") {
+	if (qtMajorVersion < 6) {
+            return {getInstance<Multimedia5PluginsDeployer>(moduleName)};
+	} else {
+            return {getInstance<Multimedia6PluginsDeployer>(moduleName)};
+        }
     }
 
     if (moduleName == "webenginecore") {

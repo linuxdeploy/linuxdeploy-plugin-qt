@@ -12,7 +12,8 @@ set(CLASSES
     SqlPluginsDeployer
     PositioningPluginsDeployer
     LocationPluginsDeployer
-    MultimediaPluginsDeployer
+    Multimedia5PluginsDeployer
+    Multimedia6PluginsDeployer
     WebEnginePluginsDeployer
     QmlPluginsDeployer
     Qt3DPluginsDeployer

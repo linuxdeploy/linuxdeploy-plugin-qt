@@ -5,7 +5,7 @@
 namespace linuxdeploy {
     namespace plugin {
         namespace qt {
-            class MultimediaPluginsDeployer : public BasicPluginsDeployer {
+            class Multimedia6PluginsDeployer : public BasicPluginsDeployer {
             public:
                 // we can just use the base class's constructor
                 using BasicPluginsDeployer::BasicPluginsDeployer;
