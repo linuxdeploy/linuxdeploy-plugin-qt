@@ -1,6 +1,6 @@
 [submodule "lib/linuxdeploy"]
 	path = lib/linuxdeploy
-	url = https://github.com/TheAssassin/linuxdeploy
+	url = https://github.com/Open-Typer/linuxdeploy
 [submodule "lib/cmake-scripts"]
 	path = lib/cmake-scripts
 	url = https://github.com/linuxdeploy/cmake-scripts.git
