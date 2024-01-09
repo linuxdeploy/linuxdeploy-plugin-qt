@@ -20,7 +20,7 @@ jobs:
 
     steps:
       # check out once git command is available
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: recursive
 
@@ -31,7 +31,7 @@ jobs:
         run: bash ci/build-in-docker.sh
 
       - name: Archive artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: AppImage ${{ matrix.ARCH }}
           path: linuxdeploy-plugin-qt-${{ matrix.ARCH }}.AppImage*
