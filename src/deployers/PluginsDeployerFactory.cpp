@@ -17,6 +17,7 @@
 #include "WebEnginePluginsDeployer.h"
 #include "XcbglIntegrationPluginsDeployer.h"
 #include "TlsBackendsDeployer.h"
+#include "WaylandcompositorPluginsDeployer.h"
 
 using namespace linuxdeploy::plugin::qt;
 using namespace linuxdeploy::core::appdir;
@@ -101,6 +102,10 @@ std::vector<std::shared_ptr<PluginsDeployer>> PluginsDeployerFactory::getDeploye
 
     if (moduleName == "texttospeech") {
         return {getInstance<TextToSpeechPluginsDeployer>(moduleName)};
+    }
+
+    if (moduleName == "waylandcompositor") {
+        return {getInstance<WaylandcompositorPluginsDeployer>(moduleName)};
     }
 
     // fallback
