@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.6)
 project(linuxdeploy-plugin-qt)
 
+option(INSTALL_LINUX_DEPLOY_APP "Decides if linuxdeploy application is installed with linuxdeployqt plugin" OFF)
+
 include(CTest)
 
 set(CMAKE_CXX_STANDARD 17)

@@ -1,1 +1,5 @@
-add_subdirectory(linuxdeploy EXCLUDE_FROM_ALL)
+if ($CACHE{INSTALL_LINUX_DEPLOY_APP})
+    add_subdirectory(linuxdeploy)
+else ()
+    add_subdirectory(linuxdeploy EXCLUDE_FROM_ALL)
+endif ()
