@@ -19,6 +19,7 @@ find_package(nlohmann_json)
 if(NOT nlohmann_json_FOUND)
     message(STATUS "nlohmann_json not found on system, fetching from GitHub")
 
+    include(FetchContent)
     FetchContent_Declare(
         nlohmann_json
         GIT_REPOSITORY https://github.com/nlohmann/json
