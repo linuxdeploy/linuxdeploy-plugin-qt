@@ -107,6 +107,7 @@ run_in_docker() {
         -i \
         --init \
         -e GITHUB_RUN_NUMBER \
+        -e USE_STATIC_RUNTIME \
         -e ARCH \
         -e CI \
         --user "$uid" \
@@ -118,4 +119,4 @@ run_in_docker() {
 }
 
 run_in_docker bash ci/build.sh
-run_in_docker bash ci/test.sh linuxdeploy-plugin-qt-"$ARCH".AppImage
+run_in_docker bash ci/test.sh linuxdeploy-plugin-qt"$USE_STATIC_RUNTIME"-"$ARCH".AppImage
