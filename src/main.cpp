@@ -34,6 +34,8 @@ int main(const int argc, const char *const *const argv) {
     args::ArgumentParser parser("linuxdeploy Qt plugin",
                                 "Bundles Qt resources. For use with an existing AppDir, created by linuxdeploy.");
 
+    args::HelpFlag help(parser, "help", "Display this help text", {'h', "help"});
+
     args::ValueFlag<fs::path> appDirPath(parser, "appdir path", "Path to an existing AppDir", {"appdir"});
     args::ValueFlagList<std::string> extraPlugins(parser, "plugin",
                                                   "Extra Qt plugin to deploy (specified by name, filename or path)",
@@ -46,6 +48,9 @@ int main(const int argc, const char *const *const argv) {
 
     try {
         parser.ParseCLI(argc, argv);
+    } catch (const args::Help &) {
+        std::cerr << parser;
+        return 0;
     } catch (const args::ParseError &) {
         std::cerr << parser;
         return 1;
