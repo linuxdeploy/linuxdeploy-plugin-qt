@@ -70,6 +70,8 @@ static const std::vector<QtModule> Qt5Modules = {
     {"svg", "libQt5Svg", ""},
     {"test", "libQt5Test", "qtbase"},
     {"texttospeech", "libQt5TextToSpeech", ""},
+    {"waylandclient", "libQt5WaylandClient", ""},
+    {"waylandcompositor", "libQt5WaylandCompositor", ""},
     {"webchannel", "libQt5WebChannel", ""},
     {"webenginecore", "libQt5WebEngineCore", ""},
     {"webengine", "libQt5WebEngine", "qtwebengine"},
