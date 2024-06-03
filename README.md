@@ -59,7 +59,9 @@ Just like all linuxdeploy plugins, the Qt plugin's behavior can be configured so
 - `$EXTRA_QT_PLUGINS=pluginA;pluginB`: Plugins to deploy even if not found automatically by linuxdeploy-plugin-qt
   - example: `EXTRA_QT_PLUGINS=svg;` if you want to use the module [QtSvg](https://doc.qt.io/qt-5/qtsvg-index.html)
 - `$EXTRA_PLATFORM_PLUGINS=platformA;platformB`: Platforms to deploy in addition to `libqxcb.so`. Platform must be available from `QT_INSTALL_PLUGINS/platforms`.
+- `$EXCLUDE_QT_PLUGINS=pluginA;pluginB`: Specify Qt plugins to exclude from deployment. Useful for excluding specific SQL drivers or other plugins not needed by the application.
 
 QML related:
 - `$QML_SOURCES_PATHS`: directory containing the application's QML files — useful/needed if QML files are "baked" into the binaries. `$QT_INSTALL_QML` is prepended to this list internally.
 - `$QML_MODULES_PATHS`: extra directories containing imported QML files (normally doesn't need to be specified).
+- Missing dependencies of a plugin are now handled as a non-fatal error, emitting a warning instead. This allows the build process to continue even if some plugins have unmet dependencies, which can be particularly useful for plugins that are not essential for the application's functionality.
