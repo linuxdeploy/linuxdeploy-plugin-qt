@@ -39,7 +39,7 @@ bool SqlPluginsDeployer::deploy() {
         }
 
         // Attempt to deploy the plugin, emitting a warning instead of failing on missing dependencies
-        if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/sqldrivers/", true)) {
+        if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/sqldrivers/")) {
             ldLog() << LD_WARNING << "Could not deploy SQL plugin due to missing dependencies:" << i->path().filename() << std::endl;
             continue; // Proceed with the next plugin instead of returning false
         }
