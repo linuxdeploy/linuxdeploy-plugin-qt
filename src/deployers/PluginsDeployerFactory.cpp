@@ -73,9 +73,9 @@ std::vector<std::shared_ptr<PluginsDeployer>> PluginsDeployerFactory::getDeploye
     }
 
     if (moduleName == "multimedia") {
-	if (qtMajorVersion < 6) {
+        if (qtMajorVersion < 6) {
             return {getInstance<Multimedia5PluginsDeployer>(moduleName)};
-	} else {
+        } else {
             return {getInstance<Multimedia6PluginsDeployer>(moduleName)};
         }
     }

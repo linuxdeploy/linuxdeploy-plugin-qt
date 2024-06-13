@@ -8,11 +8,7 @@
 using namespace linuxdeploy::plugin::qt;
 using namespace linuxdeploy::core::log;
 
-bool XcbglIntegrationPluginsDeployer::deploy() {
-    // calling the default code is optional, but it won't hurt for now
-    if (!BasicPluginsDeployer::deploy())
-        return false;
-
+bool XcbglIntegrationPluginsDeployer::customDeploy() {
     ldLog() << "Deploying xcb-gl integrations" << std::endl;
 
     return deployIntegrationPlugins(appDir, qtPluginsPath, {"xcbglintegrations/"});

@@ -10,7 +10,7 @@ namespace linuxdeploy {
                 // we can just use the base class's constructor
                 using BasicPluginsDeployer::BasicPluginsDeployer;
 
-                bool deploy() override;
+                bool customDeploy() override;
             };
         }
     }
