@@ -12,11 +12,7 @@ using namespace linuxdeploy::core::log;
 
 namespace fs = std::filesystem;
 
-bool SvgPluginsDeployer::deploy() {
-    // calling the default code is optional, but it won't hurt for now
-    if (!BasicPluginsDeployer::deploy())
-        return false;
-
+bool SvgPluginsDeployer::customDeploy() {
     ldLog() << "Deploying svg icon engine" << std::endl;
 
     if (!appDir.deployLibrary(qtPluginsPath / "iconengines/libqsvgicon.so", appDir.path() / "usr/plugins/iconengines/"))
