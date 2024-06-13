@@ -29,7 +29,21 @@ BasicPluginsDeployer::BasicPluginsDeployer(std::string moduleName,
                                                                   qtDataPath(std::move(qtDataPath)) {}
 
 bool BasicPluginsDeployer::deploy() {
-    // currently this is a no-op, but we might add more functionality later on, such as some kinds of default
-    // attempts to copy data based on the moduleName
+    for (const auto &pluginName : qtPluginsToBeDeployed()) {
+        ldLog() << "Deploying" << pluginName << "plugins" << std::endl;
+        for (fs::directory_iterator i(qtPluginsPath / pluginName); i != fs::directory_iterator(); ++i) {
+            if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins" / pluginName))
+                return false;
+        }
+    }
+
+    return customDeploy();
+}
+
+bool BasicPluginsDeployer::customDeploy() {
     return true;
+}
+
+std::vector<std::string> BasicPluginsDeployer::qtPluginsToBeDeployed() const {
+    return {};
 }
