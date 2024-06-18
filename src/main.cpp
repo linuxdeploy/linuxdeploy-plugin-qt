@@ -9,7 +9,7 @@
 // library includes
 #include <linuxdeploy/core/appdir.h>
 #include <linuxdeploy/core/elf_file.h>
-#include <linuxdeploy/core/log.h>
+#include <linuxdeploy/log/log.h>
 #include <linuxdeploy/util/util.h>
 
 // local includes
@@ -22,7 +22,7 @@ namespace fs = std::filesystem;
 
 using namespace linuxdeploy::core;
 using namespace linuxdeploy::util::misc;
-using namespace linuxdeploy::core::log;
+using namespace linuxdeploy::log;
 using namespace linuxdeploy::plugin::qt;
 
 

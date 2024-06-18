@@ -13,7 +13,7 @@ using namespace linuxdeploy::subprocess;
 std::map<std::string, std::string> queryQmake(const std::filesystem::path& qmakePath) {
     auto qmakeCall = subprocess({qmakePath.string(), "-query"}).run();
 
-    using namespace linuxdeploy::core::log;
+    using namespace linuxdeploy::log;
 
     if (qmakeCall.exit_code() != 0) {
         ldLog() << LD_ERROR << "Call to qmake failed:" << qmakeCall.stderr_string() << std::endl;
@@ -54,7 +54,7 @@ std::map<std::string, std::string> queryQmake(const std::filesystem::path& qmake
 };
 
 std::filesystem::path findQmake() {
-    using namespace linuxdeploy::core::log;
+    using namespace linuxdeploy::log;
 
     std::filesystem::path qmakePath;
 
