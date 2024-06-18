@@ -1,12 +1,12 @@
 // library headers
-#include <linuxdeploy/core/log.h>
+#include <linuxdeploy/log/log.h>
 
 // local headers
 #include "XcbglIntegrationPluginsDeployer.h"
 #include "deployment.h"
 
 using namespace linuxdeploy::plugin::qt;
-using namespace linuxdeploy::core::log;
+using namespace linuxdeploy::log;
 
 bool XcbglIntegrationPluginsDeployer::deploy() {
     // calling the default code is optional, but it won't hurt for now

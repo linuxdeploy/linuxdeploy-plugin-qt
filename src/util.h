@@ -10,7 +10,7 @@
 
 // library includes
 #include <args.hxx>
-#include <linuxdeploy/core/log.h>
+#include <linuxdeploy/log/log.h>
 
 typedef struct {
     bool success;
