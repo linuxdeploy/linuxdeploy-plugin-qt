@@ -2,13 +2,13 @@
 #include <filesystem>
 
 // library headers
-#include <linuxdeploy/core/log.h>
+#include <linuxdeploy/log/log.h>
 
 // local headers
 #include "Multimedia6PluginsDeployer.h"
 
 using namespace linuxdeploy::plugin::qt;
-using namespace linuxdeploy::core::log;
+using namespace linuxdeploy::log;
 
 namespace fs = std::filesystem;
 
