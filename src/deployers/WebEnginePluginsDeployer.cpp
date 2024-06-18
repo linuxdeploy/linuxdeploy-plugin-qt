@@ -3,14 +3,14 @@
 #include <fstream>
 
 // library headers
-#include <linuxdeploy/core/log.h>
+#include <linuxdeploy/log/log.h>
 #include <util.h>
 
 // local headers
 #include "WebEnginePluginsDeployer.h"
 
 using namespace linuxdeploy::plugin::qt;
-using namespace linuxdeploy::core::log;
+using namespace linuxdeploy::log;
 
 namespace fs = std::filesystem;
 

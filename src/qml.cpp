@@ -4,7 +4,7 @@
 // library includes
 #include <nlohmann/json.hpp>
 #include <linuxdeploy/core/appdir.h>
-#include <linuxdeploy/core/log.h>
+#include <linuxdeploy/log/log.h>
 #include <linuxdeploy/core/elf_file.h>
 #include <linuxdeploy/subprocess/subprocess.h>
 #include <linuxdeploy/util/util.h>
@@ -14,7 +14,7 @@
 #include "qml.h"
 
 using namespace linuxdeploy::core;
-using namespace linuxdeploy::core::log;
+using namespace linuxdeploy::log;
 using namespace linuxdeploy::subprocess;
 using namespace linuxdeploy::util;
 using namespace nlohmann;
