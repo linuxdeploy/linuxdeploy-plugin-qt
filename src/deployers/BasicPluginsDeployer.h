@@ -50,24 +50,23 @@ namespace linuxdeploy {
 
             public:
                 /**
-                 * This method deploys the plugins returned by \sa qtPluginsToBeDeployed()
-                 * and call \sa customDeploy() to finalize the deployment.
+                 * This method might make some deployment preparation and calls \sa doDeploy() to finalize the deployment.
                  */
                 bool deploy() override final;
 
             protected:
                 /**
-                 * The \sa deploy() method can deploy Qt plugins that follow the default
-                 * name and path scheme, but some modules are special so
-                 * they should write custom deployment code.
+                 * This method does the actual moduleName deployment, where any special case should be handled and
+                 * \sa deployStandardQtPlugins () method should be called to deploy Qt plugins that follow the default
+                 * name and path scheme.
                  */
-                virtual bool customDeploy();
+                virtual bool doDeploy();
 
                 /**
-                 * Returns a list of Qt plugin names that should be deployed and
+                 * Deploys a list of Qt plugin that should be deployed and
                  * follow the default name and path scheme.
                  */
-                virtual std::vector<std::string> qtPluginsToBeDeployed() const;
+                bool deployStandardQtPlugins(const std::vector<std::string>& plugins);
             };
         }
     }

@@ -8,7 +8,7 @@ using namespace linuxdeploy::plugin::qt;
 
 namespace fs = std::filesystem;
 
-bool QmlPluginsDeployer::customDeploy() {
+bool QmlPluginsDeployer::doDeploy() {
     try {
         deployQml(appDir, qtInstallQmlPath);
     } catch (const QmlImportScannerError &) {

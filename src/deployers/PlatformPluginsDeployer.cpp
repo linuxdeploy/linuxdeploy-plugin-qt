@@ -13,7 +13,7 @@ using namespace linuxdeploy::core::log;
 
 namespace fs = std::filesystem;
 
-bool PlatformPluginsDeployer::customDeploy() {
+bool PlatformPluginsDeployer::doDeploy() {
     ldLog() << "Deploying platform plugins" << std::endl;
 
     // always deploy default platform
@@ -28,6 +28,10 @@ bool PlatformPluginsDeployer::customDeploy() {
             if (!appDir.deployLibrary(qtPluginsPath / "platforms" / platformToDeploy, appDir.path() / "usr/plugins/platforms/"))
                 return false;
         }
+    }
+
+    if (!deployStandardQtPlugins({"platforminputcontexts", "imageformats"})) {
+        return false;
     }
 
     // TODO: platform themes -- https://github.com/probonopd/linuxdeployqt/issues/236
@@ -67,8 +71,4 @@ bool PlatformPluginsDeployer::customDeploy() {
     }
 
     return true;
-}
-
-std::vector<std::string> PlatformPluginsDeployer::qtPluginsToBeDeployed() const {
-    return {"platforminputcontexts", "imageformats"};
 }

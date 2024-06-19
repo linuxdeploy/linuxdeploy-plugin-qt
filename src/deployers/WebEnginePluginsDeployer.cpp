@@ -14,11 +14,7 @@ using namespace linuxdeploy::core::log;
 
 namespace fs = std::filesystem;
 
-bool WebEnginePluginsDeployer::customDeploy() {
-    // calling the default code is optional, but it won't hurt for now
-    if (!BasicPluginsDeployer::deploy())
-        return false;
-
+bool WebEnginePluginsDeployer::doDeploy() {
     ldLog() << "Deploying web engine plugins" << std::endl;
 
     const auto newLibexecPath = appDir.path() / "usr/libexec/";
