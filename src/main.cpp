@@ -37,9 +37,9 @@ int main(const int argc, const char *const *const argv) {
     args::HelpFlag help(parser, "help", "Display this help text", {'h', "help"});
 
     args::ValueFlag<fs::path> appDirPath(parser, "appdir path", "Path to an existing AppDir", {"appdir"});
-    args::ValueFlagList<std::string> extraPlugins(parser, "plugin",
-                                                  "Extra Qt plugin to deploy (specified by name, filename or path)",
-                                                  {'p', "extra-plugin"});
+    args::ValueFlagList<std::string> extraModules(parser, "module",
+                                                  "Extra Qt module to deploy (specified by name, filename or path)",
+                                                  {'m', "extra-module"});
 
     args::Flag pluginType(parser, "", "Print plugin type and exit", {"plugin-type"});
     args::Flag pluginApiVersion(parser, "", "Print plugin API version and exit", {"plugin-api-version"});
@@ -199,18 +199,27 @@ int main(const int argc, const char *const *const argv) {
                                          }) != libraryNames.end();
                  });
 
-    std::vector<std::string> extraPluginsFromEnv;
-    const auto* const extraPluginsFromEnvData = getenv("EXTRA_QT_PLUGINS");
-    if (extraPluginsFromEnvData != nullptr)
-        extraPluginsFromEnv = linuxdeploy::util::split(std::string(extraPluginsFromEnvData), ';');
+    std::vector<std::string> extraModulesFromEnv;
+    const auto* const extraModulesFromEnvData = []() -> char* {
+        auto* ret = getenv("EXTRA_QT_MODULES");
+        if (ret == nullptr) {
+            ret = getenv("EXTRA_QT_PLUGINS");
+            if (ret) {
+                ldLog() << std::endl << LD_WARNING << "Using deprecated EXTRA_QT_PLUGINS env var" << std::endl;
+            }
+        }
+        return ret;
+    }();
+    if (extraModulesFromEnvData != nullptr)
+        extraModulesFromEnv = linuxdeploy::util::split(std::string(extraModulesFromEnvData), ';');
 
-    for (const auto& pluginsList : {static_cast<std::vector<std::string>>(extraPlugins.Get()), extraPluginsFromEnv}) {
+    for (const auto& modulesList : {static_cast<std::vector<std::string>>(extraModules.Get()), extraModulesFromEnv}) {
         std::copy_if(qtModules.begin(), qtModules.end(), std::back_inserter(extraQtModules),
-            [&matchesQtModule, &libraryNames, &pluginsList](const QtModule &module) {
-                return std::find_if(pluginsList.begin(), pluginsList.end(),
+            [&matchesQtModule, &libraryNames, &modulesList](const QtModule &module) {
+                return std::find_if(modulesList.begin(), modulesList.end(),
                     [&matchesQtModule, &module](const std::string &libraryName) {
                         return matchesQtModule(libraryName, module);
-                    }) != pluginsList.end();
+                    }) != modulesList.end();
             }
         );
     }
