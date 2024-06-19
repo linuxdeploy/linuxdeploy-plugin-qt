@@ -12,7 +12,7 @@ using namespace linuxdeploy::core::log;
 
 namespace fs = std::filesystem;
 
-bool TextToSpeechPluginsDeployer::customDeploy() {
+bool TextToSpeechPluginsDeployer::doDeploy() {
     // calling the default code is optional, but it won't hurt for now
     if (!BasicPluginsDeployer::deploy())
         return false;
