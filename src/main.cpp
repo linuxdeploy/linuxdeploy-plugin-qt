@@ -37,6 +37,9 @@ int main(const int argc, const char *const *const argv) {
     args::HelpFlag help(parser, "help", "Display this help text", {'h', "help"});
 
     args::ValueFlag<fs::path> appDirPath(parser, "appdir path", "Path to an existing AppDir", {"appdir"});
+    args::ValueFlagList<std::string> excludeLibraryPatterns(parser, "pattern",
+                                                            "Shared library to exclude from deployment (glob pattern)",
+                                                            {"exclude-library"});
     args::ValueFlagList<std::string> extraModules(parser, "module",
                                                   "Extra Qt module to deploy (specified by name, filename or path)",
                                                   {'m', "extra-module"});
@@ -135,6 +138,9 @@ int main(const int argc, const char *const *const argv) {
     ldLog() << std::endl << "Using Qt version: " << qtVersion << " (" << qtMajorVersion << ")" << std::endl;
 
     appdir::AppDir appDir(appDirPath.Get());
+    if (const auto patterns = excludeLibraryPatterns.Get(); !patterns.empty()) {
+        appDir.setExcludeLibraryPatterns(patterns);
+    }
 
     // allow disabling copyright files deployment via environment variable
     if (getenv("DISABLE_COPYRIGHT_FILES_DEPLOYMENT") != nullptr) {
