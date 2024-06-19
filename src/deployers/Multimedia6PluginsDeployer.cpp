@@ -12,11 +12,11 @@ using namespace linuxdeploy::core::log;
 
 namespace fs = std::filesystem;
 
-std::vector<std::string> Multimedia6PluginsDeployer::qtPluginsToBeDeployed() const {
+bool Multimedia6PluginsDeployer::doDeploy() {
     if (fs::exists(qtPluginsPath / "multimedia")) {
-        return {"multimedia"};
+        return deployStandardQtPlugins({"multimedia"});
     } else {
         ldLog() << LD_WARNING << "Missing Qt 6 multimedia plugins, skipping." << std::endl;
-        return {};
+        return true;
     }
 }

@@ -1,15 +1,11 @@
 // system headers
 #include <filesystem>
 
-// library headers
-#include <linuxdeploy/core/log.h>
-
 // local headers
 #include "BearerPluginsDeployer.h"
 
 using namespace linuxdeploy::plugin::qt;
-using namespace linuxdeploy::core::log;
 
-std::vector<std::string> BearerPluginsDeployer::qtPluginsToBeDeployed() const {
-    return {"bearer"};
+bool BearerPluginsDeployer::doDeploy() {
+    return deployStandardQtPlugins({"bearer"});
 }
