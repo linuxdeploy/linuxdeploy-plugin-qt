@@ -40,6 +40,9 @@ int main(const int argc, const char *const *const argv) {
     args::ValueFlagList<std::string> extraPlugins(parser, "plugin",
                                                   "Extra Qt plugin to deploy (specified by name, filename or path)",
                                                   {'p', "extra-plugin"});
+    args::ValueFlagList<std::string> excludePlugins(parser, "plugin",
+                                                    "Qt plugin to exclude from deployment (specified by name, filename or path)",
+                                                    {'e', "exclude-plugin"});
 
     args::Flag pluginType(parser, "", "Print plugin type and exit", {"plugin-type"});
     args::Flag pluginApiVersion(parser, "", "Print plugin API version and exit", {"plugin-api-version"});
