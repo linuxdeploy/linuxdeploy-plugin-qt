@@ -13,11 +13,7 @@ using namespace linuxdeploy::core::log;
 
 namespace fs = std::filesystem;
 
-bool PlatformPluginsDeployer::deploy() {
-    // calling the default code is optional, but it won't hurt for now
-    if (!BasicPluginsDeployer::deploy())
-        return false;
-
+bool PlatformPluginsDeployer::doDeploy() {
     ldLog() << "Deploying platform plugins" << std::endl;
 
     // always deploy default platform
@@ -32,16 +28,10 @@ bool PlatformPluginsDeployer::deploy() {
             if (!appDir.deployLibrary(qtPluginsPath / "platforms" / platformToDeploy, appDir.path() / "usr/plugins/platforms/"))
                 return false;
         }
-     }
-
-    for (fs::directory_iterator i(qtPluginsPath / "platforminputcontexts"); i != fs::directory_iterator(); ++i) {
-        if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/platforminputcontexts/"))
-            return false;
     }
 
-    for (fs::directory_iterator i(qtPluginsPath / "imageformats"); i != fs::directory_iterator(); ++i) {
-        if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/imageformats/"))
-            return false;
+    if (!deployStandardQtPlugins({"platforminputcontexts", "imageformats"})) {
+        return false;
     }
 
     // TODO: platform themes -- https://github.com/probonopd/linuxdeployqt/issues/236

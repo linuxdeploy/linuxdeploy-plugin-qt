@@ -49,7 +49,24 @@ namespace linuxdeploy {
                 virtual ~BasicPluginsDeployer() = default;
 
             public:
-                bool deploy() override;
+                /**
+                 * This method might make some deployment preparation and calls \sa doDeploy() to finalize the deployment.
+                 */
+                bool deploy() override final;
+
+            protected:
+                /**
+                 * This method does the actual moduleName deployment, where any special case should be handled and
+                 * \sa deployStandardQtPlugins () method should be called to deploy Qt plugins that follow the default
+                 * name and path scheme.
+                 */
+                virtual bool doDeploy();
+
+                /**
+                 * Deploys a list of Qt plugin that should be deployed and
+                 * follow the default name and path scheme.
+                 */
+                bool deployStandardQtPlugins(const std::vector<std::string>& plugins);
             };
         }
     }
