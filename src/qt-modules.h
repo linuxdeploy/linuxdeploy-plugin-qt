@@ -121,6 +121,7 @@ static const std::vector<QtModule> Qt6Modules = {
     {"test", "libQt6Test", "qtbase"},
     {"uitools", "libQt6UiTools", ""},
     {"waylandclient", "libQt6WaylandClient", ""},
+    {"wayland-shell-integration", "libQt6WlShellIntegration", ""},
     {"waylandcompositor", "libQt6WaylandCompositor", ""},
     {"webenginecore", "libQt6WebEngineCore", ""},
     {"webengine", "libQt6WebEngine", "qtwebengine"},
