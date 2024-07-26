@@ -19,6 +19,7 @@
 #include "TlsBackendsDeployer.h"
 #include "WaylandcompositorPluginsDeployer.h"
 #include "WaylandShellIntegrationPluginsDeployer.h"
+#include "WaylandGraphicsIntegrationClientPluginsDeployer.h"
 
 using namespace linuxdeploy::plugin::qt;
 using namespace linuxdeploy::core::appdir;
@@ -111,6 +112,10 @@ std::vector<std::shared_ptr<PluginsDeployer>> PluginsDeployerFactory::getDeploye
 
     if (moduleName == "wayland-shell-integration") {
         return {getInstance<WaylandShellIntegrationPluginsDeployer>(moduleName)};
+    }
+
+    if (moduleName == "wayland-graphics-integration-client") {
+        return {getInstance<WaylandGraphicsIntegrationClientPluginsDeployer>(moduleName)};
     }
 
     // fallback
