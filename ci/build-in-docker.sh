@@ -118,5 +118,10 @@ run_in_docker() {
         "$@"
 }
 
+filename_suffix=
+if [[ "$USE_STATIC_RUNTIME" != "" ]]; then
+    filename_suffix="-static"
+fi
+
 run_in_docker bash ci/build.sh
-run_in_docker bash ci/test.sh linuxdeploy-plugin-qt"$USE_STATIC_RUNTIME"-"$ARCH".AppImage
+run_in_docker bash ci/test.sh linuxdeploy-plugin-qt"$filename_suffix"-"$ARCH".AppImage
