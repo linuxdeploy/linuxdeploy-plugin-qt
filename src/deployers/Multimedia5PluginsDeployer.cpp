@@ -20,6 +20,11 @@ bool Multimedia5PluginsDeployer::deploy() {
     ldLog() << "Deploying mediaservice plugins" << std::endl;
 
     for (fs::directory_iterator i(qtPluginsPath / "mediaservice"); i != fs::directory_iterator(); ++i) {
+        if (i->path().extension() == ".debug") {
+            ldLog() << LD_DEBUG << "skipping .debug file:" << i->path() << std::endl;
+            continue;
+        }
+
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/mediaservice/"))
             return false;
     }
@@ -27,6 +32,11 @@ bool Multimedia5PluginsDeployer::deploy() {
     ldLog() << "Deploying audio plugins" << std::endl;
 
     for (fs::directory_iterator i(qtPluginsPath / "audio"); i != fs::directory_iterator(); ++i) {
+        if (i->path().extension() == ".debug") {
+            ldLog() << LD_DEBUG << "skipping .debug file:" << i->path() << std::endl;
+            continue;
+        }
+
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/audio/"))
             return false;
     }

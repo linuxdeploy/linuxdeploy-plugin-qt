@@ -20,6 +20,11 @@ bool TlsBackendsDeployer::deploy() {
     ldLog() << "Deploying TLS backends" << std::endl;
 
     for (fs::directory_iterator i(qtPluginsPath / "tls"); i != fs::directory_iterator(); ++i) {
+        if (i->path().extension() == ".debug") {
+            ldLog() << LD_DEBUG << "skipping .debug file:" << i->path() << std::endl;
+            continue;
+        }
+
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/tls/"))
             return false;
     }

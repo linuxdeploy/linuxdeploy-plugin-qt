@@ -21,6 +21,11 @@ bool Multimedia6PluginsDeployer::deploy() {
         ldLog() << "Deploying multimedia plugins" << std::endl;
 
         for (fs::directory_iterator i(qtPluginsPath / "multimedia"); i != fs::directory_iterator(); ++i) {
+            if (i->path().extension() == ".debug") {
+                ldLog() << LD_DEBUG << "skipping .debug file:" << i->path() << std::endl;
+                continue;
+            }
+
             if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/multimedia/"))
                 return false;
         }

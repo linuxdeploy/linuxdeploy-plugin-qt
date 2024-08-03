@@ -20,6 +20,11 @@ bool LocationPluginsDeployer::deploy() {
     ldLog() << "Deploying Location plugins" << std::endl;
 
     for (fs::directory_iterator i(qtPluginsPath / "geoservices"); i != fs::directory_iterator(); ++i) {
+        if (i->path().extension() == ".debug") {
+            ldLog() << LD_DEBUG << "skipping .debug file:" << i->path() << std::endl;
+            continue;
+        }
+
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/geoservices/"))
             return false;
     }

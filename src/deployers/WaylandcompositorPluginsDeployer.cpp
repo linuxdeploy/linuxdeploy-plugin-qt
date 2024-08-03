@@ -20,16 +20,31 @@ bool WaylandcompositorPluginsDeployer::deploy() {
     ldLog() << "Deploying waylandcompositor plugin" << std::endl;
 
     for (fs::directory_iterator i(qtPluginsPath / "wayland-decoration-client"); i != fs::directory_iterator(); ++i) {
+        if (i->path().extension() == ".debug") {
+            ldLog() << LD_DEBUG << "skipping .debug file:" << i->path() << std::endl;
+            continue;
+        }
+
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/wayland-decoration-client/"))
             return false;
     }
 
     for (fs::directory_iterator i(qtPluginsPath / "wayland-graphics-integration-client"); i != fs::directory_iterator(); ++i) {
+        if (i->path().extension() == ".debug") {
+            ldLog() << LD_DEBUG << "skipping .debug file:" << i->path() << std::endl;
+            continue;
+        }
+
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/wayland-graphics-integration-client/"))
             return false;
     }
 
     for (fs::directory_iterator i(qtPluginsPath / "wayland-shell-integration"); i != fs::directory_iterator(); ++i) {
+        if (i->path().extension() == ".debug") {
+            ldLog() << LD_DEBUG << "skipping .debug file:" << i->path() << std::endl;
+            continue;
+        }
+
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/wayland-shell-integration/"))
             return false;
     }

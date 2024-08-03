@@ -20,11 +20,21 @@ bool Qt3DPluginsDeployer::deploy() {
     ldLog() << "Deploying Qt 3D plugins" << std::endl;
 
     for (fs::directory_iterator i(qtPluginsPath / "geometryloaders"); i != fs::directory_iterator(); ++i) {
+        if (i->path().extension() == ".debug") {
+            ldLog() << LD_DEBUG << "skipping .debug file:" << i->path() << std::endl;
+            continue;
+        }
+
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/geometryloaders/"))
             return false;
     }
 
     for (fs::directory_iterator i(qtPluginsPath / "sceneparsers"); i != fs::directory_iterator(); ++i) {
+        if (i->path().extension() == ".debug") {
+            ldLog() << LD_DEBUG << "skipping .debug file:" << i->path() << std::endl;
+            continue;
+        }
+
         if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins/sceneparsers/"))
             return false;
     }
