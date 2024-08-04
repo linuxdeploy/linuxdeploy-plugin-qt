@@ -39,7 +39,8 @@ bool BasicPluginsDeployer::deployStandardQtPlugins(const std::vector<std::string
     for (const auto &pluginName : plugins) {
         ldLog() << "Deploying Qt" << pluginName << "plugins" << std::endl;
         for (fs::directory_iterator i(qtPluginsPath / pluginName); i != fs::directory_iterator(); ++i) {
-            if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins" / pluginName))
+            // add a trailing slash, so pluginName is used as a destination directory, not a file.
+            if (!appDir.deployLibrary(*i, appDir.path() / "usr/plugins" / pluginName / ""))
                 return false;
         }
     }
