@@ -3,12 +3,12 @@
 #include <utility>
 
 // library headers
-#include <linuxdeploy/core/log.h>
+#include <linuxdeploy/log/log.h>
 
 // local headers
 #include "BasicPluginsDeployer.h"
 
-using namespace linuxdeploy::core::log;
+using namespace linuxdeploy::log;
 using namespace linuxdeploy::core::appdir;
 using namespace linuxdeploy::plugin::qt;
 
