@@ -39,7 +39,9 @@ bool WebEnginePluginsDeployer::doDeploy() {
     for (const auto &fileName : {"qtwebengine_resources.pak",
                                  "qtwebengine_devtools_resources.pak",
                                  "qtwebengine_resources_100p.pak",
-                                 "qtwebengine_resources_200p.pak", "icudtl.dat"}) {
+                                 "qtwebengine_resources_200p.pak",
+                                 "icudtl.dat",
+                                 "v8_context_snapshot.bin"}) {
         auto path = qtDataPath / "resources" / fileName;
 
         if (fs::is_regular_file(path))
