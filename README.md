@@ -63,3 +63,22 @@ Just like all linuxdeploy plugins, the Qt plugin's behavior can be configured so
 QML related:
 - `$QML_SOURCES_PATHS`: directory containing the application's QML files — useful/needed if QML files are "baked" into the binaries. `$QT_INSTALL_QML` is prepended to this list internally.
 - `$QML_MODULES_PATHS`: extra directories containing imported QML files (normally doesn't need to be specified).
+
+## How to build it
+1. Install the following dependencies:
+- [patchelf](https://github.com/NixOS/patchelf)
+- [cimg](https://cimg.eu/)
+- optional - disable it with `USE_CCACHE` cmake var: [ccache](https://ccache.dev/)
+2. [Fork this repository and clone it](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo).
+3. Initiate the git submodules.
+```
+cd <forked linux-deply-qt>
+git submodule update --init --recursive
+```
+4. Create the build folder and built it.
+```
+mkdir <build folder>
+cd <build folder
+cmake ../<forked linux-deply-qt> -DUSE_CCACHE=OFF -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTING=ON -DSTATIC_BUILD=ON
+make
+```
