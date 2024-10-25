@@ -37,6 +37,10 @@ inline bool deployIntegrationPlugins(appdir::AppDir& appDir, const fs::path& qtP
             // otherwise, when the directory doesn't exist, it might just copy all files to files called like
             // destinationDir
             auto destinationDir = appDir.path() / "usr/plugins" / subDir / "";
+            if (i->path().extension() == ".debug") {
+                ldLog() << LD_DEBUG << "skipping .debug file:" << i->path() << std::endl;
+                continue;
+            }
 
             if (!appDir.deployLibrary(*i, destinationDir))
                 return false;
