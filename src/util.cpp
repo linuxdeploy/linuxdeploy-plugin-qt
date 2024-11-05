@@ -68,6 +68,9 @@ std::filesystem::path findQmake() {
 
         if (qmakePath.empty())
             qmakePath = linuxdeploy::util::which("qmake");
+
+        if (qmakePath.empty())
+            qmakePath = linuxdeploy::util::which("qmake6");
     }
 
     return qmakePath;
