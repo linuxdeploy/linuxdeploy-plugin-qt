@@ -18,7 +18,7 @@ error() {
     log_message 1 "[error] $*"
 }
 
-if [[ "$ARCH" == "" ]]; then
+if [[ "${ARCH:-}" == "" ]]; then
     error "Usage: env ARCH=... bash $0"
     exit 2
 fi
@@ -29,16 +29,16 @@ this_dir="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
 
 case "$ARCH" in
     x86_64)
-        docker_arch=amd64
+        docker_platform=linux/amd64
         ;;
     i386)
-        docker_arch=i386
+        docker_platform=linux/386
         ;;
     armhf)
-        docker_arch=arm32v7
+        docker_platform=linux/arm/v7
         ;;
     aarch64)
-        docker_arch=arm64v8
+        docker_platform=linux/arm64/v8
         ;;
     *)
         echo "Unsupported \$ARCH: $ARCH"
@@ -49,7 +49,7 @@ esac
 # first, we need to build the image
 # we always attempt to build it, it will only be rebuilt if Docker detects changes
 # optionally, we'll pull the base image beforehand
-info "Building Docker image for $ARCH (Docker arch: $docker_arch)"
+info "Building Docker image for $ARCH (Docker platform: $docker_platform)"
 
 build_args=()
 if [[ "${UPDATE:-}" == "" ]]; then
@@ -58,11 +58,11 @@ else
     build_args+=("--pull")
 fi
 
-docker_image=linuxdeploy-plugin-qt-build:"$ARCH"
+docker_image=linuxdeploy-plugin-qt-build
 
 docker build \
+    --platform "$docker_platform" \
     --build-arg ARCH="$ARCH" \
-    --build-arg docker_arch="$docker_arch" \
     "${build_args[@]}" \
     -t "$docker_image" \
     "$this_dir"/docker
@@ -104,11 +104,12 @@ run_in_docker() {
     #   b) allow the build scripts to "mv" the binaries into the /out directory
     docker run \
         --rm \
+        --platform "$docker_platform" \
         -i \
         --init \
+        -e ARCH \
         -e GITHUB_RUN_NUMBER \
         -e USE_STATIC_RUNTIME \
-        -e ARCH \
         -e CI \
         --user "$uid" \
         "${docker_args[@]}" \
@@ -119,7 +120,7 @@ run_in_docker() {
 }
 
 filename_suffix=
-if [[ "$USE_STATIC_RUNTIME" != "" ]]; then
+if [[ "${USE_STATIC_RUNTIME:-}" != "" ]]; then
     filename_suffix="-static"
 fi
 
