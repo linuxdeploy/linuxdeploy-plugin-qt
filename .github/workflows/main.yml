@@ -6,31 +6,35 @@ jobs:
   build-and-test:
     strategy:
       matrix:
-        ARCH: [x86_64, i386, aarch64, armhf]
-        USE_STATIC_RUNTIME: [""]
-        UPDATE: ["1"]
-        
         include:
-          # test build
-          - ARCH: x86_64
-            DOCKER_ARCH: amd64
-            BUILD_TYPE: coverage
-
-          # experimental build
+          # regular builds:
           - ARCH: x86_64
             BUILD_TYPE: appimage
-            USE_STATIC_RUNTIME: -static
+            RUNS_ON: ubuntu-24.04
+          - ARCH: i386
+            BUILD_TYPE: appimage
+            RUNS_ON: ubuntu-24.04
+          - ARCH: aarch64
+            BUILD_TYPE: appimage
+            RUNS_ON: ubuntu-24.04-arm
+          - ARCH: armhf
+            BUILD_TYPE: appimage
+            RUNS_ON: ubuntu-24.04-arm
+
+          # test build
+          - ARCH: x86_64
+            BUILD_TYPE: coverage
+            RUNS_ON: ubuntu-24.04
 
       fail-fast: false
 
-    name: ${{ matrix.ARCH }}${{ matrix.USE_STATIC_RUNTIME }}
-    runs-on: ubuntu-latest
+    name: ${{ matrix.ARCH }} ${{ matrix.BUILD_TYPE }}
+    runs-on: ${{ matrix.RUNS_ON }}
 
     env:
       ARCH: ${{ matrix.ARCH }}
       BUILD_TYPE: ${{ matrix.BUILD_TYPE }}
       DEBIAN_FRONTEND: interactive
-      USE_STATIC_RUNTIME: ${{ matrix.USE_STATIC_RUNTIME }}
 
     steps:
       # check out once git command is available
@@ -38,23 +42,20 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Set up QEMU integration for Docker
-        run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-
       - name: Build and test AppImage
         run: bash ci/build-in-docker.sh
 
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: AppImage ${{ matrix.ARCH }}${{ matrix.USE_STATIC_RUNTIME}}
-          path: linuxdeploy-plugin-qt${{ matrix.USE_STATIC_RUNTIME}}-${{ matrix.ARCH }}.AppImage*
+          name: AppImage ${{ matrix.ARCH }}${{ matrix.BUILD_TYPE }}
+          path: linuxdeploy-plugin-qt-${{ matrix.ARCH }}.AppImage*
 
   upload:
     name: Create release and upload artifacts
     needs:
       - build-and-test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v4
