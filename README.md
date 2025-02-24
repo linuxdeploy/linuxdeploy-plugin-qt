@@ -68,17 +68,17 @@ QML related:
 1. Install the following dependencies:
 - [patchelf](https://github.com/NixOS/patchelf)
 - [cimg](https://cimg.eu/)
-- optional - disable it with `USE_CCACHE` cmake var: [ccache](https://ccache.dev/)
+- optional - disable it with `USE_CCACHE=OFF` cmake var: [ccache](https://ccache.dev/)
 2. [Fork this repository and clone it](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo).
 3. Initiate the git submodules.
 ```
-cd <forked linux-deply-qt>
+cd <forked linux-deploy-qt>
 git submodule update --init --recursive
 ```
-4. Create the build folder and built it.
+4. Create the build folder and build it.
 ```
 mkdir <build folder>
 cd <build folder
-cmake ../<forked linux-deply-qt> -DUSE_CCACHE=OFF -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTING=ON -DSTATIC_BUILD=ON
+cmake ../<forked linux-deploy-qt> -DUSE_CCACHE=OFF -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTING=ON -DSTATIC_BUILD=ON
 make
 ```
