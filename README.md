@@ -61,5 +61,5 @@ Just like all linuxdeploy plugins, the Qt plugin's behavior can be configured so
 - `$EXTRA_PLATFORM_PLUGINS=platformA;platformB`: Platforms to deploy in addition to `libqxcb.so`. Platform must be available from `QT_INSTALL_PLUGINS/platforms`.
 
 QML related:
-- `$QML_SOURCES_PATHS`: directory containing the application's QML files — useful/needed if QML files are "baked" into the binaries. `$QT_INSTALL_QML` is prepended to this list internally.
+- `$QML_SOURCES_PATHS`: directory containing the application's QML files — useful/needed if QML files are "baked" into the binaries. linuxdeploy-plugin-qt will look for all imported QML modules and include them. `$QT_INSTALL_QML` is prepended to this list internally.
 - `$QML_MODULES_PATHS`: extra directories containing imported QML files (normally doesn't need to be specified).
