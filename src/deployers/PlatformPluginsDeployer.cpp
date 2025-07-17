@@ -27,6 +27,13 @@ bool PlatformPluginsDeployer::doDeploy() {
             ldLog() << "Deploying extra platform plugin: " << platformToDeploy << std::endl;
             if (!appDir.deployLibrary(qtPluginsPath / "platforms" / platformToDeploy, appDir.path() / "usr/plugins/platforms/"))
                 return false;
+
+            using namespace linuxdeploy::util::misc;
+            if (stringStartsWith(platformToDeploy, "libqwayland")) {
+                if (!deployStandardQtPlugins({"wayland-decoration-client", "wayland-shell-integration"})) {
+                    return false;
+                }
+            }
         }
     }
 
