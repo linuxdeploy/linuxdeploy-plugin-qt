@@ -58,7 +58,10 @@ Just like all linuxdeploy plugins, the Qt plugin's behavior can be configured so
 - `$QMAKE=/path/to/my/qmake`: use another `qmake` binary to detect paths of plugins and other resources (usually doesn't need to be set manually, most Qt environments ship scripts changing `$PATH`)
 - `$EXTRA_QT_MODULES=moduleA;moduleB`: Modules to deploy even if not found automatically by linuxdeploy-plugin-qt
   - example: `EXTRA_QT_MODULES=svg;` if you want to use the module [QtSvg](https://doc.qt.io/qt-5/qtsvg-index.html)
+- `$EXTRA_QT_PLUGINS=pluginA;pluginB`: extra Qt plugins to deploy
+  - To support Wayland, add `waylandcompositor` to this variable
 - `$EXTRA_PLATFORM_PLUGINS=platformA;platformB`: Platforms to deploy in addition to `libqxcb.so`. Platform must be available from `QT_INSTALL_PLUGINS/platforms`.
+  - To support Wayland, add `libqwayland-egl.so;libqwayland-generic.so`
 
 QML related:
 - `$QML_SOURCES_PATHS`: directory containing the application's QML files — useful/needed if QML files are "baked" into the binaries. linuxdeploy-plugin-qt will look for all imported QML modules and include them. `$QT_INSTALL_QML` is prepended to this list internally.
