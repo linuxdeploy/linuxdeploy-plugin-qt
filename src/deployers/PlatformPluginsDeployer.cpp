@@ -2,14 +2,14 @@
 #include <filesystem>
 
 // library headers
-#include <linuxdeploy/core/log.h>
+#include <linuxdeploy/log/log.h>
 #include <linuxdeploy/util/util.h>
 
 // local headers
 #include "PlatformPluginsDeployer.h"
 
 using namespace linuxdeploy::plugin::qt;
-using namespace linuxdeploy::core::log;
+using namespace linuxdeploy::log;
 
 namespace fs = std::filesystem;
 
