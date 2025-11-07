@@ -308,10 +308,14 @@ int main(const int argc, const char *const *const argv) {
         return 1;
     }
 
-    ldLog() << std::endl << "-- Creating AppRun hook --" << std::endl;
-    if (!createAppRunHook(appDir)) {
-        ldLog() << LD_ERROR << "Failed to create AppRun hook in AppDir" << std::endl;
-        return 1;
+    if (qtMajorVersion >= 6) {
+        ldLog() << std::endl << "-- Note: skipping AppRun hook creation on Qt " << qtMajorVersion << " --" << std::endl;
+    } else {
+        ldLog() << std::endl << "-- Creating AppRun hook --" << std::endl;
+        if (!createAppRunHook(appDir)) {
+            ldLog() << LD_ERROR << "Failed to create AppRun hook in AppDir" << std::endl;
+            return 1;
+        }
     }
 
     ldLog() << std::endl << "Done!" << std::endl;
