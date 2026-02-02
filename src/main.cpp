@@ -100,7 +100,7 @@ int main(const int argc, const char *const *const argv) {
         ldLog() << LD_ERROR << "No such file or directory:" << qmakePath << std::endl;
         return 1;
     }
-    
+
     ldLog() << "Using qmake:" << qmakePath << std::endl;
 
     auto qmakeVars = queryQmake(qmakePath);
@@ -211,7 +211,7 @@ int main(const int argc, const char *const *const argv) {
         if (ret == nullptr) {
             ret = getenv("EXTRA_QT_PLUGINS");
             if (ret) {
-                ldLog() << std::endl << LD_WARNING << "Using deprecated EXTRA_QT_PLUGINS env var" << std::endl;
+                ldLog() << std::endl << LD_WARNING << "Using deprecated EXTRA_QT_PLUGINS env var (renamed to EXTRA_QT_MODULES)" << std::endl;
             }
         }
         return ret;
