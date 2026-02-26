@@ -38,6 +38,10 @@ bool BasicPluginsDeployer::deployStandardQtPlugins(const std::vector<std::string
 {
     for (const auto &pluginName : plugins) {
         ldLog() << "Deploying Qt" << pluginName << "plugins" << std::endl;
+        if (!fs::exists(qtPluginsPath / pluginName)) {
+            ldLog() << LD_WARNING << "No plugin path found for Qt" << pluginName << std::endl;
+            continue;
+        }
         for (fs::directory_iterator i(qtPluginsPath / pluginName); i != fs::directory_iterator(); ++i) {
             if (i->path().extension() == ".debug") {
                 ldLog() << LD_DEBUG << "skipping .debug file:" << i->path() << std::endl;
