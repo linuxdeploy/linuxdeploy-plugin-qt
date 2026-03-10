@@ -27,8 +27,6 @@ if(NOT nlohmann_json_FOUND)
     )
 
     FetchContent_MakeAvailable(nlohmann_json)
-
-    add_library(nlohmann_json::nlohmann_json ALIAS nlohmann_json)
 endif()
 
 add_subdirectory(lib)
