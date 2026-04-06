@@ -14,6 +14,7 @@ set(CLASSES
     LocationPluginsDeployer
     Multimedia5PluginsDeployer
     Multimedia6PluginsDeployer
+    NetworkInformationPluginsDeployer
     WebEnginePluginsDeployer
     QmlPluginsDeployer
     Qt3DPluginsDeployer
