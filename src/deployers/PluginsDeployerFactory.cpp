@@ -1,23 +1,24 @@
 // local headers
 #include "PluginsDeployerFactory.h"
 #include "BasicPluginsDeployer.h"
-#include "PlatformPluginsDeployer.h"
 #include "BearerPluginsDeployer.h"
 #include "GamepadPluginsDeployer.h"
 #include "LocationPluginsDeployer.h"
 #include "Multimedia5PluginsDeployer.h"
 #include "Multimedia6PluginsDeployer.h"
-#include "PrintSupportPluginsDeployer.h"
+#include "NetworkInformationPluginsDeployer.h"
+#include "PlatformPluginsDeployer.h"
 #include "PositioningPluginsDeployer.h"
+#include "PrintSupportPluginsDeployer.h"
 #include "QmlPluginsDeployer.h"
 #include "Qt3DPluginsDeployer.h"
 #include "SqlPluginsDeployer.h"
 #include "SvgPluginsDeployer.h"
 #include "TextToSpeechPluginsDeployer.h"
-#include "WebEnginePluginsDeployer.h"
-#include "XcbglIntegrationPluginsDeployer.h"
 #include "TlsBackendsDeployer.h"
 #include "WaylandcompositorPluginsDeployer.h"
+#include "WebEnginePluginsDeployer.h"
+#include "XcbglIntegrationPluginsDeployer.h"
 
 using namespace linuxdeploy::plugin::qt;
 using namespace linuxdeploy::core::appdir;
@@ -51,8 +52,16 @@ std::vector<std::shared_ptr<PluginsDeployer>> PluginsDeployerFactory::getDeploye
     if (moduleName == "network") {
         if (qtMajorVersion < 6) {
             return {getInstance<BearerPluginsDeployer>(moduleName)};
-        } else if (qtMinorVersion >= 2) {
-            return {getInstance<TlsBackendsDeployer>(moduleName)};
+        } else {
+          std::vector<std::shared_ptr<PluginsDeployer>> deployers;
+          if (qtMinorVersion >= 1) {
+            deployers.push_back(
+                getInstance<NetworkInformationPluginsDeployer>(moduleName));
+          }
+          if (qtMinorVersion >= 2) {
+            deployers.push_back(getInstance<TlsBackendsDeployer>(moduleName));
+          }
+          return deployers;
         }
     }
 
