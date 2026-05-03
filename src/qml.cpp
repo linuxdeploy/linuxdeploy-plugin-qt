@@ -1,6 +1,10 @@
 // system headers
 #include <filesystem>
 
+#ifdef __FreeBSD__
+#include <sys/sysctl.h>
+#endif
+
 // library includes
 #include <nlohmann/json.hpp>
 #include <linuxdeploy/core/appdir.h>
@@ -22,7 +26,18 @@ using namespace nlohmann;
 namespace fs = std::filesystem;
 
 fs::path findQmlImportScanner() {
-    return which("qmlimportscanner");
+    auto path = which("qmlimportscanner");
+    if (path.empty()) {
+        // at least on FreeBSD the qmlimportscanner binary is installed under
+        // QT_INSTALL_LIBEXECS for Qt 6 and QT_INSTALL_BINS for Qt5,
+        // so is not locatable via $PATH
+        auto qmakeVars = queryQmake(findQmake());
+        path = which(qmakeVars["QT_INSTALL_LIBEXECS"] + "/qmlimportscanner");
+        if (path.empty())
+            path = which(qmakeVars["QT_INSTALL_BINS"] + "/qmlimportscanner");
+    }
+
+    return path;
 }
 
 std::string runQmlImportScanner(const std::vector<std::filesystem::path> &sourcesPaths, const std::vector<fs::path> &qmlImportPaths) {
