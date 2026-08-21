@@ -43,7 +43,7 @@ fs::path findQmlImportScanner() {
 std::string runQmlImportScanner(const std::vector<std::filesystem::path> &sourcesPaths, const std::vector<fs::path> &qmlImportPaths) {
     auto qmlImportScannerPath = findQmlImportScanner();
 
-    if (findQmlImportScanner().empty()) {
+    if (qmlImportScannerPath.empty()) {
         // TODO: come up with some more user friendly logging like it's done for qmake
         throw std::runtime_error("error: qmlimportscanner not found $PATH");
     }
