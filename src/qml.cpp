@@ -26,16 +26,24 @@ using namespace nlohmann;
 namespace fs = std::filesystem;
 
 fs::path findQmlImportScanner() {
-    auto path = which("qmlimportscanner");
-    if (path.empty()) {
-        // at least on FreeBSD the qmlimportscanner binary is installed under
-        // QT_INSTALL_LIBEXECS for Qt 6 and QT_INSTALL_BINS for Qt5,
-        // so is not locatable via $PATH
-        auto qmakeVars = queryQmake(findQmake());
-        path = which(qmakeVars["QT_INSTALL_LIBEXECS"] + "/qmlimportscanner");
-        if (path.empty())
-            path = which(qmakeVars["QT_INSTALL_BINS"] + "/qmlimportscanner");
-    }
+    // Calling plain which("qmlimportscanner") is problematic, because it
+    // is symlinked to qtchooser on some distros. qtchooser's Qt6 support
+    // is less than ideal, qmlimportscanner used to be in
+    // /usr/lib/qt5/bin/qmlimportscanner, but it was moved to
+    // /usr/lib/qt6/libexec/qmlimportscanner in Qt6. qtchooser is capable
+    // of checking only a single directory for executables at a time,
+    // and it usually checks the bin/ one, so qmlimportscanner cannot
+    // be executed on Qt6 (if you are flabbergasted by this, remember that
+    // current latest release of qtchooser, 66_3, doesn't even include a
+    // qt6 config lookup file).
+    // Either way, QT_INSTALL_LIBEXECS/QT_INSTALL_BINS lookup is the more
+    // robust solution.
+    auto qmakeVars = queryQmake(findQmake());
+    auto path = which(qmakeVars["QT_INSTALL_LIBEXECS"] + "/qmlimportscanner");
+    if (path.empty())
+        path = which(qmakeVars["QT_INSTALL_BINS"] + "/qmlimportscanner");
+    if (path.empty())
+        path = which("qmlimportscanner");
 
     return path;
 }
@@ -45,7 +53,7 @@ std::string runQmlImportScanner(const std::vector<std::filesystem::path> &source
 
     if (qmlImportScannerPath.empty()) {
         // TODO: come up with some more user friendly logging like it's done for qmake
-        throw std::runtime_error("error: qmlimportscanner not found $PATH");
+        throw std::runtime_error("error: qmlimportscanner not found in Qt standard directories nor PATH");
     }
 
     std::vector<std::string> command{qmlImportScannerPath.string()};
