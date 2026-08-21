@@ -23,7 +23,7 @@ if(NOT nlohmann_json_FOUND)
     FetchContent_Declare(
         nlohmann_json
         GIT_REPOSITORY https://github.com/nlohmann/json
-        GIT_TAG v3.10.4
+        GIT_TAG v3.12.0
     )
 
     FetchContent_MakeAvailable(nlohmann_json)
