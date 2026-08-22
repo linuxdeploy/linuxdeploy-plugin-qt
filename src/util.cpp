@@ -65,10 +65,10 @@ std::filesystem::path findQmake() {
         ldLog() << "Using user specified qmake:" << qmakePath << std::endl;
     } else {
         // search for qmake
-        qmakePath = linuxdeploy::util::which("qmake-qt5");
+        qmakePath = linuxdeploy::util::which("qmake");
 
         if (qmakePath.empty())
-            qmakePath = linuxdeploy::util::which("qmake");
+            qmakePath = linuxdeploy::util::which("qmake-qt5");
 
         if (qmakePath.empty())
             qmakePath = linuxdeploy::util::which("qmake6");
