@@ -16,6 +16,7 @@
 #include "qt-modules.h"
 #include "util.h"
 #include "deployment.h"
+#include "translation-deploymant.h"
 #include "deployers/PluginsDeployerFactory.h"
 
 namespace fs = std::filesystem;
@@ -25,6 +26,67 @@ using namespace linuxdeploy::util::misc;
 using namespace linuxdeploy::log;
 using namespace linuxdeploy::plugin::qt;
 
+
+// These classes are a hack to be able to get --feature/--no-feature flags
+// where latter flags override former ones.
+class TrueToggleFlag : public args::Flag {
+    private:
+        bool &value;
+
+    public:
+        TrueToggleFlag(args::Group &group, const std::string &name,
+          const std::string &help, args::Matcher &&matcher,
+          bool &value)
+            : args::Flag(group, name, help, std::move(matcher)),
+              value(value) {}
+
+        virtual void ParseValue(const std::vector<std::string> &v) override {
+            args::Flag::ParseValue(v); // keeps Matched()/Get() bookkeeping intact
+            value = true;
+        }
+};
+
+class FalseToggleFlag : public args::Flag {
+    private:
+        bool &value;
+
+    public:
+        FalseToggleFlag(args::Group &group, const std::string &name,
+          const std::string &help, args::Matcher &&matcher,
+          bool &value)
+            : args::Flag(group, name, help, std::move(matcher)),
+              value(value) {}
+
+        virtual void ParseValue(const std::vector<std::string> &v) override {
+            args::Flag::ParseValue(v); // keeps Matched()/Get() bookkeeping intact
+            value = false;
+        }
+};
+
+
+class CustomArgumentParseError : public std::runtime_error {
+    using std::runtime_error::runtime_error;
+};
+
+
+static bool yesNoArg(const char *envVar, std::string_view value) {
+    std::string lowercase;
+    lowercase.reserve(value.size());
+
+    std::transform(value.begin(), value.end(), std::back_inserter(lowercase),
+      [](unsigned char c){ return std::tolower(c); }
+    );
+
+    if (lowercase == "yes" || lowercase == "y" || lowercase == "on" ||
+        lowercase == "1" || lowercase == "true")
+        return true;
+    if (lowercase == "no" || lowercase == "n" || lowercase == "off" ||
+        lowercase == "0" || lowercase == "false")
+        return false;
+
+    throw CustomArgumentParseError("Unknown value for env variable \"" +
+                                   std::string(value) + "!");
+}
 
 int main(const int argc, const char *const *const argv) {
     // set up verbose logging if $DEBUG is set
@@ -43,6 +105,26 @@ int main(const int argc, const char *const *const argv) {
     args::ValueFlagList<std::string> extraModules(parser, "module",
                                                   "Extra Qt module to deploy (specified by name, filename or path)",
                                                   {'m', "extra-module"});
+
+    args::ValueFlag<std::string> qtLanguages(parser, "language list",
+                                             "Comma separated list of Qt languages to install (does not apply to "
+                                             ".qm files provided by program)", {"qt-languages"});
+    bool individualTranslations = true;
+    bool appTranslations = true;
+    bool mergedTranslations = false;
+
+    TrueToggleFlag yesIndividualTranslations(parser, "", "Enable individual translations",
+                                             {"individual-translations"}, individualTranslations);
+    FalseToggleFlag noIndividualTranslations(parser, "", "Disable individual translations",
+                                             {"no-individual-translations"}, individualTranslations);
+    TrueToggleFlag yesAppTranslations(parser, "", "Enable symlinking app translations to standard directory",
+                                      {"app-symlink-translations"}, appTranslations);
+    FalseToggleFlag noAppTranslations(parser, "", "Disable symlinking app translations to standard directory",
+                                      {"no-app-symlink-translations"}, appTranslations);
+    TrueToggleFlag yesMergedTranslations(parser, "", "Enable producing of merged qt_*.qm translation files",
+                                         {"merged-translations"}, mergedTranslations);
+    FalseToggleFlag noMergedTranslations(parser, "", "Disable producing of merged qt_*.qm translation files",
+                                         {"no-merged-translations"}, mergedTranslations);
 
     args::Flag pluginType(parser, "", "Print plugin type and exit", {"plugin-type"});
     args::Flag pluginApiVersion(parser, "", "Print plugin API version and exit", {"plugin-api-version"});
@@ -290,10 +372,65 @@ int main(const int argc, const char *const *const argv) {
                 return 1;
     }
 
-    ldLog() << std::endl << "-- Deploying translations --" << std::endl;
-    if (!deployTranslations(appDir, qtTranslationsPath, qtModulesToDeploy)) {
-        ldLog() << LD_ERROR << "Failed to deploy translations" << std::endl;
+    // deployTranslations() might need a temporary directory. It is placed here
+    // to make sure it lives long enough, because files from it will be deployed.
+    TempDir lconvertTemporaryDirectory;
+
+    try {
+        if (!yesIndividualTranslations && !noIndividualTranslations) {
+            const char *individualTranslationsEnv = getenv("TRANSLATIONS_INDIVIDUAL");
+            if (individualTranslationsEnv != nullptr) {
+                individualTranslations = yesNoArg("TRANSLATIONS_INDIVIDUAL",
+                                                  individualTranslationsEnv);
+            }
+        }
+        if (!yesMergedTranslations && !noMergedTranslations) {
+            const char *mergedTranslationsEnv = getenv("TRANSLATIONS_MERGED");
+            if (mergedTranslationsEnv != nullptr) {
+                mergedTranslations = yesNoArg("TRANSLATIONS_MERGED", mergedTranslationsEnv);
+            }
+        }
+        if (!yesAppTranslations && !noAppTranslations) {
+            const char *appTranslationsEnv = getenv("TRANSLATIONS_SYMLINK_APP");
+            if (appTranslationsEnv != nullptr) {
+                mergedTranslations = yesNoArg("TRANSLATIONS_SYMLINK_APP", appTranslationsEnv);
+            }
+        }
+    } catch (const CustomArgumentParseError & exc) {
+        std::cerr << exc.what() << std::endl;
         return 1;
+    }
+
+    TranslationDeploymentType translationDeploymentType = 0;
+    if (individualTranslations)
+        translationDeploymentType |= TranslationDeployment::individual;
+    if (appTranslations)
+        translationDeploymentType |= TranslationDeployment::user_symlink;
+    if (mergedTranslations)
+        translationDeploymentType |= TranslationDeployment::merged;
+
+    std::vector<std::string> languages = split(qtLanguages.Get(), ',');
+
+    if (qtLanguages) {
+        languages = split(qtLanguages.Get(), ',');
+    } else {
+        const char *languagesEnv = getenv("TRANSLATION_LANGUAGES");
+        if (languagesEnv != nullptr) {
+            languages = split(languagesEnv, ',');
+        }
+    }
+
+    if (translationDeploymentType == 0) {
+        ldLog() << std::endl << "-- Skipping translation deployment on user request --" << std::endl;
+    } else {
+        ldLog() << std::endl << "-- Deploying translations --" << std::endl;
+        if (!deployTranslations(appDir, qtTranslationsPath, qtModulesToDeploy,
+                                translationDeploymentType, languages,
+                                lconvertTemporaryDirectory))
+        {
+            ldLog() << LD_ERROR << "Failed to deploy translations" << std::endl;
+            return 1;
+        }
     }
 
     ldLog() << std::endl << "-- Executing deferred operations --" << std::endl;

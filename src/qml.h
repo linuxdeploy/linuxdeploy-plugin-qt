@@ -22,8 +22,6 @@ struct QmlImportScannerError : public std::runtime_error {
 // deploys QML files into AppDir
 void deployQml(linuxdeploy::core::appdir::AppDir &appDir, const std::filesystem::path &installQmlPath);
 
-std::filesystem::path findQmlImportScanner();
-
 std::string runQmlImportScanner(const std::vector<std::filesystem::path> &sourcesPaths, const std::vector<std::filesystem::path>& qmlImportPaths);
 
 std::filesystem::path getQmlModuleRelativePath(const std::vector<std::filesystem::path>& qmlModulesImportPaths,

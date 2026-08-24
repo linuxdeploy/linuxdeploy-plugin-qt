@@ -1,6 +1,7 @@
 #pragma once
 
 // system includes
+#include <filesystem>
 #include <iostream>
 #include <map>
 #include <set>
@@ -17,6 +18,26 @@ typedef struct {
     std::string stdoutOutput;
     std::string stderrOutput;
 } procOutput;
+
+class TempDir {
+    public:
+        TempDir() = default;
+        TempDir(std::string_view name);
+
+        void create(std::string_view name);
+
+        TempDir(const TempDir &) = delete;
+        TempDir &operator=(const TempDir &) = delete;
+
+        TempDir(TempDir &&) noexcept;
+        TempDir &operator=(TempDir &&) noexcept;
+
+        ~TempDir();
+
+        std::filesystem::path path() const;
+    private:
+        std::filesystem::path tmpDirPath;
+};
 
 procOutput check_command(const std::vector<std::string> &args);
 
@@ -39,11 +60,18 @@ std::map<std::string, std::string> queryQmake(const std::filesystem::path& qmake
 
 std::filesystem::path findQmake();
 
+std::filesystem::path findQmlImportScanner();
+
+std::filesystem::path findLconvert();
+
 bool pathContainsFile(std::filesystem::path dir, std::filesystem::path file);
 
 std::string join(const std::vector<std::string> &list);
 
 std::string join(const std::set<std::string> &list);
+
+// Join a command line, single quote arguments which might need it.
+std::string shellJoin(const std::vector<std::string> &arguments);
 
 bool strStartsWith(const std::string &str, const std::string &prefix);
 

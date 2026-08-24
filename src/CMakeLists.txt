@@ -31,7 +31,7 @@ add_library(linuxdeploy-plugin-qt_util STATIC util.cpp util.h)
 target_include_directories(linuxdeploy-plugin-qt_util PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(linuxdeploy-plugin-qt_util linuxdeploy_core args Threads::Threads)
 
-add_executable(linuxdeploy-plugin-qt main.cpp qt-modules.h qml.cpp qml.h deployment.h)
+add_executable(linuxdeploy-plugin-qt main.cpp qt-modules.h qml.cpp qml.h deployment.h translation-deploymant.cpp translation-deploymant.h)
 target_link_libraries(linuxdeploy-plugin-qt linuxdeploy_core args nlohmann_json::nlohmann_json linuxdeploy-plugin-qt_util Threads::Threads)
 set_target_properties(linuxdeploy-plugin-qt PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 target_compile_definitions(linuxdeploy-plugin-qt
